@@ -47,6 +47,39 @@
       "link2": "https://drive.google.com/file/d/1jinnvAIj2Yz-o4w3ExQXNENeZMwGEFOP/view"
     },
     {
+      "etapa": "Estrutura",
+      "documento": "Quantitativo Preliminar + Tabela de Carga – Ed. Res. Farol da Barra",
+      "status": "Divergência",
+      "severidade": "Crítico",
+      "observacao": "Modelo estrutural documentado prevê programa de 103 cotas em 14 pavimentos + rooftop. Para ZCMu-2 com IA 3,0 em terreno de 523,71 m², o CA máximo permitido é 1.571,13 m². Uma edificação de 14 andares gera CA estimado de 7.000–8.500 m², valor muito superior ao limite legal. O modelo estrutural é inviável no programa atual e precisa ser completamente revisado após confirmação dos parâmetros urbanísticos reais com SUCOM e IPAC-BA.",
+      "acao": "Suspender o desenvolvimento estrutural até revisão do programa. Após confirmação de CA real com SUCOM, adequar número de pavimentos, unidades e volumetria. Elaborar novo quantitativo preliminar e tabela de carga com base no programa revisado.",
+      "fonte": "QUANTITATIVO PRELIMINAR-ED RES FAROL DA BARRA-SALVADOR-BA-SEAZONE-080925.pdf",
+      "link": "https://drive.google.com/file/d/1qZx3MUFI0_2nWX7_OlOOrelbxfqZUv8C/view",
+      "link2": ""
+    },
+    {
+      "etapa": "Fundação",
+      "documento": "ZF-Premissas de fundação-R00",
+      "status": "OK",
+      "severidade": "Atenção",
+      "observacao": "Premissas de fundação elaboradas e consistentes com as condições de solo costeiro da região da Barra, Salvador/BA. Solo sedimentar típico (argilas moles, nível d'água raso) demanda fundação profunda — estacas hélice contínua ou raiz. O custo e prazo de fundação profunda em área urbana consolidada (entorno do Farol da Barra) representa impacto relevante no orçamento. As premissas deverão ser revisadas após adequação do programa e do modelo estrutural.",
+      "acao": "Manter premissas como referência. Revisar após adequação do programa (redução de CA). Confirmar solução de fundação definitiva após SPT completo e novo modelo estrutural.",
+      "fonte": "ZF-Premissas de fundação-R00 (1).pdf",
+      "link": "https://drive.google.com/file/d/1MviDYb5vha8BY9ZydvYoc-qbxlfeZWy0/view",
+      "link2": ""
+    },
+    {
+      "etapa": "Validação do EP (arquiteto)",
+      "documento": "SEAZONE - FAROL DA BARRA 25_011E Validacao R00",
+      "status": "Divergência",
+      "severidade": "Crítico",
+      "observacao": "Documento de validação do estudo preliminar pelo arquiteto responsável. A validação analisa o programa atual (14 pav. + rooftop, 103 cotas) contra as normas técnicas e parâmetros urbanísticos. Dado que o CA previsto é incompatível com ZCMu-2, a validação deverá ser refeita após revisão do programa. Pontos técnicos a verificar: escada enclausurada conforme CBM-BA; acessibilidade NBR-9050 (rampas, corrimãos); recuos conforme LOUOS Salvador; cone de proteção IPAC/IPHAN.",
+      "acao": "Solicitar nova validação ao arquiteto responsável após revisão do programa (CA/gabarito). Incorporar ajustes de acessibilidade e normas do CBM-BA no anteprojeto revisado.",
+      "fonte": "SEAZONE - FAROL DA BARRA_25_011E_Validacao_R00.pdf",
+      "link": "https://drive.google.com/file/d/1AKUSmpm6k1r2TpbdJy0cLuvZ6bKWXS8I/view",
+      "link2": ""
+    },
+    {
       "etapa": "Sondagem (SPT)",
       "documento": "Relatório de Sondagem SEAZONE – Farol da Barra Spot",
       "status": "OK",

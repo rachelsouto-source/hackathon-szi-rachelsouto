@@ -99,9 +99,137 @@ function render(r) {
     tb.appendChild(tr);
   });
 
-  $("parecer").innerHTML = mdToHtml(r.parecer_md || "");
+  window._parecerMdOrig = r.parecer_md || "";
+  window._sectionEdits = {};
+  renderParecer(window._parecerMdOrig);
   setTab("achados");
   $("resultado").scrollIntoView({ behavior: "smooth" });
+}
+
+// ---- Parecer editável por seção ----
+
+function parseSections(md) {
+  // Divide o markdown em blocos: tudo antes do 1º ### é "preamble", depois cada ### é uma seção
+  const lines = md.split("\n");
+  const sections = [];
+  let current = null;
+  lines.forEach(line => {
+    if (/^### /.test(line)) {
+      if (current) sections.push(current);
+      current = { title: line.slice(4).trim(), raw: line + "\n" };
+    } else {
+      if (current) current.raw += line + "\n";
+      else {
+        if (!sections.length) sections.push({ title: "__preamble__", raw: "" });
+        sections[0].raw += line + "\n";
+      }
+    }
+  });
+  if (current) sections.push(current);
+  return sections;
+}
+
+function renderParecer(md) {
+  const sections = parseSections(md);
+  const container = $("parecer");
+  container.innerHTML = "";
+  sections.forEach(sec => {
+    if (sec.title === "__preamble__") {
+      const div = document.createElement("div");
+      div.className = "sec-preamble";
+      div.innerHTML = mdToHtml(sec.raw);
+      container.appendChild(div);
+      return;
+    }
+    const key = sec.title;
+    const block = document.createElement("div");
+    block.className = "sec-block";
+    block.dataset.key = key;
+
+    // Cabeçalho da seção
+    const head = document.createElement("div");
+    head.className = "sec-head";
+    head.innerHTML = `<h3>${key}</h3>
+      <button class="btn-edit-sec" title="Editar esta seção">✏️ Editar</button>`;
+    block.appendChild(head);
+
+    // Conteúdo renderizado
+    const view = document.createElement("div");
+    view.className = "sec-content";
+    const rawToUse = window._sectionEdits[key] !== undefined ? window._sectionEdits[key] : sec.raw;
+    view.innerHTML = mdToHtml(rawToUse);
+    block.appendChild(view);
+
+    // Área de edição (oculta inicialmente)
+    const editArea = document.createElement("div");
+    editArea.className = "sec-edit hidden";
+    editArea.innerHTML = `
+      <textarea class="sec-textarea" rows="12" placeholder="Edite o conteúdo desta seção em markdown...">${rawToUse.replace(/^### .+\n/, "")}</textarea>
+      <div class="sec-edit-actions">
+        <label class="btn-img-label" title="Inserir imagem por URL">
+          🖼️ Inserir imagem
+          <input type="text" class="img-url-input" placeholder="Cole a URL da imagem e pressione Enter" style="display:none"/>
+        </label>
+        <button class="btn-save-sec">💾 Salvar seção</button>
+        <button class="btn-cancel-sec">✕ Cancelar</button>
+      </div>`;
+    block.appendChild(editArea);
+
+    // Eventos
+    head.querySelector(".btn-edit-sec").addEventListener("click", () => {
+      view.classList.add("hidden");
+      editArea.classList.remove("hidden");
+      head.querySelector(".btn-edit-sec").classList.add("hidden");
+    });
+    editArea.querySelector(".btn-cancel-sec").addEventListener("click", () => {
+      editArea.classList.add("hidden");
+      view.classList.remove("hidden");
+      head.querySelector(".btn-edit-sec").classList.remove("hidden");
+    });
+    editArea.querySelector(".btn-save-sec").addEventListener("click", () => {
+      const txt = editArea.querySelector(".sec-textarea").value;
+      window._sectionEdits[key] = "### " + key + "\n" + txt;
+      view.innerHTML = mdToHtml("### " + key + "\n" + txt);
+      editArea.classList.add("hidden");
+      view.classList.remove("hidden");
+      head.querySelector(".btn-edit-sec").classList.remove("hidden");
+      // feedback visual
+      block.classList.add("sec-saved");
+      setTimeout(() => block.classList.remove("sec-saved"), 1500);
+    });
+    // Inserir imagem por URL
+    const imgLabel = editArea.querySelector(".btn-img-label");
+    const imgInput = editArea.querySelector(".img-url-input");
+    imgLabel.addEventListener("click", (e) => {
+      e.stopPropagation();
+      imgInput.style.display = imgInput.style.display === "none" ? "inline-block" : "none";
+      if (imgInput.style.display !== "none") imgInput.focus();
+    });
+    imgInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const url = imgInput.value.trim();
+        if (url) {
+          const ta = editArea.querySelector(".sec-textarea");
+          ta.value += `\n\n![imagem](${url})\n`;
+          imgInput.value = "";
+          imgInput.style.display = "none";
+        }
+      }
+    });
+
+    container.appendChild(block);
+  });
+}
+
+function getCurrentParecer() {
+  // Reconstrói o markdown com as edições aplicadas
+  const sections = parseSections(window._parecerMdOrig || "");
+  return sections.map(sec => {
+    if (sec.title === "__preamble__") return sec.raw;
+    return window._sectionEdits[sec.title] !== undefined
+      ? window._sectionEdits[sec.title]
+      : sec.raw;
+  }).join("\n");
 }
 
 // markdown -> html simples (títulos, negrito, links, listas, tabelas, citações, hr)
@@ -156,7 +284,12 @@ async function gerarGDoc() {
   if (!window._rid) return;
   bg.disabled = true; bg.textContent = "Gerando…";
   try {
-    const res = await fetch(`/api/dd/${window._rid}/gdoc`, { method: "POST" });
+    const parecerAtual = getCurrentParecer();
+    const res = await fetch(`/api/dd/${window._rid}/gdoc`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ parecer_md: parecerAtual }),
+    });
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || res.statusText);
     if (data.doc_url) {

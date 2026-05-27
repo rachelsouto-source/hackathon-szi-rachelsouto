@@ -220,12 +220,20 @@ def _public(rid: str, data: dict) -> dict:
     }
 
 
+class GDocRequest(BaseModel):
+    parecer_md: str | None = None
+
+
 @app.post("/api/dd/{rid}/gdoc")
-def gerar_gdoc(rid: str):
-    """Cria o parecer como Google Doc na pasta 07 - DD Técnica (sob demanda)."""
+def gerar_gdoc(rid: str, body: GDocRequest | None = None):
+    """Cria o parecer como Google Doc na pasta 07 - DD Técnica (sob demanda).
+    Aceita opcionalmente um parecer_md editado no body (edições feitas na UI)."""
     data = _RESULTS.get(rid)
     if not data:
         raise HTTPException(404, "Resultado não encontrado.")
+    # Se o cliente enviou um parecer editado, sobrescreve o original
+    if body and body.parecer_md:
+        data["parecer_md"] = body.parecer_md
     if data.get("doc_url"):
         return {"doc_url": data["doc_url"], "msg": "Google Doc já criado."}
     # Produção: cria o Google Doc de verdade na pasta 07 - DD Técnica

@@ -103,6 +103,23 @@ O Relatório de Viabilidade e Matriz (REV00) analisa as condicionantes ambientai
 
 A discrepância entre o programa comercial e o CA permitido é o **segundo bloqueio técnico** do empreendimento, ao lado da questão do espólio. O programa de 103 cotas precisará ser revisto para adequação à realidade urbanística.
 
+### VALIDAÇÃO DO ESTUDO PRELIMINAR SEAZONE
+
+O arquiteto responsável avaliou o estudo preliminar desenvolvido pela Seazone para o Farol da Barra Spot — documento **SEAZONE - FAROL DA BARRA 25_011E Validacao R00**.
+
+⚠️ A validação está **condicionada à revisão do programa**, uma vez que o CA previsto (14 pav. + rooftop, 103 cotas) é incompatível com o limite ZCMu-2. Após adequação do programa, uma nova validação formal deverá ser solicitada ao arquiteto responsável.
+
+**Pontos técnicos a verificar na versão revisada:**
+- Escada enclausurada com exaustão (EEE) conforme normas do **Corpo de Bombeiros da Bahia (CBM-BA)**;
+- Acesso com **rampa ou plataforma elevatória** (NBR-9050) e corrimãos em duas alturas;
+- Recuos frontais, laterais e de fundos conforme **LOUOS Salvador** para ZCMu-2;
+- Gabarito de altura em conformidade com a poligonal de proteção do **IPAC/IPHAN** (Farol da Barra);
+- Adequação do térreo para não avançar no recuo frontal.
+
+**Documentos para Aprovação na SUCOM (Salvador):** CNPJ da SPE; ART/RRT do projeto arquitetônico; documento do terreno atualizado (após encerramento do inventário do espólio); IPTU em nome do requerente; levantamento planialtimétrico; consulta prévia ao IPAC-BA; projeto arquitetônico completo conforme parâmetros confirmados.
+
+::FIG:: Validação do estudo preliminar / ajustes do anteprojeto
+
 ### SONDAGEM
 
 Relatório de sondagem SPT específico para o terreno, com ART assinada. A região da Barra, em Salvador, é caracterizada por solo sedimentar costeiro, com presença típica de argilas moles, areias finas e nível d'água raso — perfil que demanda fundação profunda.
@@ -131,6 +148,22 @@ Isso é consistente com o status PAUSADO: o empreendimento foi paralizado **ante
 O terreno está na Barra, próximo ao Oceano Atlântico e à Baía de Todos os Santos — região historicamente afetada por terrenos de marinha (faixa de 33 m a partir da preamar média de 1831). A SPU/BA deve ser consultada para confirmar se o lote está sujeito ao regime de terreno de marinha, com eventual obrigação de **taxa de ocupação** (3% do valor do laudêmio anual) ou **foro** junto à União.
 
 **Ação necessária:** solicitar certidão de terreno de marinha junto à SPU-BA antes da celebração do instrumento de compra e venda.
+
+### ESTRUTURA / FUNDAÇÃO
+
+**Estrutura:** Quantitativo Preliminar e Tabela de Carga elaborados para o Ed. Res. Farol da Barra, Salvador/BA. O programa documentado considera 103 cotas em 14 pavimentos + rooftop.
+
+⚠️ **Divergência crítica de CA:** Para ZCMu-2 com IA 3,0 aplicado ao lote de 523,71 m², o CA máximo permitido é de **1.571,13 m²**. O programa atual gera área construída estimada de **7.000–8.500 m²**, aproximadamente **5 vezes acima do limite legal**. O modelo estrutural preliminar **não pode ser aprovado** no formato atual — somente após revisão do programa (adequação do número de pavimentos e unidades ao CA real) será possível elaborar o quantitativo e a tabela de carga definitivos.
+
+| Parâmetro | Previsto | Limite ZCMu-2 | Situação |
+|---|---|---|---|
+| CA utilizado (est.) | ~7.000–8.500 m² | 1.571,13 m² | 🔴 Diverge |
+| Pavimentos | 14 + rooftop | A confirmar (IPAC) | 🟡 Verificar |
+| Unidades | 103 cotas | Compatível com CA revisado | 🟡 Revisar |
+
+**Fundação:** Premissas de fundação (ZF-Premissas de fundação R00) adequadas ao perfil de solo costeiro da Barra/Salvador — solo sedimentar típico com argilas moles e nível d'água raso. Fundação profunda prevista (estacas hélice contínua ou raiz). As premissas são consistentes com o relatório de sondagem SPT. O custo de fundação profunda em área urbana consolidada representa impacto relevante no orçamento e no prazo.
+
+::FIG:: Implantação estrutural / fundação
 
 ### LEITURA DE NEGÓCIO *(complemento do auditor)*
 
