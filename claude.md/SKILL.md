@@ -15,6 +15,10 @@ description: >-
 
 # Auditor de DD Técnica — SZI Lançamentos
 
+## 🌐 Acesso ao sistema (no ar)
+**https://auditor-dd.seazone.properties**
+> Interface web completa — escolha o empreendimento, clique em "Gerar DD" e veja o parecer técnico + planilha de controle em segundos. Funciona em modo demo com Jurerê Spot III e Farol da Barra Spot; em produção conecta diretamente ao Google Drive da SZI.
+
 ## O que esta skill faz
 Automatiza a etapa de **DD Técnica** de um lançamento: parte de uma pasta do
 empreendimento no Google Drive, **lê todos os documentos**, **cruza as informações**

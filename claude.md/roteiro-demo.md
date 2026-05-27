@@ -1,5 +1,11 @@
 # Roteiro de demo (vídeo ~3 min) + base de transcrição
 
+## 🌐 Link do sistema no ar
+**https://auditor-dd.seazone.properties**
+_(modo demo disponível — sem necessidade de credenciais para avaliar)_
+
+---
+
 Grave uma tela curta (Loom/Meet) mostrando **problema → solução → IA por trás**.
 Abaixo, o roteiro e um texto-base que já serve de transcrição.
 
@@ -46,6 +52,7 @@ Abaixo, o roteiro e um texto-base que já serve de transcrição.
 
 ## Checklist de entrega (hackathon)
 - [ ] Pasta no Drive compartilhada com avaliadores contendo `claude.md/`, `lessons.md/`, `memory.md/`.
+- [ ] **Link do sistema:** https://auditor-dd.seazone.properties
 - [ ] Link da gravação (Loom/Drive/YouTube unlisted).
 - [ ] Transcrição (este texto-base serve).
 - [ ] Enviar pelo formulário do site até **27/05 18:00**.
