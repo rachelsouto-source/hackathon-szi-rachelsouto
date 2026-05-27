@@ -157,7 +157,7 @@ function renderParecer(md) {
     const view = document.createElement("div");
     view.className = "sec-content";
     const rawToUse = window._sectionEdits[key] !== undefined ? window._sectionEdits[key] : sec.raw;
-    view.innerHTML = mdToHtml(rawToUse);
+    view.innerHTML = mdToHtml(rawToUse.replace(/^### .+\n/, ""));
     block.appendChild(view);
 
     // Área de edição (oculta inicialmente)

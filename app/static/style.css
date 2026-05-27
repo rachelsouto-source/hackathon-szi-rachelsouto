@@ -144,3 +144,25 @@ footer{text-align:center;color:#8a93a6;font-size:12px;padding:26px;display:flex;
   border-radius:6px;padding:6px 12px;cursor:pointer;font-size:13px;position:relative;}
 .img-url-input{margin-left:8px;border:1px solid #c2cbe0;border-radius:5px;
   padding:4px 8px;font-size:13px;width:280px;}
+
+/* ---- Seção explicativa DD Técnica ---- */
+.dd-intro{background:linear-gradient(135deg,#0f1e3d 0%,#16284d 60%,#1a3a6e 100%);
+  color:#fff;border-radius:16px;padding:28px 32px 24px;margin-bottom:22px;
+  box-shadow:0 4px 18px rgba(15,30,61,.22);}
+.dd-intro-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;}
+.dd-intro-icon{font-size:34px;line-height:1;flex-shrink:0;}
+.dd-intro-header h2{margin:0 0 3px;font-size:18px;color:#fff;}
+.dd-intro-sub{margin:0;color:#8faad6;font-size:13px;}
+.dd-intro-desc{margin:0 0 20px;font-size:14.5px;line-height:1.65;color:#d4dff5;}
+.dd-intro-desc strong{color:#fff;}
+.badge-go{background:#22c55e;color:#052010;font-weight:800;padding:1px 9px;border-radius:12px;font-size:12px;}
+.badge-res{background:#eab308;color:#2d1d00;font-weight:800;padding:1px 9px;border-radius:12px;font-size:12px;}
+.badge-ng{background:#ef4444;color:#fff;font-weight:800;padding:1px 9px;border-radius:12px;font-size:12px;}
+.dd-topics{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;}
+.dd-topic{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:10px;padding:12px 14px;display:flex;align-items:flex-start;gap:10px;
+  transition:background .2s;}
+.dd-topic:hover{background:rgba(255,255,255,.13);}
+.dt-icon{font-size:22px;flex-shrink:0;margin-top:1px;}
+.dd-topic div{font-size:13px;line-height:1.5;color:#c8d6f0;}
+.dd-topic div strong{color:#fff;display:block;margin-bottom:2px;font-size:13.5px;}
