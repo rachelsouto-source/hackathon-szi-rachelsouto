@@ -166,10 +166,7 @@ function renderParecer(md) {
     editArea.innerHTML = `
       <textarea class="sec-textarea" rows="12" placeholder="Edite o conteúdo desta seção em markdown...">${rawToUse.replace(/^### .+\n/, "")}</textarea>
       <div class="sec-edit-actions">
-        <label class="btn-img-label" title="Inserir imagem por URL">
-          🖼️ Inserir imagem
-          <input type="text" class="img-url-input" placeholder="Cole a URL da imagem e pressione Enter" style="display:none"/>
-        </label>
+        <button class="btn-img-label" title="Inserir imagem por URL">🖼️ Inserir imagem</button>
         <button class="btn-save-sec">💾 Salvar seção</button>
         <button class="btn-cancel-sec">✕ Cancelar</button>
       </div>`;
@@ -197,23 +194,15 @@ function renderParecer(md) {
       block.classList.add("sec-saved");
       setTimeout(() => block.classList.remove("sec-saved"), 1500);
     });
-    // Inserir imagem por URL
-    const imgLabel = editArea.querySelector(".btn-img-label");
-    const imgInput = editArea.querySelector(".img-url-input");
-    imgLabel.addEventListener("click", (e) => {
-      e.stopPropagation();
-      imgInput.style.display = imgInput.style.display === "none" ? "inline-block" : "none";
-      if (imgInput.style.display !== "none") imgInput.focus();
-    });
-    imgInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        const url = imgInput.value.trim();
-        if (url) {
-          const ta = editArea.querySelector(".sec-textarea");
-          ta.value += `\n\n![imagem](${url})\n`;
-          imgInput.value = "";
-          imgInput.style.display = "none";
-        }
+    // Inserir imagem por URL via prompt
+    editArea.querySelector(".btn-img-label").addEventListener("click", (e) => {
+      e.preventDefault();
+      const url = window.prompt("Cole a URL da imagem:");
+      if (url && url.trim()) {
+        const ta = editArea.querySelector(".sec-textarea");
+        const caption = window.prompt("Legenda da imagem (opcional):") || "imagem";
+        ta.value += `\n\n![${caption}](${url.trim()})\n`;
+        ta.focus();
       }
     });
 

@@ -30,11 +30,16 @@ Trata-se de parecer técnico acerca das diligências e da análise técnica real
 
 **ESTUDOS**
 - Levantamento Topográfico (planta, memorial, relatório técnico): [abrir pasta](https://drive.google.com/drive/folders/1jyS8esvVeif9K0CGz_uYT2FCAaP9xJWL)
-- Relatório de Viabilidade e Matriz Ambiental – REV00: [abrir](https://drive.google.com/file/d/1f9JA_T6lmE1r0qkBzrPzVw0GJG17MjOQ/view)
+- Estudo de Viabilidade Ambiental – Relatório Viabilidade e Matriz REV00: [abrir](https://drive.google.com/file/d/1f9JA_T6lmE1r0qkBzrPzVw0GJG17MjOQ/view)
 - ART Responsável Técnico Ambiental (Eric): [abrir](https://drive.google.com/file/d/1jinnvAIj2Yz-o4w3ExQXNENeZMwGEFOP/view)
 - ART Responsável Técnico Ambiental (Francisca): [abrir](https://drive.google.com/file/d/1aan0X9heKtJdWUVJCAHvNkodKfDXVlcB/view)
 - Relatório de Sondagem SPT – Farol da Barra Spot: [abrir](https://drive.google.com/file/d/1Vj29vGfjSjcc48lnUSxCvRIHFKfTytj1/view)
 - ART Sondagem: [abrir](https://drive.google.com/file/d/1DTdp2q2n38B9OgGIEkFffzRcwzwSRDTD/view)
+- Estrutura — Quantitativo Preliminar: [abrir](https://drive.google.com/file/d/1qZx3MUFI0_2nWX7_OlOOrelbxfqZUv8C/view)
+- Fundação — ZF-Premissas de Fundação R00: [abrir](https://drive.google.com/file/d/1MviDYb5vha8BY9ZydvYoc-qbxlfeZWy0/view)
+
+**VALIDAÇÃO**
+- Validação do Estudo Preliminar pelo Arquiteto Responsável: [abrir](https://drive.google.com/file/d/1AKUSmpm6k1r2TpbdJy0cLuvZ6bKWXS8I/view)
 
 **PROJETO**
 - Anteprojeto Arquitetônico (pasta): [abrir](https://drive.google.com/drive/folders/1ojnPkSbU5HtFes3uoRqWRvwobXGqrlAY)
@@ -78,17 +83,21 @@ Adicionalmente, a certidão cadastral da Secretaria Municipal da Fazenda apresen
 
 ### ESTUDO DE VIABILIDADE AMBIENTAL E RESTRIÇÕES PATRIMONIAIS
 
-O empreendimento está inserido na **ZCMu-2** (Zona de Centralidade Múltipla 2) do PDDU/LOUOS Salvador, com parâmetros:
-- **IA:** 3,0 · **TO:** 60% · **Subsolo:** 80%
-- **CA máximo sobre o lote:** 3,0 × 523,71 m² = **1.571,13 m²**
+Segundo o Relatório de Viabilidade e Matriz Ambiental (REV00), o terreno está inserido em área urbana consolidada no Bairro da Barra, Salvador/BA, com área de 523,71 m² (inscrição imobiliária a regularizar junto à SMF-Salvador). Pelo PDDU/LOUOS Salvador, classifica-se como **ZCMu-2 – Zona de Centralidade Múltipla 2**, que admite residencial multifamiliar, apart-hotel, comércio e serviços, com **taxa máxima de ocupação de 60%**, **impermeabilização máxima de 80%** (subsolo) e **coeficiente de aproveitamento (IA) 3,0**. O imóvel **não está** inserido em Área de Preservação Permanente (APP), não é terreno de marinha confirmado (verificação SPU pendente) e não está em Unidade de Conservação (UC).
 
-⚠️ **Divergência crítica:** o estudo preliminar prevê 14 pavimentos + rooftop com 103 cotas (14–17 m²), o que implica área construída estimada de ~7.000–8.500 m² — **muito acima do CA permitido** pelo zoneamento. Esse parâmetro precisa ser urgentemente confrontado com a SUCOM (Superintendência de Controle e Ordenamento do Uso do Solo de Salvador).
+**Restrição patrimonial (IPAC/IPHAN):** o terreno está na área de entorno do **Farol da Barra** — monumento histórico tombado em nível federal (IPHAN, Portaria 70/1992) e estadual (IPAC-BA). A poligonal de proteção do entorno pode impor **gabarito máximo de altura absoluto** inferior ao ZCMu-2 permitiria, além de restrições estéticas e de materiais. Consulta formal ao IPAC-BA é **condição obrigatória** antes do protocolo de aprovação.
 
-**Restrição patrimonial (IPAC/IPHAN):** o terreno está na área de entorno do **Farol da Barra** — monumento tombado em nível federal (IPHAN) e estadual (IPAC-BA). A legislação de entorno pode impor **gabarito máximo de altura** (cota absoluta) inferior ao que o zoneamento permitiria, além de exigências estéticas e de materiais. Uma consulta formal junto ao IPAC-BA é condição necessária antes de qualquer aprovação.
+**Infraestrutura e saneamento:** a área conta com infraestrutura urbana completa — vias pavimentadas, abastecimento de água pela **EMBASA** (Empresa Baiana de Águas e Saneamento), energia elétrica pela **COELBA/Neoenergia**, drenagem pluvial e coleta de resíduos sólidos pela **LIMPURB**. O sistema de esgotamento sanitário opera pela **EMBASA**. Recomenda-se **declaração atualizada da EMBASA** confirmando capacidade de atendimento ao empreendimento e viabilidade de ligação de esgoto no local. Caso a rede pública não suporte a demanda, deverá ser projetada **ETE própria** (Estação de Tratamento de Esgoto) no empreendimento, com aprovação do INEMA/SEMABS.
 
-O Relatório de Viabilidade e Matriz (REV00) analisa as condicionantes ambientais locais. Deverá ser verificada a necessidade de:
-- Licença Ambiental Prévia (LAP) junto ao **INEMA** (Instituto do Meio Ambiente e Recursos Hídricos da Bahia);
-- Estudo de Impacto de Vizinhança (EIV) exigido pelo PDDU para empreendimentos de grande porte no Centro Histórico/entorno.
+**Vegetação:** o terreno é antropizado, localizado em área urbana consolidada do Bairro da Barra, com cobertura vegetal restrita. O Relatório de Viabilidade e Matriz identifica exemplares arbóreos no lote que deverão ser inventariados por profissional habilitado. Os exemplares passíveis de supressão demandam **Autorização de Supressão de Vegetação (ASV)** junto à **SEMMAM** (Secretaria Municipal de Meio Ambiente e Proteção Animal de Salvador) ou ao **INEMA**, conforme a espécie e porte. A supressão estará condicionada ao pagamento de **compensação ambiental** (replantio ou contribuição ao fundo municipal), conforme legislação municipal vigente.
+
+**Fauna:** com base em registros secundários da região, há presença potencial de espécies sinantrópicas comuns ao ambiente urbano costeiro de Salvador, sem registro de espécies ameaçadas. Não há fragmentos de Mata Atlântica nativa no lote.
+
+**Riscos físicos:** o terreno está próximo ao litoral da Baía de Todos os Santos e do Oceano Atlântico, em área suscetível a ressacas e eventual inundação costeira. O sistema de drenagem pluvial do bairro está implantado; recomenda-se verificar cota de soleira e impermeabilização em conformidade com as normas municipais.
+
+**Licenciamento ambiental:** conforme a legislação estadual da Bahia, empreendimentos residenciais multifamiliares e apart-hotéis de médio e grande porte em Salvador podem requerer **Licença Ambiental Prévia (LAP)** junto ao **INEMA** (Instituto do Meio Ambiente e Recursos Hídricos da Bahia) ou à **SEMABS** (Secretaria Municipal de Meio Ambiente e Bem-Estar Animal), a depender do porte e da tipologia. Deverá ser verificada a exigência de **EIV (Estudo de Impacto de Vizinhança)** pelo PDDU para empreendimentos na poligonal de entorno do Farol da Barra. O programa revisado (após adequação do CA) definirá o porte e o potencial poluidor para fins de enquadramento do licenciamento.
+
+**Recomendações:** elaborar **PGRCC** (Plano de Gerenciamento de Resíduos da Construção Civil) conforme Lei nº 12.305/2010 (PNRS) e Resolução CONAMA nº 307/2002; prever medidas de eficiência hídrica e energética (captação de água da chuva, painéis solares, iluminação LED); obter **ASV** com compensação ambiental antes do início das obras. O estudo conclui pela **viabilidade ambiental**, condicionada à consulta ao IPAC-BA, à confirmação da capacidade de esgoto pela EMBASA e à revisão do programa para adequação ao CA real.
 
 ::FIG:: Mapa de restrições ambientais / estudo de viabilidade
 
