@@ -334,7 +334,11 @@ def monitor_run():
 
 @app.get("/", response_class=HTMLResponse)
 def index():
-    return (STATIC / "index.html").read_text(encoding="utf-8")
+    content = (STATIC / "index.html").read_text(encoding="utf-8")
+    return HTMLResponse(content=content, headers={
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache", "Expires": "0",
+    })
 
 
 app.mount("/static", StaticFiles(directory=str(STATIC)), name="static")
