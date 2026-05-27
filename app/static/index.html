@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auditor de DD Técnica — SZI Lançamentos</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header>
+    <div class="logo-box">
+      <img id="logo" src="/api/logo"
+           alt="Seazone" onerror="this.style.display='none';document.getElementById('logo-fb').style.display='grid';" />
+      <div id="logo-fb" class="logo-fb">DD</div>
+    </div>
+    <div class="title-center">
+      <h1>Auditor de DD Técnica</h1>
+      <p class="sub">Seazone Investimentos · Lançamentos</p>
+    </div>
+    <span id="modo" class="badge">…</span>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="card-head">
+        <span class="step">1</span>
+        <div>
+          <h2>Escolha o empreendimento</h2>
+          <p class="hint" id="hint">Empreendimentos em lançamento (pasta “00 - Empreendimentos Estruturados / em Estruturação”).</p>
+        </div>
+      </div>
+      <div class="row">
+        <select id="empreendimento"><option>carregando…</option></select>
+        <button id="btn-gerar"><span class="spin hidden" id="spin"></span><span id="btn-label">Gerar DD</span></button>
+      </div>
+      <p id="status" class="status"></p>
+    </section>
+
+    <section id="resultado" class="card hidden">
+      <div class="card-head">
+        <span class="step">2</span>
+        <div style="flex:1">
+          <h2>Resultado da DD Técnica</h2>
+          <p class="hint" id="res-nome"></p>
+        </div>
+        <div class="actions">
+          <a id="link-xlsx" class="btn-link">⬇ Planilha</a>
+          <button id="btn-gdoc" class="btn-link primary hidden">📝 Gerar Google Doc</button>
+          <a id="link-doc" class="btn-link primary hidden" target="_blank">📄 Abrir Google Doc</a>
+        </div>
+      </div>
+
+      <div id="recomendacao" class="reco"></div>
+      <p id="doc-note" class="doc-note hidden"></p>
+
+      <div id="resumo" class="resumo"></div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="achados">Achados da auditoria</button>
+        <button class="tab" data-tab="parecer">Parecer técnico</button>
+      </div>
+
+      <div id="tab-achados" class="tabpane">
+        <table id="tabela">
+          <thead>
+            <tr><th>Etapa</th><th>Status</th><th>Sev.</th><th>Observação</th><th>Ação</th><th>Fonte</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div id="tab-parecer" class="tabpane hidden">
+        <article id="parecer" class="parecer"></article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <img src="/api/logo" alt="Seazone" class="foot-logo" onerror="this.style.display='none'" />
+    <p>Gerado com apoio de IA · requer revisão humana · Hackathon SZI 2026</p>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
