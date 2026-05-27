@@ -1,0 +1,155 @@
+# PARECER TÉCNICO – DUE DILIGENCE – FAROL DA BARRA SPOT
+
+> Exemplo gerado pela skill/app `auditor-dd-tecnica` a partir dos documentos reais do Farol da Barra Spot. Requer revisão humana antes de uso oficial.
+
+## 1. IMÓVEL
+
+| Item | Descrição |
+|---|---|
+| **Endereço** | Av. Almirante Marques de Leão, 283 – Barra, Salvador/BA – CEP 40.140-230 |
+| **Área do terreno** | 523,71 m² (levantamento topográfico) |
+| **Matrícula** | nº 11.190 – Cartório de Registro de Imóveis de Salvador/BA |
+| **Zoneamento** | ZCMu-2 – Zona de Centralidade Múltipla 2 (LOUOS/PDDU Salvador) |
+| **Parâmetros** | IA 3,0 · TO 60% · Subsolo 80% |
+| **Status** | PAUSADO |
+
+## 2. PROPRIETÁRIO(A)S
+
+- **Armando** (coproprietário)
+- **Alice** (coproprietária)
+- **Espólio de Juliet** (coproprietário — inventário em aberto)
+
+Trata-se de parecer técnico acerca das diligências e da análise técnica realizada pelo Setor de Lançamentos da Seazone Investimentos em relação aos estudos de viabilidade referentes ao terreno e ao estudo preliminar desenvolvido, objetivando a retomada do processo de estruturação do empreendimento.
+
+### Documentos analisados (fontes — clique para abrir)
+
+**IMÓVEL**
+- Certidão de inteiro teor da matrícula nº 11.190: [abrir](https://drive.google.com/file/d/15DWeAcV5ZK7wOlz2Z9OLMfPbTDDge7k8/view)
+- Certidão Positiva com Efeito de Negativa de IPTU: [abrir](https://drive.google.com/file/d/1ogcLpFsQKeD8EEjDivFH2c6pRQ6y83j3/view)
+- Certidão Cadastral – Secretaria Municipal da Fazenda (Salvador): [abrir](https://drive.google.com/file/d/1AWa7JlSHPgGJg_dzGYoaqRPxR1oR4BGw/view)
+
+**ESTUDOS**
+- Levantamento Topográfico (planta, memorial, relatório técnico): [abrir pasta](https://drive.google.com/drive/folders/1jyS8esvVeif9K0CGz_uYT2FCAaP9xJWL)
+- Relatório de Viabilidade e Matriz Ambiental – REV00: [abrir](https://drive.google.com/file/d/1f9JA_T6lmE1r0qkBzrPzVw0GJG17MjOQ/view)
+- ART Responsável Técnico Ambiental (Eric): [abrir](https://drive.google.com/file/d/1jinnvAIj2Yz-o4w3ExQXNENeZMwGEFOP/view)
+- ART Responsável Técnico Ambiental (Francisca): [abrir](https://drive.google.com/file/d/1aan0X9heKtJdWUVJCAHvNkodKfDXVlcB/view)
+- Relatório de Sondagem SPT – Farol da Barra Spot: [abrir](https://drive.google.com/file/d/1Vj29vGfjSjcc48lnUSxCvRIHFKfTytj1/view)
+- ART Sondagem: [abrir](https://drive.google.com/file/d/1DTdp2q2n38B9OgGIEkFffzRcwzwSRDTD/view)
+
+**PROJETO**
+- Anteprojeto Arquitetônico (pasta): [abrir](https://drive.google.com/drive/folders/1ojnPkSbU5HtFes3uoRqWRvwobXGqrlAY)
+
+Para realização da due diligence, foi verificado, entre outros tópicos, código de obras, PDDU, LOUOS, legislação patrimonial (IPAC/IPHAN) e demais normas vigentes para Salvador/BA.
+
+## 3. CONCLUSÃO
+
+### LOCALIZAÇÃO
+
+Terreno com localização estratégica no Bairro da Barra, Salvador/BA — um dos endereços de maior apelo turístico do Brasil: a ~200 m do Farol da Barra (forte do século XVI), no encontro da Baía de Todos os Santos com o Oceano Atlântico. Bairro consolidado, com forte demanda por short stay e liquidez comercial elevada. O projeto Spot de 103 cotas (14–17 m²) está perfeitamente alinhado ao perfil do bairro. ROI líquido estimado: **15,3%**.
+
+Coordenadas do terreno: **-13,009141, -38,529498**
+
+### TOPOGRAFIA
+
+Segundo o levantamento topográfico georreferenciado, o terreno possui área real de **523,71 m²**, compatível com os 523 m² indicados na Planilha Geral do empreendimento. O levantamento inclui TRT assinado, Mapa de Localização, Mapa de Análise de Dominialidade, Memorial Descritivo, Planta georreferenciada e Relatório Técnico completo — documentação de boa qualidade para embasamento do projeto.
+
+**Ponto de atenção:** verificar no Mapa de Análise de Dominialidade se o polígono do lote respeita integralmente a poligonal de proteção do entorno do Farol da Barra definida pelo IPAC/IPHAN.
+
+| Referência | Área (m²) |
+|---|---|
+| Levantamento Topográfico | 523,71 |
+| Planilha Geral do empreendimento | 523,00 |
+| **Diferença** | **0,71 m² (< 0,15% — dentro da margem)** |
+
+::FIG:: Levantamento topográfico
+
+### SITUAÇÃO JURÍDICA / MATRÍCULA
+
+⚠️ **Achado crítico — motivo provável do status PAUSADO.**
+
+A matrícula nº 11.190 registra **três coproprietários**: Armando, Alice e o **Espólio de Juliet**. A existência de um espólio aberto configura o principal bloqueio jurídico ao avanço do empreendimento:
+
+- **Espólio** = patrimônio de pessoa falecida pendente de inventário. A fração do espólio não pode ser alienada pelo inventariante sem autorização judicial ou, em inventário extrajudicial, sem acordo de todos os herdeiros.
+- Enquanto o inventário não for encerrado e o **formal de partilha** não for registrado no CRI-BA, qualquer instrumento de compra e venda da totalidade do imóvel estará incompleto ou sujeito à anulação.
+
+**Condicionante obrigatória:** encerramento do inventário de Juliet (judicial ou extrajudicial) antes de qualquer contrato de compra e venda com a Seazone.
+
+Adicionalmente, a certidão cadastral da Secretaria Municipal da Fazenda apresenta **inconsistência no endereço** do IPTU (anotação na pasta: "obs que a Rua está errada"), demandando regularização cadastral junto à SMF-Salvador.
+
+### ESTUDO DE VIABILIDADE AMBIENTAL E RESTRIÇÕES PATRIMONIAIS
+
+O empreendimento está inserido na **ZCMu-2** (Zona de Centralidade Múltipla 2) do PDDU/LOUOS Salvador, com parâmetros:
+- **IA:** 3,0 · **TO:** 60% · **Subsolo:** 80%
+- **CA máximo sobre o lote:** 3,0 × 523,71 m² = **1.571,13 m²**
+
+⚠️ **Divergência crítica:** o estudo preliminar prevê 14 pavimentos + rooftop com 103 cotas (14–17 m²), o que implica área construída estimada de ~7.000–8.500 m² — **muito acima do CA permitido** pelo zoneamento. Esse parâmetro precisa ser urgentemente confrontado com a SUCOM (Superintendência de Controle e Ordenamento do Uso do Solo de Salvador).
+
+**Restrição patrimonial (IPAC/IPHAN):** o terreno está na área de entorno do **Farol da Barra** — monumento tombado em nível federal (IPHAN) e estadual (IPAC-BA). A legislação de entorno pode impor **gabarito máximo de altura** (cota absoluta) inferior ao que o zoneamento permitiria, além de exigências estéticas e de materiais. Uma consulta formal junto ao IPAC-BA é condição necessária antes de qualquer aprovação.
+
+O Relatório de Viabilidade e Matriz (REV00) analisa as condicionantes ambientais locais. Deverá ser verificada a necessidade de:
+- Licença Ambiental Prévia (LAP) junto ao **INEMA** (Instituto do Meio Ambiente e Recursos Hídricos da Bahia);
+- Estudo de Impacto de Vizinhança (EIV) exigido pelo PDDU para empreendimentos de grande porte no Centro Histórico/entorno.
+
+::FIG:: Mapa de restrições ambientais / estudo de viabilidade
+
+### VIABILIDADE URBANÍSTICA — ANÁLISE DO PROGRAMA
+
+| Parâmetro | Previsto no EP | Limite ZCMu-2 | Situação |
+|---|---|---|---|
+| Pavimentos | 14 + rooftop | A confirmar (IPAC) | ⚠️ Verificar |
+| CA utilizado | ~7.000–8.500 m² (est.) | 1.571,13 m² | ⚠️ DIVERGE |
+| TO | — | 60% (314,23 m² de base) | A confirmar |
+| Nº de cotas | 103 | — | A confirmar após CA |
+
+A discrepância entre o programa comercial e o CA permitido é o **segundo bloqueio técnico** do empreendimento, ao lado da questão do espólio. O programa de 103 cotas precisará ser revisto para adequação à realidade urbanística.
+
+### SONDAGEM
+
+Relatório de sondagem SPT específico para o terreno, com ART assinada. A região da Barra, em Salvador, é caracterizada por solo sedimentar costeiro, com presença típica de argilas moles, areias finas e nível d'água raso — perfil que demanda fundação profunda.
+
+Recomenda-se adotar soluções como **estacas hélice contínua** (quando NA coincide com base do bloco) ou **estacas raiz** (em casos de restrição de espaço). O impacto em custo e prazo de fundação profunda em área urbana consolidada (Barra) deve ser incorporado ao orçamento desde a fase de viabilidade.
+
+::FIG:: Locação dos furos de sondagem
+
+### APROVAÇÕES E LICENCIAMENTOS
+
+⚠️ **Todas as pastas de aprovação estão vazias** (Aprovação Arquitetônica, Hidrossanitária, PPCI, Licenciamentos Ambientais, EIV e Alvará de Construção). Nenhum protocolo foi iniciado junto à SUCOM, INEMA, CBM-BA ou outros órgãos.
+
+Isso é consistente com o status PAUSADO: o empreendimento foi paralizado **antes** do início do processo de aprovações — provavelmente em razão do espólio e/ou da necessidade de revisão do programa (CA).
+
+**Documentos necessários para protocolo na SUCOM Salvador:**
+- CNPJ da SPE (a constituir);
+- ART/RRT do projeto arquitetônico;
+- Matrícula atualizada (após encerramento do inventário);
+- Certidão cadastral corrigida (SMF-Salvador);
+- Levantamento planialtimétrico;
+- Consulta prévia ao IPAC-BA (zona de proteção do Farol);
+- Projeto arquitetônico completo conforme CA/gabarito aprovado.
+
+### DOCUMENTAÇÃO SPU (MARINHA)
+
+O terreno está na Barra, próximo ao Oceano Atlântico e à Baía de Todos os Santos — região historicamente afetada por terrenos de marinha (faixa de 33 m a partir da preamar média de 1831). A SPU/BA deve ser consultada para confirmar se o lote está sujeito ao regime de terreno de marinha, com eventual obrigação de **taxa de ocupação** (3% do valor do laudêmio anual) ou **foro** junto à União.
+
+**Ação necessária:** solicitar certidão de terreno de marinha junto à SPU-BA antes da celebração do instrumento de compra e venda.
+
+### LEITURA DE NEGÓCIO *(complemento do auditor)*
+
+- **Potencial do empreendimento:** altíssimo — localização premium (Farol da Barra), modelo Spot consolidado, ROI estimado 15,3%.
+- **Bloqueios identificados (por prioridade):**
+  1. 🔴 Espólio de Juliet — inventário em aberto (bloqueio jurídico total para compra);
+  2. 🔴 Divergência de CA: programa prevê ~8.000 m² vs. limite legal de ~1.571 m²;
+  3. 🟡 Restrição IPAC/IPHAN: gabarito de altura pode ser inferior ao planejado;
+  4. 🟡 Inconsistência cadastral IPTU (endereço errado);
+  5. 🟡 SPU/Marinha: verificar faixa de terreno de marinha;
+  6. 🟡 Nenhuma aprovação iniciada (zero protocolos).
+- **Impacto em prazo:** a combinação espólio + revisão do programa + aprovação em Salvador com restrição patrimonial configura um cronograma longo — estimativa mínima de 24–36 meses até alvará.
+- **Recomendação:** **PAUSADO ATÉ RESOLUÇÃO DOS BLOQUEIOS** — retomar somente após: (1) encerramento do inventário do espólio; (2) consulta formal ao IPAC-BA sobre gabarito; (3) revisão do programa para adequação ao CA real. Se confirmado o CA de 1.571 m², o número de cotas cai significativamente, impactando o VGV e a viabilidade financeira do modelo atual.
+
+### CONCLUSÃO
+
+O empreendimento Farol da Barra Spot possui localização excepcional e potencial de negócio reconhecido. Contudo, a Due Diligence Técnica identificou **três bloqueios de severidade crítica** que justificam o status PAUSADO: (1) copropriedade com espólio aberto, impedindo a alienação do imóvel; (2) divergência expressiva entre o programa comercial previsto e o CA permitido pelo PDDU/LOUOS para a ZCMu-2; e (3) necessidade de consulta ao IPAC/IPHAN sobre restrições de gabarito na poligonal de entorno do Farol da Barra.
+
+A retomada está condicionada, no mínimo, ao encerramento do inventário de Juliet e à confirmação dos parâmetros urbanísticos reais junto à SUCOM e ao IPAC-BA. Recomenda-se, ainda, verificar a situação perante o SPU/BA (terreno de marinha) e corrigir o cadastro imobiliário junto à SMF-Salvador.
+
+*Salvador/BA, 27 de maio de 2026.*
+*Setor de Projetos — Estruturação — Seazone Investimentos.*

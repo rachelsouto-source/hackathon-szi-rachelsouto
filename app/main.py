@@ -77,7 +77,10 @@ def logo():
 @app.get("/api/empreendimentos")
 def empreendimentos():
     if demo_mode():
-        return {"modo": "demo", "itens": [{"id": "demo-jurere-iii", "name": "Jurerê Spot III (demo)"}]}
+        return {"modo": "demo", "itens": [
+            {"id": "demo-jurere-iii", "name": "Jurerê Spot III (demo)"},
+            {"id": "demo-farol-barra", "name": "Farol da Barra Spot (demo)"},
+        ]}
     from core import drive_client
     try:
         return {"modo": "produção", "itens": drive_client.list_empreendimentos()}
@@ -85,7 +88,18 @@ def empreendimentos():
         raise HTTPException(500, f"Erro ao listar empreendimentos: {e}")
 
 
-def _demo_result() -> dict:
+def _demo_result(emp_id: str = "demo-jurere-iii") -> dict:
+    if emp_id == "demo-farol-barra":
+        achados = json.loads((EXEMPLOS / "farol-barra-achados.json").read_text(encoding="utf-8"))["itens"]
+        parecer_md = (EXEMPLOS / "farol-barra-parecer.md").read_text(encoding="utf-8")
+        return {
+            "nome": "Farol da Barra Spot (demo)",
+            "achados": achados,
+            "parecer_md": parecer_md,
+            "negocio": {"recomendacao": "PAUSADO ATÉ RESOLUÇÃO DOS BLOQUEIOS"},
+            "doc_url": "",
+            "out_folder": None,
+        }
     achados = json.loads((EXEMPLOS / "jurere-iii-achados.json").read_text(encoding="utf-8"))["itens"]
     parecer_md = (EXEMPLOS / "jurere-iii-parecer.md").read_text(encoding="utf-8")
     return {
@@ -103,7 +117,7 @@ def gerar_dd(req: DDRequest):
     rid = uuid.uuid4().hex[:8]
 
     if demo_mode():
-        data = _demo_result()
+        data = _demo_result(req.id)
         data["xlsx"] = docs_writer.gerar_xlsx_bytes(
             data["nome"], data["achados"], data.get("negocio", {}).get("recomendacao", "—"))
         _RESULTS[rid] = data
@@ -271,11 +285,19 @@ def baixar_xlsx(rid: str):
 def monitor_status():
     """Varre '02 - Projetos' e mostra a completude de cada empreendimento."""
     if demo_mode():
-        return {"modo": "demo", "itens": [{
-            "id": "demo-jurere-iii", "nome": "Jurerê Spot III (demo)",
-            "completo": True, "ja_tem_dd": True, "elegivel": False,
-            "presentes": ["(demo)"], "faltando": [],
-        }]}
+        return {"modo": "demo", "itens": [
+            {
+                "id": "demo-jurere-iii", "nome": "Jurerê Spot III (demo)",
+                "completo": True, "ja_tem_dd": True, "elegivel": False,
+                "presentes": ["(demo)"], "faltando": [],
+            },
+            {
+                "id": "demo-farol-barra", "nome": "Farol da Barra Spot (demo)",
+                "completo": False, "ja_tem_dd": False, "elegivel": False,
+                "presentes": ["matrícula", "topografia", "sondagem", "estudo ambiental"],
+                "faltando": ["aprovações", "validação EP", "proposta CCV"],
+            },
+        ]}
     from core import monitor
     try:
         return {"modo": "produção", "itens": monitor.varrer()}

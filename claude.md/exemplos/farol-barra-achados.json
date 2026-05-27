@@ -1,0 +1,137 @@
+{
+  "empreendimento": "Farol da Barra Spot",
+  "data": "2026-05-27",
+  "itens": [
+    {
+      "etapa": "Matrícula",
+      "documento": "Matrícula nº 11.190 – Registro de Imóveis de Salvador/BA",
+      "status": "Divergência",
+      "severidade": "Crítico",
+      "observacao": "Imóvel com três coproprietários: Armando, Alice e 'Espólio Juliet'. A presença de um espólio (herança não regularizada) impede a livre alienação da fração correspondente sem conclusão do inventário judicial ou extrajudicial. Enquanto o inventário não for encerrado e o formal de partilha não for registrado no CRI, a negociação da quota do espólio não pode ser formalizada — bloqueio jurídico que explica o status PAUSADO do empreendimento.",
+      "acao": "Concluir inventário do espólio Juliet (judicial ou extrajudicial via escritura pública, se não houver litígio). Apresentar formal de partilha registrado no CRI-BA antes de qualquer instrumento de compra e venda. Confirmar se há testamento ou herdeiros conflitantes.",
+      "fonte": "1. Matrícula 11190.pdf",
+      "link": "https://drive.google.com/file/d/15DWeAcV5ZK7wOlz2Z9OLMfPbTDDge7k8/view",
+      "link2": ""
+    },
+    {
+      "etapa": "Certidão cadastral (PMS)",
+      "documento": "Certidão Cadastral – Secretaria Municipal da Fazenda / Salvador",
+      "status": "Divergência",
+      "severidade": "Atenção",
+      "observacao": "A certidão positiva com efeito de negativa de IPTU indica situação fiscal regularizada sob condicionantes. A Certidão Cadastral da SMF-Salvador confirma o imóvel, mas o carnê IPTU apresenta inconsistência no endereço ('obs que a Rua está errada' — anotação na própria pasta). Divergência cadastral entre o endereço registrado no IPTU e o endereço real (Av. Almirante Marques de Leão, 283) precisa de regularização junto à Secretaria Municipal da Fazenda.",
+      "acao": "Regularizar endereço cadastral no sistema da SMF-Salvador. Obter nova certidão cadastral após correção. Confirmar inscrição imobiliária correta para o projeto de aprovação.",
+      "fonte": "certidão positiva com efeito de negativa IPTU.pdf / Certidão Cadastral - Secretaria Municipal da Fazenda.png",
+      "link": "https://drive.google.com/file/d/1ogcLpFsQKeD8EEjDivFH2c6pRQ6y83j3/view",
+      "link2": "https://drive.google.com/file/d/1AWa7JlSHPgGJg_dzGYoaqRPxR1oR4BGw/view"
+    },
+    {
+      "etapa": "Levantamento topográfico",
+      "documento": "Topografia Farol da Barra Spot – Planta, Memorial Descritivo, Relatório Técnico",
+      "status": "OK",
+      "severidade": "Atenção",
+      "observacao": "Levantamento completo e estruturado: TRT (Termo de Responsabilidade Técnica), Mapa de Localização, Mapa de Análise de Dominialidade, Memorial Descritivo (IV), Planta (V), Imagens (VI) e Relatório Técnico (VII). Área topografada: 523,71 m², consistente com os 523 m² indicados na Planilha Geral. A análise de dominialidade é especialmente relevante dado o entorno de proteção patrimonial do Farol da Barra. Verificar se o memorial descritivo confirma coordenadas georreferenciadas (SIRGAS 2000) e se não há sobreposição com área pública ou faixa de proteção.",
+      "acao": "Usar área topografada (523,71 m²) como base para o projeto. Verificar o mapa de dominialidade contra o polígono de proteção do entorno do Farol (IPAC/IPHAN). Confirmar ausência de sobreposição com faixa de marinha.",
+      "fonte": "03 - Levantamento Topográfico (pasta completa)",
+      "link": "https://drive.google.com/drive/folders/1jyS8esvVeif9K0CGz_uYT2FCAaP9xJWL",
+      "link2": ""
+    },
+    {
+      "etapa": "Estudo ambiental / Viabilidade",
+      "documento": "Relatório Viabilidade e Matriz - REV00.pdf",
+      "status": "Divergência",
+      "severidade": "Crítico",
+      "observacao": "O relatório analisa a viabilidade ambiental e a matriz de restrições do terreno na Barra, Salvador/BA (ZCMu-2). O empreendimento está inserido na área de entorno do Farol da Barra — monumento tombado pelo IPHAN (Portaria 70/1992) e pelo IPAC-BA. A legislação municipal de Salvador (PDDU e LOUOS) pode impor gabarito máximo diferente dos 14 pavimentos previstos no estudo preliminar para imóveis dentro da poligonal de proteção. Licenciamento ambiental estadual (INEMA) pode ser exigido para construção em ZCMu-2 com esse porte. ARTs de responsabilidade técnica assinadas por Eric e Francisca.",
+      "acao": "Consultar IPAC-BA e IPHAN sobre restrições de altura e interferência visual no cone de proteção do Farol da Barra. Verificar LOUOS Salvador para gabarito efetivo em ZCMu-2 (IA 3,0; TO 60%; subsolo 80%). Confirmar se INEMA exige EIA/RIMA ou apenas LAP. Verificar necessidade de Estudo de Impacto de Vizinhança (EIV) conforme PDDU.",
+      "fonte": "Relatório Viabilidade e Matriz - REV00.pdf",
+      "link": "https://drive.google.com/file/d/1f9JA_T6lmE1r0qkBzrPzVw0GJG17MjOQ/view",
+      "link2": "https://drive.google.com/file/d/1jinnvAIj2Yz-o4w3ExQXNENeZMwGEFOP/view"
+    },
+    {
+      "etapa": "Sondagem (SPT)",
+      "documento": "Relatório de Sondagem SEAZONE – Farol da Barra Spot",
+      "status": "OK",
+      "severidade": "Atenção",
+      "observacao": "Relatório de sondagem SPT específico para o terreno. A região do Bairro da Barra, em Salvador, é caracterizada por solo sedimentar costeiro com presença de argilas moles e nível d'água raso — condições que tipicamente demandam fundação profunda (estacas hélice contínua ou raiz). ART de responsabilidade técnica da sondagem presente (ART SEAZONE - FAROL DA BARRA SPOT.pdf). Boletim de Medição e Nota Fiscal da execução da sondagem arquivados, indicando serviço efetivamente realizado.",
+      "acao": "Confirmar tipo de fundação recomendado com base nos perfis SPT. Verificar NA (nível d'água) e capacidade portante para projeto de 14 pavimentos em 523 m². Avaliar impacto de vibrações nas edificações vizinhas — região consolidada e de alta densidade.",
+      "fonte": "RELATÓRIO DE SONDAGEM SEAZONE - FAROL DA BARRA SPOT.pdf",
+      "link": "https://drive.google.com/file/d/1Vj29vGfjSjcc48lnUSxCvRIHFKfTytj1/view",
+      "link2": "https://drive.google.com/file/d/1DTdp2q2n38B9OgGIEkFffzRcwzwSRDTD/view"
+    },
+    {
+      "etapa": "Projeto Arquitetônico (anteprojeto)",
+      "documento": "03 - Anteprojeto (pasta 05 - Projeto Arquitetônico)",
+      "status": "Pendente",
+      "severidade": "Atenção",
+      "observacao": "A pasta de anteprojeto existe, mas não foi localizado documento de validação por arquiteto responsável (equivalente ao DD_TÉCNICA_EP usado no Jurerê III). O estudo preliminar (pasta 01) e a validação (pasta 02) estão estruturados. O programa prevê 14 pavimentos + rooftop, 103 cotas (14–17 m²), o que implica área construída de ~7.300 m². Para ZCMu-2 com IA 3,0 em 523 m² de terreno, o CA máximo permitido é de 1.569 m² — a divergência é muito significativa e precisa ser verificada contra o PDDU de Salvador.",
+      "acao": "Contratar validação formal do anteprojeto por arquiteto habilitado. Verificar CA (Coeficiente de Aproveitamento) real vs. limite ZCMu-2 (IA 3,0 × 523 m² = 1.569 m²). Confirmar gabarito de altura com restrições do IPAC/IPHAN. Adequar o programa se necessário.",
+      "fonte": "03 - Anteprojeto (subpasta de 05 - Projeto Arquitetônico)",
+      "link": "https://drive.google.com/drive/folders/1ojnPkSbU5HtFes3uoRqWRvwobXGqrlAY",
+      "link2": ""
+    },
+    {
+      "etapa": "Aprovação do projeto",
+      "documento": "01 - Processo de Aprovação (subpastas arq., hidro, PPCI, ambiental, vizinhança, alvará)",
+      "status": "Pendente",
+      "severidade": "Crítico",
+      "observacao": "Todas as 6 pastas do processo de aprovação (Arquitetônico, Hidrossanitário, PPCI, Licenciamentos Ambientais, EIV e Alvará de Construção) estão vazias — contém apenas arquivo placeholder '..txt'. Nenhum protocolo, nenhuma aprovação, nenhum licenciamento obtido até o momento. Isso é consistente com o status 'PAUSADO' do empreendimento: o processo está parado antes mesmo do início das aprovações.",
+      "acao": "Definir se o empreendimento será retomado. Se sim: resolver primeiro o inventário do espólio (pré-requisito para CCV), confirmar viabilidade urbanística com IPAC/IPHAN, e só então iniciar protocolo de aprovação na SUCOM (Superintendência de Controle e Ordenamento do Uso do Solo do Município de Salvador).",
+      "fonte": "01 - Processo de Aprovação (pasta 02 - Projetos)",
+      "link": "https://drive.google.com/drive/folders/1Q5gd3nbBiqLKPmFEKBvvbmqzb7_yI2Nl",
+      "link2": ""
+    },
+    {
+      "etapa": "Documentação SPU (marinha)",
+      "documento": "—",
+      "status": "Pendente",
+      "severidade": "Atenção",
+      "observacao": "O terreno está no Bairro da Barra, às margens da Baía de Todos os Santos e próximo ao Oceano Atlântico. A região é historicamente afetada por terrenos de marinha (faixa de 33 m da preamar) e áreas de acrescidos. O estudo ambiental (Relatório Viabilidade e Matriz) não foi avaliado nesta auditoria para confirmar se o terreno está ou não na faixa de marinha — documentação do SPU (Secretaria do Patrimônio da União) precisa ser verificada.",
+      "acao": "Solicitar certidão de terreno de marinha junto à SPU/BA. Verificar se há necessidade de taxa de ocupação ou foro junto à União. Em caso positivo, providenciar Contrato de Concessão de Uso ou título de cessão conforme legislação do SPU.",
+      "fonte": "(aguardando consulta ao SPU/BA)",
+      "link": "",
+      "link2": ""
+    },
+    {
+      "etapa": "Proposta de compra e venda",
+      "documento": "02 - Proposta de compra e venda (pasta 05 - Jurídico / 01 - Terreno)",
+      "status": "Pendente",
+      "severidade": "Atenção",
+      "observacao": "A pasta de proposta de compra e venda existe na estrutura, mas os arquivos não foram localizados nesta auditoria. Dado que há três vendedores (Armando, Alice, Espólio Juliet), a proposta precisará contemplar a assinatura de todos os coproprietários e do inventariante do espólio — ou aguardar o encerramento do inventário para consolidar a titularidade.",
+      "acao": "Verificar se há proposta assinada. Se não houver, aguardar conclusão do inventário antes de firmar qualquer instrumento. Incluir no instrumento cláusula suspensiva condicionada ao encerramento do inventário.",
+      "fonte": "02 - Proposta de compra e venda (pasta 05 - Jurídico)",
+      "link": "https://drive.google.com/drive/folders/1EExhzPhyQ08fG3VAqpSksB3YG6OxwPUu",
+      "link2": ""
+    },
+    {
+      "etapa": "Documentação de instalações",
+      "documento": "—",
+      "status": "Não se aplica",
+      "severidade": "OK",
+      "observacao": "Não há documentação de instalações (hidrossanitário, elétrico, PPCI) nesta etapa — empreendimento ainda em fase de anteprojeto, antes de qualquer aprovação. As pastas de aprovação de projeto hidrossanitário e PPCI existem mas estão vazias.",
+      "acao": "Providenciar projetos de instalações e protocolos junto aos órgãos competentes quando a aprovação arquitetônica for iniciada.",
+      "fonte": "(n/a – fase de anteprojeto)",
+      "link": ""
+    },
+    {
+      "etapa": "Viabilidade urbanística (ZCMu-2)",
+      "documento": "LOUOS Salvador / PDDU – parâmetros ZCMu-2",
+      "status": "Divergência",
+      "severidade": "Crítico",
+      "observacao": "O estudo preliminar prevê 14 pavimentos + rooftop e 103 cotas (14–17 m²) em terreno de 523 m². Usando IA 3,0 (ZCMu-2), o CA máximo permitido seria 1.569 m². Uma torre de 14 andares típica em 523 m² de base gera área construída muito superior ao CA permitido. Além disso, o gabarito de altura pode ser ainda mais restritivo na poligonal de proteção do Farol da Barra (IPAC/IPHAN). O programa comercial (103 cotas) precisa ser validado contra os parâmetros reais do PDDU e da poligonal patrimonial.",
+      "acao": "Contratar consulta técnica junto à SUCOM/Salvador para confirmar CA, TO, gabarito e recuos aplicáveis ao lote. Verificar com IPAC-BA se o lote está dentro da poligonal de proteção do Farol da Barra e quais restrições adicionais se aplicam. Rever o programa do empreendimento se necessário.",
+      "fonte": "LOUOS Salvador / consulta SUCOM",
+      "link": "",
+      "link2": ""
+    },
+    {
+      "etapa": "Imagens (localização/drone)",
+      "documento": "09 - Imagens de Drone (pasta 02 - Projetos)",
+      "status": "OK",
+      "severidade": "OK",
+      "observacao": "Pasta de imagens de drone disponível na estrutura do empreendimento. A localização do terreno na Av. Almirante Marques de Leão, 283 — Barra, Salvador/BA — é de altíssimo apelo turístico: vizinhança do Farol da Barra, acesso à orla atlântica e à Baía de Todos os Santos, bairro consolidado com forte demanda por short stay. Contexto favorável ao modelo Spot de cotas. Coordenadas: -13.009141, -38.529498.",
+      "acao": "Usar imagens de drone para peças comerciais e para a conferência de contexto urbano. Avaliar vistas por pavimento dado o gabarito de altura que for confirmado.",
+      "fonte": "09 - Imagens de Drone",
+      "link": "https://drive.google.com/drive/folders/1ZNiWt6DorhHsOUWmnbAC4RF3KqnrBiSk",
+      "link2": ""
+    }
+  ]
+}
