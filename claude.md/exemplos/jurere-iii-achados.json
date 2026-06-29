@@ -1,0 +1,152 @@
+{
+  "empreendimento": "Jurerê Spot III",
+  "data": "2025-09-23",
+  "itens": [
+    {
+      "etapa": "Matrícula",
+      "documento": "Matrículas 6.698 (Imóvel 01) e 7.568 (Imóvel 02) - 2º RI Florianópolis",
+      "status": "Divergência",
+      "severidade": "Crítico",
+      "observacao": "Área registrada soma 1.382,40 m² (566,40 + 816,00), mas o levantamento topográfico aponta área real de 1.158,96 m² — diferença de ~223,44 m² (~16%, acima do limite de 3%).",
+      "acao": "Realizar retificação de matrícula com anuência dos confrontantes e amembramento das duas matrículas.",
+      "fonte": "Matrícula (ônus e ações).pdf / Matrícula 7568.pdf",
+      "link": "https://drive.google.com/file/d/1LnbJmLHaWTFVn1INNAwqnkt9_H_rk00P/view",
+      "link2": "https://drive.google.com/file/d/1HpdvNmVt13bLkXjeD2O6m2gVtPnNAgtH/view"
+    },
+    {
+      "etapa": "Certidão cadastral (PMF)",
+      "documento": "Espelho IPTU Imóvel 01 e Cadastral Imóvel 02",
+      "status": "Divergência",
+      "severidade": "Atenção",
+      "observacao": "Área cadastral PMF soma 1.145,10 m² (537,00 + 608,10), não corresponde nem à matrícula (1.382,40) nem ao topográfico (1.158,96).",
+      "acao": "Regularização cadastral junto à PMF após retificação.",
+      "fonte": "Espelho IPTU.pdf / Cadastral Prefeitura Imóvel 02.pdf",
+      "link": "https://drive.google.com/file/d/1IHs_k8cDMBNajfcQlpnyWzE9JBSFo3L0/view",
+      "link2": "https://drive.google.com/file/d/1zH6Lvp0x0fJDN5rt8Aielbh7GQ30nI0k/view"
+    },
+    {
+      "etapa": "Certidão de confrontantes (PMF)",
+      "documento": "certidao_confrontantes_01-2025 / _02-2025",
+      "status": "OK",
+      "severidade": "OK",
+      "observacao": "Confrontantes obtidos para os dois imóveis; necessários para a retificação.",
+      "acao": "Usar na anuência dos confrontantes durante a retificação.",
+      "fonte": "certidao_confrontantes_01-2025.pdf / _02-2025.pdf",
+      "link": "https://drive.google.com/file/d/1NmDcDdrYemujs8VGKmsPqH9tYbXIWtmr/view",
+      "link2": "https://drive.google.com/file/d/1nO9DmVut4g15cjlknm_m7YdpwSlLBNWI/view"
+    },
+    {
+      "etapa": "Viabilidade Técnica Construtiva (PMF)",
+      "documento": "Viabilidade Técnica Construtiva Imóvel 01 e 02",
+      "status": "OK",
+      "severidade": "Atenção",
+      "observacao": "Documento do site da PMF que define o zoneamento (ATR 4.5) e as exigências legais (TO máx 50%, impermeabilização máx 70%, altura ~4 pavimentos). Fonte oficial dos parâmetros urbanísticos da auditoria do gabarito.",
+      "acao": "Confrontar os parâmetros (TO/CA/TP/recuo/altura) com o estudo preliminar.",
+      "fonte": "Imóvel 01/02 - Viabilidade Técnica Construtiva.pdf",
+      "link": "https://drive.google.com/file/d/1xjABrDvpcBGYiJPl9nHbxfb4vIvsC9hI/view",
+      "link2": "https://drive.google.com/file/d/19cQrnyN8WzGUUFoiKolJQnCfze8P3aeq/view"
+    },
+    {
+      "etapa": "Levantamento topográfico",
+      "documento": "Prancha Rev (última versão em PDF)",
+      "status": "OK",
+      "severidade": "Atenção",
+      "observacao": "Área real georreferenciada de 1.158,96 m² — referência para retificação. Terreno relativamente plano (variações < 1,0 m). Puxada automaticamente a última Rev em PDF da pasta 03 - Levantamento Topográfico.",
+      "acao": "Base para retificação de matrícula e projeto.",
+      "fonte": "Jurerê Spot III - Rua Accacio Melo - Prancha - Rev (PDF)",
+      "link": "https://drive.google.com/file/d/1T96iuLeomi9XTNVnMLePHoK8E0I-6eOw/view"
+    },
+    {
+      "etapa": "Estudo ambiental (EVA)",
+      "documento": "EVA_Seazone_Jurerê_III_REVA",
+      "status": "OK",
+      "severidade": "Atenção",
+      "observacao": "Zoneamento ATR 4.5. Parte em APP de curso hídrico (não edificável; área útil ~48%). NÃO é terreno de marinha (logo, sem necessidade de SPU), NÃO é UC. Condicionante de esgoto (ACP nº 5005775-70.2012.4.04.7200/SC). Supressão de 8 árvores (AuC + compensação FLORAM). Necessário alvará de demolição. EVA cita 68 unidades.",
+      "acao": "Obter declaração CASAN/PMF de esgoto; DANC + AuC na FLORAM; alvará de demolição; respeitar APP.",
+      "fonte": "EVA_Seazone_Jurerê_III_REVA.pdf",
+      "link": "https://drive.google.com/file/d/1ehGdlUZ5UHwRrMsh4zDBHz-5egxvsCKY/view"
+    },
+    {
+      "etapa": "Sondagem (SPT)",
+      "documento": "Relatório de Sondagem Jurerê Spot III",
+      "status": "OK",
+      "severidade": "Atenção",
+      "observacao": "5 furos (SP-01 a SP-05), 18,80–26,50 m. NA raso (1,50–2,10 m). Camadas superficiais de baixa capacidade. Camada resistente a partir de ~15 m. Recomenda fundação profunda (estaca raiz / hélice contínua / pré-moldada com cautela).",
+      "acao": "Adotar fundação profunda; avaliar impacto de custo e vibração na vizinhança.",
+      "fonte": "Relatório de Sondagem_Jurerê Spot III.pdf",
+      "link": "https://drive.google.com/file/d/1A4jPopputSaBPzGo_rBov7CKeXbXPQ-f/view"
+    },
+    {
+      "etapa": "Estrutura",
+      "documento": "Quantitativo preliminar + Tabela de carga",
+      "status": "Divergência",
+      "severidade": "Atenção",
+      "observacao": "Modelo estrutural: 1 torre Térreo + 6 pavimentos, 24,5 m, 69 unidades. Diverge do EVA (68 unidades) e o gabarito T+6 deve ser conferido contra o limite do Plano Diretor (~4 pavimentos para ATR 4.5).",
+      "acao": "Conciliar nº de unidades (68 x 69) e validar gabarito permitido para a tipologia apart-hotel.",
+      "fonte": "QUANTITATIVO PRELIMINAR / TABELA DE CARGA-R00S",
+      "link": "https://drive.google.com/file/d/1nmpfx9Zc8e3muVLwMF3Zrnnnc8_S7Aq7/view",
+      "link2": "https://drive.google.com/file/d/1qZNfX3emjULeA9MRpBsP4wTjdnBUsid7/view"
+    },
+    {
+      "etapa": "Fundação",
+      "documento": "ZF - Premissas de fundação R00",
+      "status": "OK",
+      "severidade": "Atenção",
+      "observacao": "Premissas de fundação coerentes com a recomendação de fundação profunda da sondagem.",
+      "acao": "Detalhar no projeto executivo.",
+      "fonte": "ZF-Premissas de fundação-R00.pdf",
+      "link": "https://drive.google.com/file/d/1Vg91NgoL8fneIxu8us9JQpWFuF1ssNeu/view"
+    },
+    {
+      "etapa": "Validação do EP (arquiteto)",
+      "documento": "DD_TÉCNICA_EP_JURERÊ III_V00",
+      "status": "Divergência",
+      "severidade": "Atenção",
+      "observacao": "Da pasta 05 - Projeto Arquitetônico/02 - Validação do estudo preliminar. Anteprojeto exige ajustes: escada enclausurada com exaustão (EEE) conforme Bombeiros SC; acesso com rampa/plataforma p/ NBR-9050 e corrimãos em duas alturas; readequar garden do térreo para não avançar no recuo frontal.",
+      "acao": "Incorporar ajustes no anteprojeto antes da aprovação.",
+      "fonte": "DD_TÉCNICA_EP_JURERÊ III_V00_2025.08.28.pdf",
+      "link": "https://drive.google.com/file/d/1kT9CtTKqj-IYyij-wRPhZ4ZN51YF44dg/view"
+    },
+    {
+      "etapa": "Proposta de compra e venda",
+      "documento": "Proposta / CCV (pasta 04 - Comercial ou 05 - Jurídico)",
+      "status": "Pendente",
+      "severidade": "Atenção",
+      "observacao": "Documento sempre consultado na DD para conferir valores e condições do negócio. Em produção o app puxa o link da pasta 04 - Comercial / 05 - Jurídico.",
+      "acao": "Anexar/conferir a proposta de compra e venda para alimentar a leitura de negócio.",
+      "fonte": "(link puxado automaticamente em produção)",
+      "link": ""
+    },
+    {
+      "etapa": "Documentação de instalações",
+      "documento": "—",
+      "status": "Não se aplica",
+      "severidade": "OK",
+      "observacao": "Sem documentação de instalações específica nesta etapa.",
+      "acao": "—",
+      "fonte": "(n/a)",
+      "link": ""
+    },
+    {
+      "etapa": "Documentação SPU (marinha)",
+      "documento": "—",
+      "status": "Não se aplica",
+      "severidade": "OK",
+      "observacao": "O EVA confirma que o terreno NÃO está em área de marinha; documentação SPU não é exigida neste caso.",
+      "acao": "—",
+      "fonte": "EVA_Seazone_Jurerê_III_REVA.pdf",
+      "link": "https://drive.google.com/file/d/1ehGdlUZ5UHwRrMsh4zDBHz-5egxvsCKY/view"
+    },
+    {
+      "etapa": "Imagens (localização/drone)",
+      "documento": "Localização 01–04 + panorâmica + fotos por pavimento",
+      "status": "OK",
+      "severidade": "OK",
+      "observacao": "Imagens de drone da pasta 09 - Imagens de Drone usadas para avaliar entorno, contexto urbano (Jurerê consolidado) e vistas por pavimento — insumo para a leitura de negócio e validação do contexto ambiental/topográfico.",
+      "acao": "Usar nas peças comerciais e na conferência de vistas por andar.",
+      "fonte": "Localização 01.png; Localização 03.png (+ demais)",
+      "link": "https://drive.google.com/file/d/1KUbi8Hd6qQYv6jBnFLe3-oOOyJIvS23Z/view",
+      "link2": "https://drive.google.com/file/d/1_b_kKnTeQY0MgnefHrhEFR7XwnzbkySn/view"
+    }
+  ]
+}
