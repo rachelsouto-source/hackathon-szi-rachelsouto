@@ -320,8 +320,8 @@ def monitor_status():
             {
                 "id": "demo-novo-campeche-iii", "nome": "Novo Campeche Spot III (demo)",
                 "completo": False, "ja_tem_dd": True, "elegivel": False,
-                "presentes": ["matrícula", "IPTU", "certidão ônus", "hipoteca TQ", "estudo de massa", "estudo preliminar"],
-                "faltando": ["topografia", "EVA", "sondagem SPT", "viabilidade PMF", "proposta CCV"],
+                "presentes": ["matrícula", "IPTU", "certidão ônus", "hipoteca TQ", "estudo de massa", "estudo preliminar", "levantamento topográfico", "viabilidade PMF", "consulta ambiental FLORAM", "imagens de drone", "estrutura"],
+                "faltando": ["EVA", "sondagem SPT", "fundação", "proposta CCV"],
             },
         ]}
     from core import monitor
