@@ -80,6 +80,7 @@ def empreendimentos():
         return {"modo": "demo", "itens": [
             {"id": "demo-jurere-iii", "name": "Jurerê Spot III (demo)"},
             {"id": "demo-farol-barra", "name": "Farol da Barra Spot (demo)"},
+            {"id": "demo-novo-campeche-iii", "name": "Novo Campeche Spot III (demo)"},
         ]}
     from core import drive_client
     try:
@@ -97,6 +98,17 @@ def _demo_result(emp_id: str = "demo-jurere-iii") -> dict:
             "achados": achados,
             "parecer_md": parecer_md,
             "negocio": {"recomendacao": "PAUSADO ATÉ RESOLUÇÃO DOS BLOQUEIOS"},
+            "doc_url": "",
+            "out_folder": None,
+        }
+    if emp_id == "demo-novo-campeche-iii":
+        achados = json.loads((EXEMPLOS / "novo-campeche-achados.json").read_text(encoding="utf-8"))["itens"]
+        parecer_md = (EXEMPLOS / "novo-campeche-parecer.md").read_text(encoding="utf-8")
+        return {
+            "nome": "Novo Campeche Spot III (demo)",
+            "achados": achados,
+            "parecer_md": parecer_md,
+            "negocio": {"recomendacao": "GO COM RESSALVAS CRÍTICAS"},
             "doc_url": "",
             "out_folder": None,
         }
@@ -304,6 +316,12 @@ def monitor_status():
                 "completo": False, "ja_tem_dd": False, "elegivel": False,
                 "presentes": ["matrícula", "topografia", "sondagem", "estudo ambiental"],
                 "faltando": ["aprovações", "validação EP", "proposta CCV"],
+            },
+            {
+                "id": "demo-novo-campeche-iii", "nome": "Novo Campeche Spot III (demo)",
+                "completo": False, "ja_tem_dd": True, "elegivel": False,
+                "presentes": ["matrícula", "IPTU", "certidão ônus", "hipoteca TQ", "estudo de massa", "estudo preliminar"],
+                "faltando": ["topografia", "EVA", "sondagem SPT", "viabilidade PMF", "proposta CCV"],
             },
         ]}
     from core import monitor

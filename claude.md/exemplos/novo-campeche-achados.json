@@ -1,0 +1,128 @@
+{
+  "empreendimento": "Novo Campeche Spot III",
+  "id_nekt": "10045",
+  "data": "2026-06-30",
+  "itens": [
+    {
+      "etapa": "Certidões (validade)",
+      "documento": "Matrícula 10045.pdf / iptu casa 2026.pdf / Certidão ônus campeche.pdf",
+      "status": "Divergência",
+      "severidade": "Crítico",
+      "observacao": "Três certidões obrigatórias vencidas na data desta análise (30/06/2026): Matrícula emitida 14/04/2026 (expirada há 47 dias), IPTU emitido 02/05/2026 (expirado há 28 dias), Certidão de Ônus emitida 27/04/2026 (expirada há 34 dias). Todas têm validade de 30 dias. Escritura pública exige certidões válidas — tabelionato recusará lavrar sem renovação.",
+      "acao": "Solicitar imediatamente as três certidões atualizadas ao 2º RI de Florianópolis e à PMF (IPTU). Custo estimado: R$ 200–500 por certidão. Prazo: 3–5 dias úteis.",
+      "fonte": "Matrícula 10045.pdf | iptu casa 2026.pdf | Certidão ônus campeche.pdf",
+      "link": "https://drive.google.com/drive/folders/1bF8ZlBuO2aIJV8D_zVBY7Di7VSd4aKtH",
+      "link2": ""
+    },
+    {
+      "etapa": "Hipoteca (cancelamento)",
+      "documento": "Hipoteca - TQ CARLOS E ROBERTA_Assinado.pdf / Protocolo eletronico.jpeg",
+      "status": "Pendente",
+      "severidade": "Crítico",
+      "observacao": "Hipoteca CEF (R.3/Matrícula 42480, 1998, R$54.000) quitada: TQ emitido pela Caixa em 08/06/2026 declara dívida plenamente quitada e autoriza o cancelamento. Cancelamento protocolado no 2º RI em 09/06/2026 (e-Protocolo AC015431440). Porém, a última certidão de ônus (27/04/2026 — EXPIRADA) ainda registra a hipoteca como ativa. Confirmação da averbação do cancelamento depende da nova certidão de ônus.",
+      "acao": "Nova certidão de ônus (item anterior) irá confirmar se o cancelamento já foi averbado. Se não constar: acionar o 2º RI com o protocolo AC015431440 para verificar status e prazo. Não lavrar escritura antes de confirmar o cancelamento.",
+      "fonte": "Hipoteca - TQ CARLOS E ROBERTA_Assinado.pdf | Protocolo eletronico.jpeg",
+      "link": "https://drive.google.com/drive/folders/1bF8ZlBuO2aIJV8D_zVBY7Di7VSd4aKtH",
+      "link2": ""
+    },
+    {
+      "etapa": "Construção existente",
+      "documento": "iptu casa 2026.pdf",
+      "status": "Divergência",
+      "severidade": "Crítico",
+      "observacao": "Existe uma edificação residencial de 204,30 m² construída em 1999 sobre o lote (conforme IPTU). O projeto do Apart-Hotel requer ocupação total do térreo — a demolição é pré-condição para início das obras.",
+      "acao": "Incluir custo de demolição no modelo financeiro (estimativa: R$ 40.000–80.000). Prazo adicional ao cronograma: 30–60 dias. Vistoria prévia para quantificar estrutura e definir método de demolição.",
+      "fonte": "iptu casa 2026.pdf — Área construída: 204,30 m² / 1999",
+      "link": "https://drive.google.com/drive/folders/1bF8ZlBuO2aIJV8D_zVBY7Di7VSd4aKtH",
+      "link2": ""
+    },
+    {
+      "etapa": "Ambiental — UC entorno",
+      "documento": "ARQ_EM_R00_26-03-2026 (Estudo de Massa)",
+      "status": "Divergência",
+      "severidade": "Crítico",
+      "observacao": "O Estudo de Massa registra explicitamente UC (Unidade de Conservação) na porção posterior do lote, com decisão projetual de 'desconsiderar'. Essa nota é um sinal de risco: a UC pode impor restrições de recuo, vegetação a manter ou exigências de EVA/EAS específicas. A PMF pode condicionar a Viabilidade Construtiva à análise ambiental desta restrição.",
+      "acao": "Solicitar EVA específico para avaliar a UC de entorno. Verificar se a Viabilidade Construtiva PMF (ausente na pasta) já contempla esta restrição. Risco de redução da área construída ou atraso no alvará se recuo for imposto.",
+      "fonte": "ARQ_EM_R00_26-03-2026 (Estudo de Massa) — nota de decisão projetual",
+      "link": "https://drive.google.com/drive/folders/1bF8ZlBuO2aIJV8D_zVBY7Di7VSd4aKtH",
+      "link2": ""
+    },
+    {
+      "etapa": "Documentos ausentes",
+      "documento": "—",
+      "status": "Pendente",
+      "severidade": "Crítico",
+      "observacao": "Documentos obrigatórios para DD Técnica completa não encontrados na pasta: (1) Viabilidade Construtiva PMF — valida parâmetros urbanísticos; (2) Levantamento topográfico — confirma área e confrontantes; (3) EVA / Laudo ambiental — necessário para avaliar UC entorno; (4) Sondagem SPT — custo e tipo de fundação desconhecidos; (5) Certidão de confrontantes; (6) Proposta de compra e venda.",
+      "acao": "Solicitar ao vendedor/arquiteto: topográfico, EVA, SPT, Viabilidade PMF e proposta de CCV antes de assinar qualquer compromisso. Não fechar negócio sem estes documentos.",
+      "fonte": "00.Documentação (pasta vistoriada em 30/06/2026)",
+      "link": "https://drive.google.com/drive/folders/1bF8ZlBuO2aIJV8D_zVBY7Di7VSd4aKtH",
+      "link2": ""
+    },
+    {
+      "etapa": "Titularidade",
+      "documento": "Matrícula 10045.pdf / iptu casa 2026.pdf",
+      "status": "Divergência",
+      "severidade": "Atenção",
+      "observacao": "Matrícula (42.480) registra dois coproprietários em comunhão parcial: Carlos Eduardo Schmidt Capela + Roberta Pires de Oliveira (desde 1998). IPTU 2026 consta somente Roberta como 100% proprietária. Documento 'casa e divorcia Roberta.pdf' presente na pasta indica ocorrência de divórcio, mas a transferência pode não estar averbada na matrícula.",
+      "acao": "Ler 'casa e divorcia Roberta.pdf' e verificar sentença de divórcio com partilha. Se o imóvel foi transferido integralmente a Roberta na partilha, averbar a sentença na matrícula antes da escritura. Se não: obter assinatura de Carlos na escritura.",
+      "fonte": "Matrícula 10045.pdf | iptu casa 2026.pdf | casa e divorcia Roberta.pdf (não lido)",
+      "link": "https://drive.google.com/drive/folders/1bF8ZlBuO2aIJV8D_zVBY7Di7VSd4aKtH",
+      "link2": ""
+    },
+    {
+      "etapa": "Área do terreno",
+      "documento": "Matrícula / IPTU / Estudo de Massa / EP Validação",
+      "status": "Divergência",
+      "severidade": "Atenção",
+      "observacao": "Quatro documentos informam áreas diferentes: Matrícula = 450,00 m², IPTU = 450,00 m², Estudo de Massa (medição real) = 452,26 m² (+0,5%), EP Validação = 445,00 m² (−1,1%). Divergência total de 7,26 m² (1,6%) entre o menor e o maior valor. A EP usa 445 m² sem nota explicativa.",
+      "acao": "Topográfico (documento ausente) resolverá. Exigir levantamento topográfico atualizado antes da escritura. O valor correto impacta os índices urbanísticos e o modelo financeiro.",
+      "fonte": "Matrícula 10045.pdf | iptu casa 2026.pdf | ARQ_EM_R00 | EP Validação R00",
+      "link": "https://drive.google.com/drive/folders/1bF8ZlBuO2aIJV8D_zVBY7Di7VSd4aKtH",
+      "link2": ""
+    },
+    {
+      "etapa": "Taxa de ocupação",
+      "documento": "EP Validação R00 / Estudo de Massa",
+      "status": "Divergência",
+      "severidade": "Atenção",
+      "observacao": "Estudo de Massa referencia TO máximo = 65% (ATR 2.5 base). EP do arquiteto (Thais Lee Cleaver Brochado) utiliza TO Base = 68% como valor permitido, sem usar incentivo de uso misto. Divergência de 3%. Sem a Viabilidade Construtiva PMF, não é possível confirmar qual valor está correto.",
+      "acao": "Viabilidade Construtiva PMF (documento ausente) definirá o TO correto. Se for 65%, o projeto atual está 3% acima e precisará de ajuste.",
+      "fonte": "EP Validação ARQ_EP_R00 (pág. 1 — TO Base 68%) | ARQ_EM_R00 (TO máx 65%)",
+      "link": "https://drive.google.com/drive/folders/1I3khYMDf-FGEzPk9kCbZVXj5Q77zVxix",
+      "link2": ""
+    },
+    {
+      "etapa": "Zoneamento e parâmetros",
+      "documento": "EP Validação ARQ_EP_R00 / Estudo de Massa",
+      "status": "OK",
+      "severidade": "OK",
+      "observacao": "Zoneamento ATR 2.5 confirmado. Tipo de aprovação Apart-Hotel. 4 pavimentos (Térreo + 2 Tipo + Rooftop) — dentro do gabarito. IA Projeto = 2,22 < IA Máximo = 2,27. Área de Marinha = 0,00 m² (sem envolvimento SPU). 0 vagas exigidas para Apart-Hotel (atendido).",
+      "acao": "Confirmar com Viabilidade PMF. Demais parâmetros (IA, pavimentos) dentro dos limites.",
+      "fonte": "EP Validação ARQ_EP_R00 (pág. 1) | ARQ_EM_R00",
+      "link": "https://drive.google.com/drive/folders/1I3khYMDf-FGEzPk9kCbZVXj5Q77zVxix",
+      "link2": ""
+    },
+    {
+      "etapa": "Bombeiro — altura e escada",
+      "documento": "EP FOLHAS ARQ_EP_FOLHAS_R00 (Corte B)",
+      "status": "OK",
+      "severidade": "OK",
+      "observacao": "Altura do último pavimento habitável (4º Pav. — Rooftop): h = 9,18 m. Barrilete: 12,24 m. Cobertura: 15,30 m. Com h = 9,18 m < 12 m, a edificação exige apenas Escada Natural — sem EEE (Enclausurada com Exaustão) e sem EP (Escada Pressurizada). Menor custo possível para sistemas de saída de emergência.",
+      "acao": "Confirmar no Projeto Legal que a escada natural atende IN-009 CBMSC para Apart-Hotel (B-2). Distância de percurso ≤ 20 m até a escada sem sprinkler.",
+      "fonte": "EP FOLHAS ARQ_EP_FOLHAS_R00_01-04-2026.pdf — Corte B (h = 9,18 m)",
+      "link": "https://drive.google.com/drive/folders/1I3khYMDf-FGEzPk9kCbZVXj5Q77zVxix",
+      "link2": ""
+    },
+    {
+      "etapa": "Eficiência do projeto",
+      "documento": "EP Validação ARQ_EP_R00",
+      "status": "OK",
+      "severidade": "OK",
+      "observacao": "49 unidades (2 PCD + 47 simples), área média 15,70 m². Eficiência privativa: 77,54% (meta 70% ✓). Eficiência Seazone: 99,59% (meta 99% ✓). 3 lojas (exigido mínimo 1 ✓). 5 vagas de bicicleta (exigido 5 ✓). Área ROI total: 1.109,98 m².",
+      "acao": "Projeto entregue acima das metas SZI. Manter na evolução para Projeto Legal.",
+      "fonte": "EP Validação ARQ_EP_R00 (pág. 1–2)",
+      "link": "https://drive.google.com/drive/folders/1I3khYMDf-FGEzPk9kCbZVXj5Q77zVxix",
+      "link2": ""
+    }
+  ]
+}
