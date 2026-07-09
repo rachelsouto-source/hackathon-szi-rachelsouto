@@ -5,22 +5,22 @@
   "itens": [
     {
       "etapa": "Certidões (validade)",
-      "documento": "Matrícula 10045.pdf / iptu casa 2026.pdf / Certidão ônus campeche.pdf",
+      "documento": "Matrícula 10045.pdf / iptu casa 2026.pdf / Certidão ônus campeche.pdf / Terrenos_Proposta_LagoaPequena.docx",
       "status": "Divergência",
       "severidade": "Crítico",
-      "observacao": "Três certidões de registro expiradas: Matrícula emitida 14/04/2026 (vencida há 48 dias), IPTU emitido 02/05/2026 (vencido há 29 dias), Certidão de Ônus emitida 27/04/2026 (vencida há 35 dias). Validade padrão: 30 dias. Escritura exige certidões válidas. NOTA: Consulta de Construção PMF (N° 028428/2026, 24/06/2026) e Consulta Ambiental FLORAM (N° 17823068371826/2026, 24/06/2026) foram obtidas recentemente e estão vigentes.",
-      "acao": "Renovar imediatamente as 3 certidões de registro (matrícula, IPTU, ônus reais) junto ao 2° RI de Florianópolis e PMF. Custo: R$ 200–500 cada. Prazo: 3–5 dias úteis.",
+      "observacao": "Três certidões de registro expiradas: Matrícula emitida 14/04/2026 (vencida há 48 dias), IPTU emitido 02/05/2026 (vencido há 29 dias), Certidão de Ônus emitida 27/04/2026 (vencida há 35 dias). Validade padrão: 30 dias. NOVO (09/07/2026): a Proposta de Compra e Venda (assinada 18/06/2026, Cláusula 3.1) obriga o(s) VENDEDOR(ES) a apresentar certidão atualizada de matrícula, certidões negativas municipais/federais/trabalhistas e certidão de casamento/divórcio atualizada (90 dias) no prazo de 20 dias da assinatura — prazo contratual VENCEU EM 08/07/2026 (ontem). Não há confirmação de entrega dessas certidões na pasta do Drive. Consulta de Construção PMF (N° 028428/2026) e Consulta Ambiental FLORAM (N° 17823068371826/2026), ambas de 24/06/2026, seguem vigentes.",
+      "acao": "URGENTE: cobrar do vendedor a entrega das certidões da Cláusula 3.1 da Proposta — prazo contratual já vencido (08/07/2026). Verificar se o atraso do vendedor already dá causa a vencimento/ineficácia da Proposta (Cláusula 4.1) e se a COMPRADORA quer prorrogar. Renovar em paralelo as 3 certidões de registro (matrícula, IPTU, ônus reais) junto ao 2° RI e PMF. Custo: R$ 200–500 cada.",
       "fonte": "Matrícula 10045.pdf | iptu casa 2026.pdf | Certidão ônus campeche.pdf",
       "link": "https://drive.google.com/drive/folders/1bF8ZlBuO2aIJV8D_zVBY7Di7VSd4aKtH",
       "link2": ""
     },
     {
       "etapa": "Hipoteca (cancelamento)",
-      "documento": "Hipoteca - TQ CARLOS E ROBERTA_Assinado.pdf / Protocolo eletronico.jpeg",
+      "documento": "Hipoteca - TQ CARLOS E ROBERTA_Assinado.pdf / Protocolo eletronico.jpeg / Terrenos_Proposta_LagoaPequena.docx",
       "status": "Pendente",
-      "severidade": "Crítico",
-      "observacao": "Hipoteca CEF (R.3/Matrícula 42480, 1998, R$54.000) quitada em 08/06/2026 (TQ Caixa). Cancelamento protocolado no 2° RI em 09/06/2026 (e-Protocolo AC015431440). Certidão de ônus de 27/04/2026 (EXPIRADA) ainda registra hipoteca ativa. Confirmação da averbação pendente de nova certidão.",
-      "acao": "Nova certidão de ônus confirmará se averbação foi concluída. Se não: acionar 2° RI com protocolo AC015431440. Não lavrar escritura antes de confirmar cancelamento.",
+      "severidade": "Atenção",
+      "observacao": "Hipoteca CEF (R.3/Matrícula 42480, 1998, R$54.000) quitada em 08/06/2026 (TQ Caixa). Cancelamento protocolado no 2° RI em 09/06/2026 (e-Protocolo AC015431440). Certidão de ônus de 27/04/2026 (EXPIRADA) ainda registra hipoteca ativa. NOVO (09/07/2026): a Proposta de Compra e Venda (Cláusula 2.3) torna a conclusão da averbação da baixa OBRIGAÇÃO CONTRATUAL do(s) VENDEDOR(ES), às suas próprias expensas, e CONDIÇÃO para a assinatura do Contrato Definitivo — o risco de execução deste item passa a ser do vendedor, não da Seazone. Rebaixado de Crítico para Atenção por esse motivo.",
+      "acao": "Cobrar do vendedor a nova certidão de ônus que confirme a averbação (obrigação contratual, Cláusula 2.3). Não lavrar o Contrato Definitivo antes da confirmação. Se não concluído: acionar 2° RI com o protocolo AC015431440.",
       "fonte": "Hipoteca - TQ CARLOS E ROBERTA_Assinado.pdf | Protocolo eletronico.jpeg",
       "link": "https://drive.google.com/drive/folders/1bF8ZlBuO2aIJV8D_zVBY7Di7VSd4aKtH",
       "link2": ""
@@ -82,12 +82,11 @@
     },
     {
       "etapa": "Titularidade",
-      "documento": "Matrícula 10045.pdf / iptu casa 2026.pdf",
+      "documento": "Matrícula 10045.pdf / iptu casa 2026.pdf / casa e divorcia Roberta.pdf / Terrenos_Proposta_LagoaPequena.docx",
       "status": "Divergência",
       "severidade": "Atenção",
-      "observacao": "Matrícula (42.480) registra dois coproprietários: Carlos Eduardo Schmidt Capela + Roberta Pires de Oliveira (comunhão parcial, 1998). IPTU 2026 consta somente Roberta como 100% proprietária. Documento 'casa e divorcia Roberta.pdf' presente na pasta indica divórcio, mas averbação na matrícula ainda não confirmada.",
-      "acao": "Ler 'casa e divorcia Roberta.pdf' para confirmar partilha do imóvel. Se transferido integralmente a Roberta: averbar sentença na matrícula antes da escritura. Se não: obter assinatura de Carlos na escritura.",
-      "fonte": "Matrícula 10045.pdf | iptu casa 2026.pdf | casa e divorcia Roberta.pdf (não lido)",
+      "observacao": "Matrícula (42.480) registra dois coproprietários: Carlos Eduardo Schmidt Capela + Roberta Pires de Oliveira, casados em 1991 sob comunhão PARCIAL de bens. 'casa e divorcia Roberta.pdf' LIDO (09/07/2026): é a Certidão de Casamento em inteiro teor — confirma Separação Consensual averbada em 2010 (sentença de 2005) e CONVERSÃO em DIVÓRCIO averbada em 06/08/2024 (processo nº 5011835-35.2024.8.24.0091, TJSC, transitado em julgado 26/07/2024). O divórcio está averbado no registro civil, mas a averbação na MATRÍCULA DO IMÓVEL (42.480) ainda não está confirmada — por isso IPTU 2026 consta só Roberta e a matrícula ainda consta os dois. O documento não trata de partilha de bens (não é formal de partilha). A Proposta de Compra e Venda (Cláusula 2.4) já torna isso obrigação contratual do vendedor.",
+      "acao": "Cobrar do vendedor, conforme Cláusula 2.4 da Proposta: (1) averbação do divórcio na matrícula nº 42.480; (2) comprovação de que não há partilha que altere a titularidade OU apresentação do formal/escritura de partilha, de modo que ambos (Carlos e Roberta) figurem como alienantes de suas frações ideais. Sem isso, não assinar o Contrato Definitivo.",
       "link": "https://drive.google.com/drive/folders/1bF8ZlBuO2aIJV8D_zVBY7Di7VSd4aKtH",
       "link2": ""
     },
@@ -96,8 +95,8 @@
       "documento": "Matrícula / IPTU / Consulta Ambiental FLORAM / Estudo de Massa / EP",
       "status": "Divergência",
       "severidade": "Atenção",
-      "observacao": "Cinco fontes: Matrícula = 450,00 m², IPTU = 450,00 m², Consulta Ambiental FLORAM = 452,27 m², Estudo de Massa = 452,26 m², EP Validação = 445,00 m². PMF e Estudo de Massa convergem em ~452 m². Matrícula (450 m²) diverge 0,5%. EP usa 445 m² sem justificativa — mais conservador mas discrepante. Levantamento topográfico ainda ausente para confirmar.",
-      "acao": "Topográfico (pasta 03 - Levantamento Topográfico disponível na pasta do projeto) deve ser verificado. Exigir antes da escritura para confirmar área e confrontantes. Corrigir eventual divergência no cadastro PMF se necessário.",
+      "observacao": "Cinco fontes: Matrícula = 450,00 m², IPTU = 450,00 m², Consulta Ambiental FLORAM = 452,27 m², Estudo de Massa = 452,26 m², EP Validação = 445,00 m². PMF e Estudo de Massa convergem em ~452 m². Matrícula (450 m²) diverge 0,5%. EP usa 445 m² sem justificativa — mais conservador mas discrepante. CORREÇÃO (09/07/2026): a pasta '03 - Levantamento Topográfico' no Drive tem a estrutura de 7 subpastas criada (Planta, Memorial Descritivo, Relatório Técnico, Dominialidade, Imagens etc.), mas TODAS AS SUBPASTAS ESTÃO VAZIAS — nenhum arquivo foi entregue ainda. O parecer anterior (01/07/2026) marcou essa etapa como 'completa' por engano, considerando apenas a existência da estrutura de pastas. NOVO: a Proposta de Compra e Venda (Cláusula 4.1.1) já prevê a realização do levantamento topográfico pela COMPRADORA durante a due diligence, com retificação da matrícula via procuração outorgada pelo(s) VENDEDOR(ES) caso haja divergência de área.",
+      "acao": "Levantamento topográfico ainda não entregue — cobrar execução (mecanismo já previsto na Cláusula 4.1.1 da Proposta). Ao receber, confirmar área real e obter a procuração do vendedor para retificação da matrícula se houver divergência, conforme já pactuado.",
       "fonte": "Matrícula | IPTU | Consulta Ambiental FLORAM N° 17823068371826/2026 | ARQ_EM_R00 | EP R00",
       "link": "https://drive.google.com/drive/folders/1AoO6yI4F2xRRDs9g1o9IvdWa4ogeUJ20",
       "link2": ""
@@ -107,8 +106,8 @@
       "documento": "—",
       "status": "Pendente",
       "severidade": "Atenção",
-      "observacao": "Mapeamento da pasta principal (01/07/2026): ✅ PRESENTES — Viabilidade PMF, Consulta Ambiental, Levantamento Topográfico completo (7 subpastas: Planta, Memorial Descritivo, Relatório Técnico, Análise de Dominialidade, Imagens, etc.), Imagens de Drone (3 estudos), estrutura (Alvenaria + Drywall). ❌ AUSENTES — Estudo Ambiental/EVA (pasta 04 vazia), Sondagem SPT (pasta 08 vazia), Fundação (pasta 11 vazia). ⬜ NÃO LIDOS — 05 Jurídico (subpasta 01-TERRENO com conteúdo desconhecido), certidão de confrontantes, proposta de CCV, 'casa e divorcia Roberta.pdf'.",
-      "acao": "Prioridade: (1) Ler 05-Jurídico/01-TERRENO para verificar docs do imóvel. (2) Contratar EVA e Sondagem SPT (ainda ausentes — crítico dada área inundável). (3) Ler o Levantamento Topográfico para confirmar área real do lote. (4) Solicitar certidão de confrontantes e CCV ao vendedor.",
+      "observacao": "Mapeamento atualizado (09/07/2026): ✅ PRESENTES/LIDOS — Viabilidade PMF, Consulta Ambiental FLORAM, Imagens de Drone (3 estudos), estrutura (Alvenaria + Drywall), 05-Jurídico/01-TERRENO/00-Documentos (cópias de Matrícula/IPTU/Ônus, já conhecidas — sem certidões novas), Proposta de Compra e Venda (Terrenos_Proposta_LagoaPequena.docx, assinada 18/06/2026, R$ 5.000.000,00), Certidão de Casamento/Divórcio de Carlos e Roberta ('casa e divorcia Roberta.pdf' — divórcio averbado no registro civil em 06/08/2024). ❌ AUSENTES — Estudo Ambiental/EVA (pasta 04 vazia), Sondagem SPT (pasta 08 vazia), Fundação (pasta 11 vazia), Levantamento Topográfico (pasta 03: estrutura de 7 subpastas criada mas TODAS VAZIAS — corrige o parecer anterior que a havia marcado como completa). ⬜ AINDA NÃO ENTREGUES PELO VENDEDOR — certidões da Cláusula 3.1 da Proposta (prazo de 20 dias venceu em 08/07/2026), certidão de confrontantes, formal de partilha (se houver) referente ao divórcio de Carlos e Roberta.",
+      "acao": "Prioridade: (1) Cobrar do vendedor as certidões da Cláusula 3.1 — prazo contratual já vencido. (2) Contratar/cobrar EVA e Sondagem SPT (crítico dada área inundável). (3) Cobrar entrega do Levantamento Topográfico (Cláusula 4.1.1 já prevê o mecanismo de retificação). (4) Cobrar certidão de confrontantes e, se houver partilha do divórcio, o formal/escritura correspondente (Cláusula 2.4).",
       "fonte": "1.47 - [10045] Novo Campeche Spot III (pasta principal)",
       "link": "https://drive.google.com/drive/folders/1AoO6yI4F2xRRDs9g1o9IvdWa4ogeUJ20",
       "link2": ""
@@ -133,6 +132,17 @@
       "acao": "Confirmar no Projeto Legal que a escada natural atende IN-009 CBMSC para B-2 (Apart-Hotel). Distância de percurso ≤ 20 m até a escada sem sprinkler.",
       "fonte": "EP FOLHAS ARQ_EP_FOLHAS_R00 — Corte B | Consulta PMF N° 028428/2026 — Seção 5",
       "link": "https://drive.google.com/drive/folders/1I3khYMDf-FGEzPk9kCbZVXj5Q77zVxix",
+      "link2": ""
+    },
+    {
+      "etapa": "Proposta de Compra e Venda — condições contratuais",
+      "documento": "Terrenos_Proposta_LagoaPequena.docx",
+      "status": "Pendente",
+      "severidade": "Atenção",
+      "observacao": "Proposta assinada em 18/06/2026 entre SEAZONE INVESTIMENTOS (compradora), Carlos Eduardo Schmidt Capela + Roberta Pires de Oliveira (vendedores) e FLN Investimentos (interveniente anuente). Valor: R$ 5.000.000,00 (arras R$250k + R$250k em 90d + R$2M em +90d + R$2,5M em 6x R$500k mensais). Vigência: 45 dias da assinatura (vence ~02/08/2026). Cláusula 2.3: baixa da hipoteca é obrigação do vendedor. Cláusula 2.4: averbação do divórcio e comprovação/partilha de titularidade são obrigação do vendedor. Cláusula 3.1: vendedor tem 20 dias (venceu 08/07/2026) para entregar certidões atualizadas. Cláusula 4.1.1: levantamento topográfico + retificação de área por procuração do vendedor, se houver divergência. Cláusula 4.2: se a DD revelar inviabilidade/ônus/ações que coloquem o negócio em risco, a Proposta é cancelada sem penalidade para a Seazone. Contrato de Compra e Venda será firmado por investidor indicado pela Seazone e depois cedido a SPE.",
+      "acao": "Monitorar os prazos contratuais: (1) entrega das certidões da Cláusula 3.1 — já vencido, cobrar formalmente; (2) vigência da Proposta até ~02/08/2026 — se F-04 (inundação) e F-05 (pavimentos) não forem esclarecidos a tempo, avaliar prorrogação ou acionar Cláusula 4.2 para cancelar sem ônus.",
+      "fonte": "Terrenos_Proposta_LagoaPequena.docx",
+      "link": "",
       "link2": ""
     },
     {

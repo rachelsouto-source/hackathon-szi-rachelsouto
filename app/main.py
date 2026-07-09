@@ -108,7 +108,7 @@ def _demo_result(emp_id: str = "demo-jurere-iii") -> dict:
             "nome": "Novo Campeche Spot III (demo)",
             "achados": achados,
             "parecer_md": parecer_md,
-            "negocio": {"recomendacao": "GO COM RESSALVAS CRÍTICAS"},
+            "negocio": {"recomendacao": "PAUSADO — AGUARDAR ESCLARECIMENTOS CRÍTICOS"},
             "doc_url": "",
             "out_folder": None,
         }
@@ -320,8 +320,8 @@ def monitor_status():
             {
                 "id": "demo-novo-campeche-iii", "nome": "Novo Campeche Spot III (demo)",
                 "completo": False, "ja_tem_dd": True, "elegivel": False,
-                "presentes": ["matrícula", "IPTU", "certidão ônus", "hipoteca TQ", "estudo de massa", "estudo preliminar", "levantamento topográfico", "viabilidade PMF", "consulta ambiental FLORAM", "imagens de drone", "estrutura"],
-                "faltando": ["EVA", "sondagem SPT", "fundação", "proposta CCV"],
+                "presentes": ["matrícula", "IPTU", "certidão ônus", "hipoteca TQ", "estudo de massa", "estudo preliminar", "viabilidade PMF", "consulta ambiental FLORAM", "imagens de drone", "estrutura", "proposta CCV", "certidão de casamento/divórcio"],
+                "faltando": ["EVA", "sondagem SPT", "fundação", "levantamento topográfico"],
             },
         ]}
     from core import monitor
