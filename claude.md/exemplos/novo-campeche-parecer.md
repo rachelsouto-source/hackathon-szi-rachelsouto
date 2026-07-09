@@ -1,6 +1,6 @@
 # PARECER TÉCNICO – DUE DILIGENCE – NOVO CAMPECHE SPOT III
 
-> Atualizado em 01/07/2026 com base nas Consultas PMF e FLORAM obtidas em 24/06/2026. Requer revisão humana antes de uso oficial.
+> Atualizado em 09/07/2026 com a leitura da Proposta de Compra e Venda e da Certidão de Casamento/Divórcio. Requer revisão humana antes de uso oficial.
 
 ## 1. IMÓVEL
 
@@ -23,7 +23,7 @@
 - **CARLOS EDUARDO SCHMIDT CAPELA** – CPF 029.182.608-35 *(matrícula)*
 - **ROBERTA PIRES DE OLIVEIRA** – CPF 050.202.418-65 *(matrícula + IPTU)*
 
-> ⚠️ IPTU 2026 lista apenas Roberta como 100% proprietária. Documento de divórcio presente na pasta — averbação na matrícula não confirmada.
+> ⚠️ Casados em 1991 (comunhão parcial de bens), separados consensualmente em 2010 e com **conversão em divórcio averbada em 06/08/2024** (certidão de casamento em inteiro teor, lida em 09/07/2026). IPTU 2026 lista apenas Roberta como 100% proprietária, mas a averbação do divórcio **na matrícula do imóvel** ainda não está confirmada. A Proposta de Compra e Venda (Cláusula 2.4) já torna a resolução disso obrigação contratual do vendedor.
 
 ### Documentos analisados
 
@@ -40,19 +40,23 @@
 - EP Validação — planilha (ARQ_EP_R00, 01/04/2026)
 - EP FOLHAS com cortes (ARQ_EP_FOLHAS_R00, 01/04/2026)
 
-**DOCUMENTOS ADICIONAIS IDENTIFICADOS (01/07/2026)**
-- ✅ Levantamento Topográfico — pasta 03 completa (7 subpastas: Planta, Memorial Descritivo, Relatório Técnico, Dominialidade, Imagens)
+**DOCUMENTOS ADICIONAIS IDENTIFICADOS E LIDOS (09/07/2026)**
+- ✅ **Proposta de Compra e Venda** (`Terrenos_Proposta_LagoaPequena.docx`, assinada 18/06/2026, R$ 5.000.000,00) — ver seção 7-A.
+- ✅ **Certidão de Casamento/Divórcio** (`casa e divorcia Roberta.pdf`) — divórcio de Carlos e Roberta averbado no registro civil em 06/08/2024; não trata de partilha de bens.
 - ✅ Imagens de Drone — pasta 09 (3 estudos: ago/2025, set/2025)
 - ✅ Estrutura — pasta 10 (Alvenaria Interna, Drywall Interno)
-- ✅ Jurídico — pasta 05 (01-TERRENO, conteúdo ainda não lido)
+- ✅ Jurídico — pasta 05/01-TERRENO lida: apenas cópias de Matrícula/IPTU/Ônus já conhecidas, sem certidões novas
+
+**CORREÇÃO (09/07/2026):** o parecer de 01/07/2026 havia marcado o Levantamento Topográfico (pasta 03) como "completo" por existir a estrutura de 7 subpastas — mas **todas as subpastas estão vazias**, nenhum arquivo foi entregue.
 
 **DOCUMENTOS AINDA PENDENTES**
+- ❌ Levantamento Topográfico *(pasta 03 — estrutura criada, mas sem arquivos)*
 - ❌ Estudo Ambiental/EVA *(pasta 04 vazia)*
 - ❌ Sondagem SPT *(pasta 08 vazia — crítico dada área inundável)*
 - ❌ Fundação *(pasta 11 vazia)*
+- ⬜ Certidões da Cláusula 3.1 da Proposta *(prazo de 20 dias — VENCIDO em 08/07/2026, sem confirmação de entrega)*
 - ⬜ Certidão de confrontantes *(a solicitar)*
-- ⬜ Proposta de compra e venda *(a solicitar)*
-- ⬜ Divórcio/partilha Roberta *(a ler — `casa e divorcia Roberta.pdf`)*
+- ⬜ Formal de partilha do divórcio, se houver *(a solicitar — Cláusula 2.4 da Proposta)*
 
 ---
 
@@ -60,14 +64,14 @@
 
 ### RECOMENDAÇÃO: 🔴 PAUSADO — AGUARDAR ESCLARECIMENTOS CRÍTICOS
 
-O terreno tem zoneamento adequado para Apart-Hotel e parâmetros de IA e altura dentro dos limites. Porém, **duas inconsistências críticas novas** surgidas com a Consulta PMF exigem esclarecimento do arquiteto **antes de qualquer compromisso financeiro**:
+O terreno tem zoneamento adequado para Apart-Hotel e parâmetros de IA e altura dentro dos limites. Porém, **duas inconsistências técnicas críticas** exigem esclarecimento do arquiteto **antes de qualquer compromisso financeiro adicional**:
 
 1. **Pavimentos**: ATR-2.5 permite 2 pavimentos padrão (TDC=0). Projeto conta 3 (excluindo cobertura). Justificativa OODC/Incentivo não documentada.
 2. **Área inundável**: FLORAM confirma imóvel em zona susceptível a inundação. Fundação e custos precisam ser reavaliados.
 
-Adicionalmente, as certidões de registro estão vencidas e hipoteca não confirmada como averbada.
+**Atualização 09/07/2026 — boa notícia parcial:** a leitura da Proposta de Compra e Venda mostra que a hipoteca (F-02) e a titularidade/divórcio (F-08) **já são obrigação contratual do vendedor**, condição para o Contrato Definitivo — o risco jurídico desses dois pontos deixou de ser da Seazone e foi rebaixado de Crítico para Atenção. Em contrapartida, o **prazo de 20 dias da Proposta (Cláusula 3.1) para o vendedor entregar as certidões atualizadas venceu ontem (08/07/2026)** sem confirmação de entrega, e o **Levantamento Topográfico continua sem nenhum arquivo entregue** (a versão anterior deste parecer havia marcado essa etapa como completa por engano).
 
-> **Gatilho para GO**: (1) Arquiteto fornece memória de cálculo justificando 3° pavimento e TO=68%; (2) Sondagem SPT com análise de lençol freático; (3) Certidões renovadas.
+> **Gatilho para GO**: (1) Arquiteto fornece memória de cálculo justificando 3° pavimento e TO=68%; (2) Sondagem SPT com análise de lençol freático; (3) Vendedor entrega as certidões da Cláusula 3.1 (prazo vencido) e o Levantamento Topográfico.
 
 ---
 
@@ -117,6 +121,26 @@ h = 9,18 m (4° Pav. Rooftop → rua) — confirmado PMF: altura fachada < 10,5 
 
 ---
 
+## 7-A. PROPOSTA DE COMPRA E VENDA (lida em 09/07/2026)
+
+`Terrenos_Proposta_LagoaPequena.docx` — assinada em **18/06/2026** entre SEAZONE INVESTIMENTOS (compradora), Carlos Eduardo Schmidt Capela + Roberta Pires de Oliveira (vendedores) e FLN Investimentos Imobiliários (interveniente anuente).
+
+| Item | Condição |
+|---|---|
+| **Valor** | R$ 5.000.000,00 |
+| **Forma de pagamento** | R$250k (arras) + R$250k (+90d) + R$2.000.000 (+90d) + R$2.500.000 em 6× R$500.000 mensais |
+| **Vigência da Proposta** | 45 dias da assinatura → vence **~02/08/2026** |
+| **Cláusula 2.3** | Baixa da hipoteca: obrigação e ônus do vendedor, condição para o Contrato Definitivo |
+| **Cláusula 2.4** | Averbação do divórcio + comprovação/partilha de titularidade: obrigação do vendedor, condição para o Contrato Definitivo |
+| **Cláusula 3.1** | Vendedor entrega certidões atualizadas em 20 dias → prazo **venceu em 08/07/2026** |
+| **Cláusula 4.1.1** | Levantamento topográfico pela compradora; se houver divergência de área, vendedor outorga procuração para retificação da matrícula |
+| **Cláusula 4.2** | Se a DD revelar inviabilidade/ônus/ações de risco, Proposta cancela sem penalidade para a Seazone |
+| **Estrutura societária** | Contrato firmado por investidor indicado pela Seazone, depois cedido a SPE |
+
+**Implicação para este parecer:** as Cláusulas 2.3 e 2.4 transferem ao vendedor o risco de execução da hipoteca (F-02) e da titularidade/divórcio (F-08), por isso ambos foram rebaixados de Crítico para Atenção na matriz de risco (seção 9). Já a Cláusula 3.1 cria um prazo vencido (08/07/2026) que precisa ser cobrado formalmente do vendedor.
+
+---
+
 ## 7. SITUAÇÃO DA HIPOTECA
 
 | Data | Evento |
@@ -147,31 +171,32 @@ h = 9,18 m (4° Pav. Rooftop → rua) — confirmado PMF: altura fachada < 10,5 
 
 | Cód. | Achado | Prob. | Impacto | Criticidade | Responsável |
 |---|---|---|---|---|---|
-| F-01 | Certidões expiradas (3 docs) | Alta | Alto | 🔴 | Jurídico SZI |
-| F-02 | Hipoteca: averbação cancelamento pendente | Média | Alto | 🔴 | Jurídico SZI |
+| F-01 | Certidões expiradas + prazo contratual (Cláus. 3.1) VENCIDO 08/07 | Alta | Alto | 🔴 | Jurídico SZI |
 | F-03 | Demolição obrigatória 204 m² | Alta | Médio | 🔴 | Engenharia SZI |
 | F-04 | Inundação/alagamento (FLORAM) | Alta | Alto | 🔴 | Engenharia + FLORAM |
 | F-05 | Pavimentos: 3 contáveis vs max 2 (ATR-2.5) | Média | Alto | 🔴 | Arquiteto + Jurídico |
 | F-06 | TO 68% vs OODC max 65% (sem Incentivo doc.) | Média | Médio | 🟡 | Arquiteto |
 | F-07 | UC entorno — consulta obrigatória ao gestor | Média | Médio | 🟡 | Jurídico SZI |
-| F-08 | Titularidade Carlos+Roberta vs Roberta 100% | Média | Alto | 🟡 | Jurídico SZI |
-| F-09 | Área: matrícula 450 m² vs PMF/EM 452 m² | Baixa | Baixo | 🟡 | Engenharia |
-| F-10 | Docs pendentes: SPT, certidão confrontantes, CCV | Alta | Médio | 🟡 | Jurídico SZI |
+| F-02 | Hipoteca: averbação pendente — **agora obrigação contratual do vendedor** (Cláus. 2.3) | Baixa | Alto | 🟡 | Vendedor (cobrar Jurídico SZI) |
+| F-08 | Titularidade Carlos+Roberta: divórcio averbado no civil (2024), pendente na matrícula — **agora obrigação contratual do vendedor** (Cláus. 2.4) | Baixa | Alto | 🟡 | Vendedor (cobrar Jurídico SZI) |
+| F-09 | Área: matrícula 450 m² vs PMF/EM 452 m²; topográfico ainda sem arquivos | Baixa | Baixo | 🟡 | Engenharia |
+| F-10 | Docs ainda pendentes: EVA, SPT, Fundação, Topográfico, confrontantes | Alta | Médio | 🟡 | Jurídico SZI |
+| F-11 | Vigência da Proposta vence 02/08/2026 — corrida contra F-04/F-05 | Média | Alto | 🟡 | Rachel (gestão) |
 
 ---
 
 ## 10. PRÓXIMOS PASSOS IMEDIATOS
 
-1. 🔴 **Solicitar ao arquiteto** memória de cálculo para 3° pavimento e TO=68% — prazo: 48h
-2. 🔴 **Contratar sondagem SPT** com análise de lençol freático (área inundável confirmada)
-3. 🔴 Renovar certidões (matrícula, IPTU, ônus reais) — prazo 3–5 dias úteis
-4. 🔴 Confirmar averbação hipoteca via nova certidão de ônus
-5. 🟡 Ler Levantamento Topográfico (pasta 03, 7 subpastas disponíveis) — confirmar área real do lote
-6. 🟡 Ler conteúdo de 05-Jurídico/01-TERRENO — verificar matrícula atualizada e docs de titularidade
-7. 🟡 Ler `casa e divorcia Roberta.pdf` — confirmar partilha e averbação
+1. 🔴 **Cobrar do vendedor** a entrega das certidões da Cláusula 3.1 da Proposta — prazo venceu 08/07/2026, já em atraso
+2. 🔴 **Solicitar ao arquiteto** memória de cálculo para 3° pavimento e TO=68% — prazo: 48h
+3. 🔴 **Contratar/cobrar sondagem SPT** com análise de lençol freático (área inundável confirmada)
+4. 🔴 **Cobrar entrega do Levantamento Topográfico** — pasta 03 tem estrutura mas nenhum arquivo
+5. 🟡 Cobrar do vendedor a averbação do divórcio na matrícula + comprovação/formal de partilha (Cláusula 2.4)
+6. 🟡 Cobrar do vendedor a nova certidão de ônus confirmando baixa da hipoteca (Cláusula 2.3)
 7. 🟡 Identificar UC no entorno e consultar órgão gestor
-8. 📌 Incluir OODC e fundação especial no modelo financeiro
+8. 🟡 Monitorar vigência da Proposta (~02/08/2026) vs. tempo para resolver F-04/F-05 — avaliar necessidade de prorrogação
+9. 📌 Incluir OODC e fundação especial no modelo financeiro
 
 ---
 
-*Parecer atualizado em 01/07/2026 para uso interno da SZI. Fontes: Consulta PMF N° 028428/2026 + Consulta Ambiental FLORAM N° 17823068371826/2026 (ambas de 24/06/2026). Revisão final: Rachel Souto. Não substitui assessoria jurídica especializada.*
+*Parecer atualizado em 09/07/2026 para uso interno da SZI. Fontes: Consulta PMF N° 028428/2026, Consulta Ambiental FLORAM N° 17823068371826/2026 (ambas de 24/06/2026), Proposta de Compra e Venda (18/06/2026) e Certidão de Casamento/Divórcio. Revisão final: Rachel Souto. Não substitui assessoria jurídica especializada.*
