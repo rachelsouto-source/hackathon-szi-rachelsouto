@@ -35,6 +35,18 @@ entre eles, aponta **divergências/pendências**, e entrega:
 
 ## Fluxo de execução (passo a passo)
 
+### 0. Consultar precedentes na Base de Conhecimento (se disponível)
+- Antes de rodar os cruzamentos, consulte a **Base de Conhecimento de DD Técnica**
+  (projeto do Vini — ver `references/base-conhecimento-integracao.md`) por
+  empreendimentos comparáveis: mesma cidade primeiro, mesmo estado se não houver
+  precedente local. Priorize achados de categoria `gargalo` e `erro`.
+- Hoje a base só cobre 4 empreendimentos-piloto (Campeche Spot, Jurerê Spot,
+  Japaratinga, Jurerê Beach) — se o empreendimento em DD não tiver precedente na
+  cidade/estado, siga o fluxo normal sem bloquear por isso.
+- Se algo relevante for encontrado, registre para citar na seção **Precedentes** do
+  parecer (passo 4), sempre com o nome do empreendimento de origem + link — nunca
+  de forma genérica.
+
 ### 1. Localizar os documentos
 - Pergunte (ou receba) o **nome do empreendimento** ou o **link/ID da pasta** no Drive.
 - Use o MCP de Google Drive (`search_files`, `read_file_content`) para localizar e ler:
@@ -68,7 +80,8 @@ Cada achado vira um item com: **severidade** (🔴 crítico / 🟡 atenção / �
 
 ### 4. Gerar as saídas
 - **Parecer**: use `templates/parecer-tecnico.md`. Preencha IMÓVEL, PROPRIETÁRIO,
-  lista de documentos (com links), CONCLUSÃO por subseção (Topografia, Ambiental,
+  lista de documentos (com links), a seção complementar PRECEDENTES (se o passo 0
+  encontrou algo — omitir se não), CONCLUSÃO por subseção (Topografia, Ambiental,
   Validação do EP, Sondagem, Estrutura/Fundação) e a CONCLUSÃO final.
 - **Planilha de controle**: use `scripts/gerar_checklist.py` (ou o template
   `templates/checklist-controle.csv`) para gerar o status por etapa.
@@ -84,4 +97,7 @@ Cada achado vira um item com: **severidade** (🔴 crítico / 🟡 atenção / �
 - **Nunca inventar**: se um documento falta ou está ilegível, marque como **Pendente**, não presuma.
 - **Parametrizável por município**: a legislação/órgãos mudam fora de Floripa
   (ver `references/legislacao-municipios.md`).
+- **Precedentes citados, nunca genéricos**: ao usar a Base de Conhecimento (passo 0),
+  sempre nomear o empreendimento de origem + link — ver
+  `references/base-conhecimento-integracao.md`.
 - **A pessoa valida**: a saída é um rascunho técnico de alta qualidade para revisão humana.

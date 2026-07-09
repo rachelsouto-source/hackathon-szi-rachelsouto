@@ -31,6 +31,11 @@ tabela de carga) · fundação.
 Para realização da due diligence, foi verificado, entre outros tópicos, código de obras, plano
 diretor e demais legislações vigentes.
 
+## PRECEDENTES *(complemento do auditor — se a Base de Conhecimento de DD Técnica achou algo; ver `references/base-conhecimento-integracao.md`; omitir a seção se não houver precedente)*
+{{PRECEDENTES}}
+<!-- Ex.: "O Campeche Spot [2595] (mesmo bairro) teve gargalo de licenciamento ambiental
+     por área de restinga não identificada no estudo inicial — link: {{...}}." -->
+
 ## 3. CONCLUSÃO
 
 ### TOPOGRAFIA

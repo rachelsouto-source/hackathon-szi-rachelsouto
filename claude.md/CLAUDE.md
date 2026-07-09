@@ -51,6 +51,12 @@ Trilha Lançamentos do Hackathon SZI. Caso-base: **Jurerê Spot III** (Florianó
 - Subir o parecer/planilha automaticamente na pasta do empreendimento no Drive.
 - Expandir `legislacao-municipios.md` para os demais municípios da carteira.
 - Cruzar com a "Checklist de Alvarás" para acompanhar pós-DD.
+- **Integração com a Base de Conhecimento de DD Técnica (projeto do Vini)** — ver
+  `references/base-conhecimento-integracao.md`. Passo 0 e seção "Precedentes" já
+  adicionados ao fluxo (09/07/2026); falta decidir com o Vini o mecanismo real de
+  consulta (Nekt SQL vs. Sheets API) antes de rodar em produção, e validar o valor
+  prático com os 4 empreendimentos-piloto já extraídos (Campeche Spot, Jurerê Spot,
+  Japaratinga, Jurerê Beach).
 
 ---
 
