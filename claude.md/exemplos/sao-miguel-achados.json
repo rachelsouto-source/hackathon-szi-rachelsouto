@@ -1,0 +1,117 @@
+{
+  "empreendimento": "São Miguel dos Milagres",
+  "id_nekt": "12235",
+  "data": "2026-07-14",
+  "itens": [
+    {
+      "etapa": "Situação Jurídica — Terreno de Marinha (regime de OCUPAÇÃO)",
+      "documento": "CND SPU / Matrícula / linha de marinha (DXF)",
+      "status": "Divergência",
+      "severidade": "Crítico",
+      "observacao": "A CND da Secretaria do Patrimônio da União (emitida 30/06/2026) registra o imóvel sob regime de utilização = OCUPAÇÃO, e a própria matrícula declara 'com parte pertencente à Marinha'. OCUPAÇÃO é a posse mais frágil perante a União: NÃO há domínio pleno, a transferência exige anuência/transferência de ocupação na SPU, há taxa de ocupação anual e a União mantém o domínio. 'Comprar' aqui significa adquirir a ocupação, não a propriedade. Há ainda a linha de marinha demarcada (DXF) que atravessa os fundos do terreno e restringe a construção.",
+      "acao": "Jurídico SZI: confirmar na SPU o regime, a transferibilidade da ocupação, débitos e eventual laudêmio/foro; obter planta SPU e validar a LPM/LLTM. Definir com a diretoria se o modelo de aquisição de ocupação (não domínio pleno) é aceitável antes de qualquer compromisso financeiro.",
+      "fonte": "CND SPU | Matrícula (inteiro teor)",
+      "link": "https://drive.google.com/drive/folders/1jX9StIIVHxV-2Q-lEN9x4AXTs3cckecL",
+      "link2": ""
+    },
+    {
+      "etapa": "Situação Jurídica — Cadeia dominial e matrícula",
+      "documento": "Matrícula / Certidão de Ônus",
+      "status": "Divergência",
+      "severidade": "Crítico",
+      "observacao": "Matrícula do Cartório do Único Ofício de Porto de Pedras/AL (Livro 2, registros de 2007): Sítio 'Toque', Lote 177 do desmembramento Santo Antônio da Trindade. Cadeia com sucessivos titulares (nomes reservados), valores de aquisição simbólicos (R$ 15.000) e título via Mandado de Averbação (proc. adm. 02/2007). O cartório CERTIFICA o extravio de vários registros do Livro 2 na gestão do tabelião anterior — fragilidade documental relevante na cadeia dominial. Matrícula aparentemente desatualizada (último ato de 2007). A Certidão de Ônus não teve inteiro teor legível no material atual.",
+      "acao": "Jurídico SZI: solicitar matrícula atualizada em inteiro teor, ler a Certidão de Ônus (confirmar ausência de hipoteca/gravames/ações) e validar a regularidade da cadeia diante do extravio de registros e da titularidade atual.",
+      "fonte": "Matrícula (inteiro teor) | Certidão de Ônus",
+      "link": "https://drive.google.com/drive/folders/1jX9StIIVHxV-2Q-lEN9x4AXTs3cckecL",
+      "link2": ""
+    },
+    {
+      "etapa": "Viabilidade Ambiental — APP de mangue + faixa de praia/marinha",
+      "documento": "Matrícula (confrontações) / DIÁRIO — riscos ambientais",
+      "status": "Divergência",
+      "severidade": "Crítico",
+      "observacao": "A matrícula descreve confrontações com a praia/preamar (Oceano Atlântico) e com MANGUE — dupla restrição ambiental federal (faixa de praia/marinha + APP de manguezal). Terreno grande, arborizado (coqueiral). O estudo ambiental foi decidido COMPLETO, com catalogação de espécies/árvores (fornecedor Ipê Consultoria Ambiental, R$ 32.500). A pasta '04 - Estudo Ambiental' ainda está VAZIA — o estudo não foi entregue.",
+      "acao": "Ambiental: delimitar APP do mangue e sobrepor à linha de marinha no CAD; aguardar entrega do estudo (Ipê) com EVA/ASV/supressão e condicionantes. Comparar com precedentes de Alagoas (Japaratinga/Patacho) para riscos de licenciamento.",
+      "fonte": "Matrícula (confrontação com mangue) | DIÁRIO São Miguel",
+      "link": "https://drive.google.com/drive/folders/1Hf03O2MUZ2wDAnnVU9EjfCo7N9Pqg2ly",
+      "link2": ""
+    },
+    {
+      "etapa": "Viabilidade Urbanística — Gabarito e taxa de ocupação sem base legal",
+      "documento": "Milagres Spot | Análise PDM / DIÁRIO / Handover 03/07",
+      "status": "Divergência",
+      "severidade": "Crítico",
+      "observacao": "A legislação local indica 2 pavimentos / ~10 m; o projeto adotou 3 PAVIMENTOS com base apenas em orientação VERBAL do secretário (áudio), SEM registro formal. A taxa de ocupação estaria excedendo em ~1.000 m² sem comprovação formal. O checklist 'Análise PDM' na pasta está 100% em branco — a verificação de parâmetros (zoneamento, CA, TO, gabarito, recuos, permeabilidade, vagas) ainda não foi feita. Afastamentos adotados: 5 m lateral, 10 m frontal, 50 m da praia. Divergência sobre OODC: a Análise PDM diz 'utilizaremos outorga'; o handover diz que não foi orçada.",
+      "acao": "URGENTE: formalizar por escrito a autorização do secretário/prefeitura para os 3 pavimentos e a extrapolação de TO — sem isso o risco de indeferimento/embargo recai sobre o partido. Preencher a Análise PDM. Definir a questão da OODC.",
+      "fonte": "Análise PDM (em branco) | Handover Milagres 03/07/2026",
+      "link": "https://drive.google.com/drive/folders/1BCyjxP8Xk_M6t8nJte3U9TAX-NI-1Cg2",
+      "link2": ""
+    },
+    {
+      "etapa": "Topografia — Levantamento ausente e área divergente",
+      "documento": "Matrícula / EP FOLHAS R00 / DIÁRIO",
+      "status": "Pendente",
+      "severidade": "Crítico",
+      "observacao": "Não há levantamento topográfico atual (pasta '03 - Levantamento Topográfico' vazia). O material existente é antigo e divergente da matrícula; polígono e medidas do terreno NÃO estão confirmados. Área: matrícula 8.573 m² vs. 8.500 m² citado no handover. Há um 'morrinho' a cortar, estimado por verba padrão. O EP foi desenhado sobre a delimitação do zoneamento/plano diretor, não sobre topografia real. Fornecedor MCZ Topografia contratado (R$ 5.500).",
+      "acao": "Cobrar entrega do topográfico (MCZ) e conciliar a área real com a matrícula/SPU; revisar terraplenagem/corte após o levantamento.",
+      "fonte": "Matrícula (8.573 m²) | DIÁRIO São Miguel",
+      "link": "https://drive.google.com/drive/folders/1VfDrF9zXVYrPFftNaCmrwRs5HcL9iTje",
+      "link2": ""
+    },
+    {
+      "etapa": "Sondagem — Laudo SPT não entregue",
+      "documento": "pasta 08 - Sondagem (vazia) / DIÁRIO",
+      "status": "Pendente",
+      "severidade": "Atenção",
+      "observacao": "Pasta '08 - Sondagem' vazia — laudo SPT/nível d'água ainda não entregue. Contratada a AGS - Arapiraca Geotecnia e Sondagem (R$ 6.000 + R$ 70/m adicional); sondagem reduzida de 5 para 3 furos por custo, a serem posicionados nas áreas previstas para as torres.",
+      "acao": "Cobrar execução e laudo SPT (AGS); confirmar capacidade de carga e riscos geotécnicos, especialmente pela proximidade de mangue/marinha (lençol freático).",
+      "fonte": "DIÁRIO São Miguel (contratação AGS, 3 furos)",
+      "link": "https://drive.google.com/drive/folders/19DV8igr6hy8m6nZYlXfUJHVaElK30BmT",
+      "link2": ""
+    },
+    {
+      "etapa": "Validação do EP — Estudo preliminar sem base topográfica",
+      "documento": "EP FOLHAS R00 16-06 / PRANCHAS R02 (13/07)",
+      "status": "Divergência",
+      "severidade": "Atenção",
+      "observacao": "Existe EP FOLHAS R00 (16/06) e uma revisão de pranchas R02 (13/07, a mais recente). O estudo foi feito sem topografia real (base no zoneamento/PD). Decisões de projeto no diário: blocos de 3 pavimentos p/ atingir ≥180 UHs; sem sacadas (gardens); acesso à praia por corredor lateral; lazer em área descoberta na faixa de marinha; estacionamento deslocado para o terreno do outro lado da rua; fundos como land banking. Eficiência privativa ~82%.",
+      "acao": "Revalidar o EP após topografia e definição dos parâmetros urbanísticos; confirmar quadro de áreas e nº de unidades (risco de perder pavimento/unidades).",
+      "fonte": "EP FOLHAS R00 (16/06/2026) | PRANCHAS R02 (13/07/2026)",
+      "link": "https://drive.google.com/drive/folders/1lTwnffuOuAdqhVTwkydM4QKDyRmyW71p",
+      "link2": ""
+    },
+    {
+      "etapa": "Estrutura & Fundação / Concessionárias",
+      "documento": "pasta 09-Proj. Fundação (vazia) / orçamento",
+      "status": "Pendente",
+      "severidade": "Atenção",
+      "observacao": "Projetos de estrutura/fundação ainda não entregues; verba de fundação em valor padrão (~R$ 790 mil citado no handover), sem contenção específica prevista — a confirmar após sondagem. Sem esgotamento público na região: prevista ETE (estação de tratamento de esgoto) própria, com verba considerável dimensionada por nº de UHs.",
+      "acao": "Compatibilizar fundação com a sondagem (AGS) e o EP; dimensionar ETE e confirmar concessionárias (água/energia) conforme a região.",
+      "fonte": "Handout orçamento | DIÁRIO São Miguel",
+      "link": "https://drive.google.com/drive/folders/1BCyjxP8Xk_M6t8nJte3U9TAX-NI-1Cg2",
+      "link2": ""
+    },
+    {
+      "etapa": "Aprovações — Legislação nebulosa e prefeitura",
+      "documento": "DIÁRIO / Handover 03/07 / Análise PDM",
+      "status": "Pendente",
+      "severidade": "Crítico",
+      "observacao": "A legislação de São Miguel dos Milagres é 'nebulosa' e exige arquiteto com experiência recente em aprovações locais (mantida a arquiteta de Patacho — Yaucha Arquitetura, R$ 119.350,15). Parte relevante das premissas depende de orientação informal do secretário, sem respaldo claro na lei. Recuos e TO seguem o Plano Diretor de 2010. Há também a questão de acesso público à praia (Praia do Toque) — avaliar necessidade de corredor lateral de acesso à orla. Jurídico é o gargalo declarado do cronograma de lançamento.",
+      "acao": "Formalizar as orientações do secretário; mapear o rito de aprovação (prefeitura + eventuais órgãos estaduais/federais por causa da marinha e do mangue); verificar exigência de acesso público à orla.",
+      "fonte": "DIÁRIO São Miguel | Handover 03/07/2026",
+      "link": "https://drive.google.com/drive/folders/1-OWQ40p6bh7NfkkTWcJrwdKD8PrsB67s",
+      "link2": ""
+    },
+    {
+      "etapa": "Leitura de Negócio",
+      "documento": "Handover 03/07 / Planilha Geral / DIÁRIO",
+      "status": "Pendente",
+      "severidade": "Atenção",
+      "observacao": "Terreno 8.573 m² (frente-mar pé na areia + porção de fundos após via), R$ 11 M, fluxo 20 meses. Produto: multifamiliar (alt. apart-hotel), ~180–212 UHs, 3 pav + cooktop/lazer, ticket ~R$ 202 mil. Financiamento Pride/FLN (comente R$ 100 M; estruturação faseada 25/50/75/100%). Referência de produto: Patacho. Comparáveis de mercado: Vila Manati/Náutica, CityCom. Fundos destinados a land banking (2º lançamento). Lançamento mirado para meados/fim de agosto — cronograma pressionado pelo jurídico.",
+      "acao": "Amarrar no contrato: entrega da modelagem final cotada 100%; correção por INCC; estrutura de SPE; e as condicionantes do vendedor (marinha/cadeia dominial). Monitorar cronograma vs. pendências críticas.",
+      "fonte": "Handover Milagres 03/07/2026 | Planilha Geral [ID-12235]",
+      "link": "https://drive.google.com/drive/folders/1sTxDdX3ZJq4qalXpuznhZ1eYS2ffYTeb",
+      "link2": ""
+    }
+  ]
+}

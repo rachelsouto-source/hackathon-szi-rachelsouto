@@ -81,6 +81,7 @@ def empreendimentos():
             {"id": "demo-jurere-iii", "name": "Jurerê Spot III (demo)"},
             {"id": "demo-farol-barra", "name": "Farol da Barra Spot (demo)"},
             {"id": "demo-novo-campeche-iii", "name": "Novo Campeche Spot III (demo)"},
+            {"id": "demo-sao-miguel", "name": "São Miguel dos Milagres (demo)"},
         ]}
     from core import drive_client
     try:
@@ -109,6 +110,17 @@ def _demo_result(emp_id: str = "demo-jurere-iii") -> dict:
             "achados": achados,
             "parecer_md": parecer_md,
             "negocio": {"recomendacao": "GO COM RESSALVAS CRÍTICAS"},
+            "doc_url": "",
+            "out_folder": None,
+        }
+    if emp_id == "demo-sao-miguel":
+        achados = json.loads((EXEMPLOS / "sao-miguel-achados.json").read_text(encoding="utf-8"))["itens"]
+        parecer_md = (EXEMPLOS / "sao-miguel-parecer.md").read_text(encoding="utf-8")
+        return {
+            "nome": "São Miguel dos Milagres (demo)",
+            "achados": achados,
+            "parecer_md": parecer_md,
+            "negocio": {"recomendacao": "NO-GO / PAUSADO — TERRENO DE MARINHA E ESTUDOS PENDENTES"},
             "doc_url": "",
             "out_folder": None,
         }
