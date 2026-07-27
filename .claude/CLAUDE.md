@@ -16,6 +16,20 @@ Contexto completo: `claude.md/CLAUDE.md`
 ## Caso-base validado
 **Jurerê Spot III** — Florianópolis/SC. Exemplos em `claude.md/exemplos/`.
 
+## Base de conhecimento da DD Técnica (metodologia Rachel Souto)
+
+`base-conhecimento/` é a **camada de método** da DD Técnica — a metodologia completa que o
+agente deve ter na hora de fazer uma DD. **Ler antes de emitir qualquer parecer do Modo A**:
+
+- `base-conhecimento/PROMPT-SISTEMA.md` — prompt consolidado (persona + método + regras)
+- `base-conhecimento/03-ordem-de-analise.md` — os 12 blocos documentais, na ordem obrigatória
+- `base-conhecimento/04-regras-de-auditoria.md` — R1–R7
+- `base-conhecimento/06-estrutura-do-parecer.md` — seções do parecer e GO / GO COM RESSALVAS / NO GO
+- `base-conhecimento/09-florianopolis.md` — validações automáticas para Floripa
+- `base-conhecimento/10-consulta-a-base-historica.md` — precedentes via `sintese` → `aprendizados` → Drive
+
+Índice completo em `base-conhecimento/README.md`.
+
 ## Estrutura dos arquivos de referência
 
 ```
