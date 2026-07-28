@@ -109,7 +109,7 @@ def _demo_result(emp_id: str = "demo-jurere-iii") -> dict:
             "nome": "Novo Campeche Spot III (demo)",
             "achados": achados,
             "parecer_md": parecer_md,
-            "negocio": {"recomendacao": "GO COM RESSALVAS CRÍTICAS"},
+            "negocio": {"recomendacao": "NO-GO — POTENCIAL CONSTRUTIVO NÃO DEMONSTRADO"},
             "doc_url": "",
             "out_folder": None,
         }
