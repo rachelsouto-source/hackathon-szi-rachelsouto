@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Auditor de DD Técnica — SZI Lançamentos</title>
-  <link rel="stylesheet" href="/static/style.css?v=6" />
+  <link rel="stylesheet" href="/static/style.css?v=7" />
 </head>
 <body>
   <header>
@@ -31,7 +31,14 @@
       </div>
       <p class="dd-intro-desc">
         A <strong>DD Técnica</strong> é o laudo de auditoria que <strong>certifica se um empreendimento está apto a seguir para a fase de projeto e lançamento — ou não</strong>.
-        Ela cruza automaticamente os documentos entregues pelos <strong>profissionais das disciplinas contratadas</strong> (ambiental, topografia, arquitetura, sondagem, estrutura/fundação — projetos complementares de construção civil) com os critérios técnicos e legais da Seazone, gerando um parecer fundamentado com recomendação de <span class="badge-go">GO</span>, <span class="badge-res">GO COM RESSALVAS</span> ou <span class="badge-ng">NO-GO / PAUSADO</span>.
+        Ela cruza automaticamente os documentos entregues pelos <strong>profissionais das disciplinas contratadas</strong> (ambiental, topografia, arquitetura, sondagem, estrutura/fundação — projetos complementares de construção civil) com os critérios técnicos e legais da Seazone, com o <strong>histórico de casos anteriores</strong> e com o <strong>Diário de Lançamentos</strong>.
+      </p>
+      <p class="dd-intro-desc">
+        O Auditor entrega a <strong>exposição técnica</strong> — a situação, as divergências, os pontos de
+        atenção, os precedentes e <strong>o que ainda falta saber</strong> — sempre com a evidência que
+        sustenta cada afirmação. A recomendação de
+        <span class="badge-go">GO</span>, <span class="badge-res">GO COM RESSALVAS</span> ou
+        <span class="badge-ng">NO-GO</span> permanece uma <strong>decisão humana</strong>.
       </p>
       <div class="dd-topics">
         <div class="dd-topic">
@@ -73,6 +80,10 @@
       </div>
     </section>
 
+    <!-- Aviso de capacidades: o v1 caía em modo demo em silêncio e o painel exibia
+         JSON estático versionado no repo, indistinguível de uma auditoria real. -->
+    <section id="aviso-modo" class="aviso hidden"></section>
+
     <section class="card">
       <div class="card-head">
         <span class="step">1</span>
@@ -83,47 +94,48 @@
       </div>
       <div class="row">
         <select id="empreendimento"><option>carregando…</option></select>
-        <button id="btn-gerar"><span class="spin hidden" id="spin"></span><span id="btn-label">Gerar DD</span></button>
+        <button id="btn-gerar"><span class="spin hidden" id="spin"></span><span id="btn-label">Auditar agora</span></button>
       </div>
+      <p class="hint-forte">Cada execução <strong>revarre o Drive e refaz a análise do zero</strong>.
+         Nenhuma conclusão anterior é reaproveitada.</p>
       <p id="status" class="status"></p>
+      <ul id="progresso" class="progresso hidden"></ul>
     </section>
 
     <section id="resultado" class="card hidden">
       <div class="card-head">
         <span class="step">2</span>
         <div style="flex:1">
-          <h2>Resultado da DD Técnica</h2>
+          <h2>Resultado da auditoria</h2>
           <p class="hint" id="res-nome"></p>
         </div>
         <div class="actions">
           <a id="link-xlsx" class="btn-link">⬇ Planilha</a>
+          <a id="link-docx" class="btn-link">⬇ Word</a>
           <button id="btn-gdoc" class="btn-link primary hidden">📝 Gerar Google Doc</button>
-          <a id="link-doc" class="btn-link primary hidden" target="_blank">📄 Abrir Google Doc</a>
         </div>
       </div>
 
-      <div id="recomendacao" class="reco"></div>
-      <p id="doc-note" class="doc-note hidden"></p>
-
+      <div id="exposicao" class="exposicao"></div>
       <div id="resumo" class="resumo"></div>
 
       <div class="tabs">
-        <button class="tab active" data-tab="achados">Achados da auditoria</button>
-        <button class="tab" data-tab="parecer">Parecer técnico</button>
+        <button class="tab active" data-tab="achados">Achados</button>
+        <button class="tab" data-tab="lacunas">Lacunas <span id="c-lac" class="chip"></span></button>
+        <button class="tab" data-tab="precedentes">Precedentes <span id="c-prec" class="chip"></span></button>
+        <button class="tab" data-tab="mudancas">Mudanças</button>
+        <button class="tab" data-tab="cobertura">Cobertura</button>
+        <button class="tab" data-tab="parecer">Parecer</button>
+        <button class="tab" data-tab="trilha">Trilha</button>
       </div>
 
-      <div id="tab-achados" class="tabpane">
-        <table id="tabela">
-          <thead>
-            <tr><th>Etapa</th><th>Status</th><th>Sev.</th><th>Observação</th><th>Ação</th><th>Fonte</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-
-      <div id="tab-parecer" class="tabpane hidden">
-        <article id="parecer" class="parecer"></article>
-      </div>
+      <div id="tab-achados" class="tabpane"></div>
+      <div id="tab-lacunas" class="tabpane hidden"></div>
+      <div id="tab-precedentes" class="tabpane hidden"></div>
+      <div id="tab-mudancas" class="tabpane hidden"></div>
+      <div id="tab-cobertura" class="tabpane hidden"></div>
+      <div id="tab-parecer" class="tabpane hidden"><article id="parecer" class="parecer"></article></div>
+      <div id="tab-trilha" class="tabpane hidden"></div>
     </section>
   </main>
 
@@ -132,6 +144,6 @@
     <p>Gerado com apoio de IA · requer revisão humana · Hackathon SZI 2026</p>
   </footer>
 
-  <script src="/static/app.js?v=6"></script>
+  <script src="/static/app.js?v=7"></script>
 </body>
 </html>
