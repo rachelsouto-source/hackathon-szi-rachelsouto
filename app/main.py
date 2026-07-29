@@ -1,29 +1,38 @@
 """
-Auditor de DD Técnica — aplicação web (FastAPI).
+Auditor de DD Técnica — API (FastAPI).
 
-Rotas:
-  GET  /                      -> página (frontend)
-  GET  /api/health            -> status e modo (drive/demo)
-  GET  /api/empreendimentos   -> lista os empreendimentos de "02 - Projetos"
-  POST /api/dd                 -> roda a DD de um empreendimento (body: {id, nome})
-  GET  /api/dd/{rid}/xlsx     -> baixa a planilha de controle
+Esta camada é FINA de propósito: não contém lógica de auditoria. Tudo vive em
+`auditor/pipeline.py`, que também é chamável por terminal, cron e skill (§4.3-D1).
 
-Modo DEMO (DEMO_MODE=1 ou sem credenciais): usa os exemplos do Jurerê III,
-sem chamar Drive/Claude — permite testar e gravar a demo offline.
+O que mudou em relação ao v1:
+
+  · SEMPRE REEXECUTA. Não existe endpoint que devolva parecer antigo. `POST /api/dd`
+    dispara uma auditoria nova, que revarre o Drive e reconstrói o Livro do zero.
+    Ver §9.1 — a causa do "ele pega o que já fez em algum momento".
+  · JOB ASSÍNCRONO + POLLING. Com loop de ferramentas, uma DD leva de 5 a 20 minutos;
+    um POST síncrono estoura o timeout do proxy (§4.3-D3).
+  · /api/health DIZ O QUE FALTA. O v1 caía em DEMO silenciosamente e o painel exibia
+    JSON estático versionado no repo, indistinguível do resultado real. Era a origem
+    do problema nº 1.
 """
 from __future__ import annotations
 
 import json
 import os
+import threading
+import traceback
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from typing import Any
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, HTMLResponse, Response
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from core import dd_engine, docs_writer
+from auditor import estado, pipeline, relatorio
+from core import docs_writer
 
 ROOT = Path(__file__).resolve().parent.parent
 EXEMPLOS = ROOT / "claude.md" / "exemplos"
@@ -31,37 +40,102 @@ STATIC = Path(__file__).resolve().parent / "static"
 
 app = FastAPI(title="Auditor de DD Técnica — SZI Lançamentos")
 
-_RESULTS: dict[str, dict] = {}  # cache em memória das DDs geradas
+_JOBS: dict[str, dict] = {}
+_LOCK = threading.Lock()
+_POOL = ThreadPoolExecutor(max_workers=int(os.getenv("DD_WORKERS", "2")))
+LOGO_ID = os.getenv("LOGO_FILE_ID", "1QXKWeEZ9w8SVUq0lazUuRnBrnXJFsi9z")
+
+# (id do demo, prefixo do arquivo em claude.md/exemplos, nome exibido)
+DEMOS = [
+    ("demo-jurere-iii", "jurere-iii", "Jurerê Spot III"),
+    ("demo-farol-barra", "farol-barra", "Farol da Barra Spot"),
+    ("demo-novo-campeche-iii", "novo-campeche", "Novo Campeche Spot III"),
+    ("demo-sao-miguel", "sao-miguel", "São Miguel dos Milagres"),
+]
+
+
+# --------------------------------------------------------------------------- #
+# Diagnóstico de capacidades — nada de degradar em silêncio
+# --------------------------------------------------------------------------- #
+
+def capacidades() -> dict[str, Any]:
+    """
+    Diz exatamente o que está ligado e o que falta para ligar o resto.
+
+    Isto existe porque o app rodou semanas em modo demo servindo JSON congelado sem que
+    ninguém percebesse. Agora a falta de cada credencial é visível e nomeada.
+    """
+    from auditor.fontes import diario as fdiario
+    from auditor.fontes import historica as fhistorica
+
+    try:
+        from core import drive_client
+        drive_ok = drive_client.is_configured()
+    except Exception:  # noqa: BLE001
+        drive_ok = False
+
+    claude_ok = bool(os.getenv("ANTHROPIC_API_KEY"))
+    diario_ok, diario_msg = fdiario.disponivel()
+    base_ok, base_msg = fhistorica.disponivel()
+    disco_ok = estado.disco_disponivel()
+
+    itens = {
+        "drive": {
+            "ativo": drive_ok, "essencial": True,
+            "falta": "" if drive_ok else
+                     "GOOGLE_SERVICE_ACCOUNT_JSON (JSON inteiro da service account) e "
+                     "EMPREENDIMENTOS_FOLDER_ID; a pasta precisa estar compartilhada "
+                     "com o e-mail da service account.",
+        },
+        "claude": {
+            "ativo": claude_ok, "essencial": True,
+            "falta": "" if claude_ok else "ANTHROPIC_API_KEY",
+        },
+        "diario": {
+            "ativo": diario_ok, "essencial": False, "falta": diario_msg,
+            "beneficio": "riscos e decisões do time que não estão em documento nenhum",
+        },
+        "base_historica": {
+            "ativo": base_ok, "essencial": False, "falta": base_msg,
+            "beneficio": "comparação com casos anteriores (Patacho, Japaratinga…)",
+        },
+        "historico_em_disco": {
+            "ativo": disco_ok, "essencial": False,
+            "falta": "" if disco_ok else
+                     f"volume gravável montado em {estado.raiz()} "
+                     f"(ou AUDITOR_DADOS_DIR apontando para um)",
+            "beneficio": "changelog entre rodadas e sessão de contestação persistente",
+        },
+    }
+    forcado = os.getenv("DEMO_MODE", "").lower() in {"1", "true", "yes"}
+    operante = drive_ok and claude_ok and not forcado
+    return {
+        "modo": "produção" if operante else "demo",
+        "demo_forcado_por_env": forcado,
+        "itens": itens,
+        "faltando_essencial": [k for k, v in itens.items()
+                               if v["essencial"] and not v["ativo"]],
+    }
 
 
 def demo_mode() -> bool:
-    if os.getenv("DEMO_MODE", "").lower() in {"1", "true", "yes"}:
-        return True
-    try:
-        from core import drive_client
-        return not (drive_client.is_configured() and os.getenv("ANTHROPIC_API_KEY"))
-    except Exception:  # noqa: BLE001
-        return True
-
-
-# ----------------- API -----------------
-
-class DDRequest(BaseModel):
-    id: str
-    nome: str
-
-
-LOGO_ID = os.getenv("LOGO_FILE_ID", "1QXKWeEZ9w8SVUq0lazUuRnBrnXJFsi9z")
+    return capacidades()["modo"] == "demo"
 
 
 @app.get("/api/health")
 def health():
-    return {"ok": True, "modo": "demo" if demo_mode() else "produção"}
+    c = capacidades()
+    aviso = ""
+    if c["modo"] == "demo":
+        faltam = ", ".join(c["faltando_essencial"]) or "DEMO_MODE=1 está forçando o modo"
+        aviso = (f"⚠️ MODO DEMO — os dados exibidos são EXEMPLOS FIXOS versionados no "
+                 f"repositório, não o resultado de uma auditoria. Nada é lido do Drive e "
+                 f"nenhuma análise roda. Falta: {faltam}.")
+    return {"ok": True, "versao": "2.0", **c, "aviso": aviso}
 
 
 @app.get("/api/logo")
 def logo():
-    """Logo da Seazone: em produção serve do Drive; em demo redireciona ao thumbnail."""
     if not demo_mode():
         try:
             from core import drive_client
@@ -70,305 +144,367 @@ def logo():
                             headers={"Cache-Control": "public, max-age=86400"})
         except Exception:  # noqa: BLE001
             pass
-    from fastapi.responses import RedirectResponse
     return RedirectResponse(f"https://drive.google.com/thumbnail?id={LOGO_ID}&sz=w240")
 
+
+# --------------------------------------------------------------------------- #
+# Empreendimentos
+# --------------------------------------------------------------------------- #
 
 @app.get("/api/empreendimentos")
 def empreendimentos():
     if demo_mode():
+        # Lista só os exemplos cujos arquivos existem de fato neste build. Oferecer um
+        # demo cujo JSON não está presente produz uma tela vazia que parece bug.
         return {"modo": "demo", "itens": [
-            {"id": "demo-jurere-iii", "name": "Jurerê Spot III (demo)"},
-            {"id": "demo-farol-barra", "name": "Farol da Barra Spot (demo)"},
-            {"id": "demo-novo-campeche-iii", "name": "Novo Campeche Spot III (demo)"},
-            {"id": "demo-sao-miguel", "name": "São Miguel dos Milagres (demo)"},
+            {"id": eid, "name": f"{nome} (EXEMPLO FIXO)"}
+            for eid, slug, nome in DEMOS
+            if (EXEMPLOS / f"{slug}-achados.json").exists()
         ]}
     from core import drive_client
     try:
-        return {"modo": "produção", "itens": drive_client.list_empreendimentos()}
+        itens = drive_client.list_empreendimentos()
     except Exception as e:  # noqa: BLE001
         raise HTTPException(500, f"Erro ao listar empreendimentos: {e}")
+    # Anexa o histórico de auditorias já realizadas
+    for it in itens:
+        emp_id = pipeline._extrair_emp_id(it["name"], it["id"])
+        it["emp_id"] = emp_id
+        ult = estado.ultima_rodada(emp_id)
+        it["rodadas"] = ult or 0
+        lv = estado.ler_livro(emp_id) if ult else None
+        it["ultima_auditoria"] = lv.gerado_em if lv else ""
+    return {"modo": "produção", "itens": itens}
 
 
-def _demo_result(emp_id: str = "demo-jurere-iii") -> dict:
-    if emp_id == "demo-farol-barra":
-        achados = json.loads((EXEMPLOS / "farol-barra-achados.json").read_text(encoding="utf-8"))["itens"]
-        parecer_md = (EXEMPLOS / "farol-barra-parecer.md").read_text(encoding="utf-8")
-        return {
-            "nome": "Farol da Barra Spot (demo)",
-            "achados": achados,
-            "parecer_md": parecer_md,
-            "negocio": {"recomendacao": "PAUSADO ATÉ RESOLUÇÃO DOS BLOQUEIOS"},
-            "doc_url": "",
-            "out_folder": None,
-        }
-    if emp_id == "demo-novo-campeche-iii":
-        achados = json.loads((EXEMPLOS / "novo-campeche-achados.json").read_text(encoding="utf-8"))["itens"]
-        parecer_md = (EXEMPLOS / "novo-campeche-parecer.md").read_text(encoding="utf-8")
-        return {
-            "nome": "Novo Campeche Spot III (demo)",
-            "achados": achados,
-            "parecer_md": parecer_md,
-            "negocio": {"recomendacao": "GO COM RESSALVAS CRÍTICAS"},
-            "doc_url": "",
-            "out_folder": None,
-        }
-    if emp_id == "demo-sao-miguel":
-        achados = json.loads((EXEMPLOS / "sao-miguel-achados.json").read_text(encoding="utf-8"))["itens"]
-        parecer_md = (EXEMPLOS / "sao-miguel-parecer.md").read_text(encoding="utf-8")
-        return {
-            "nome": "São Miguel dos Milagres (demo)",
-            "achados": achados,
-            "parecer_md": parecer_md,
-            "negocio": {"recomendacao": "NO-GO / PAUSADO — TERRENO DE MARINHA E ESTUDOS PENDENTES"},
-            "doc_url": "",
-            "out_folder": None,
-        }
-    achados = json.loads((EXEMPLOS / "jurere-iii-achados.json").read_text(encoding="utf-8"))["itens"]
-    parecer_md = (EXEMPLOS / "jurere-iii-parecer.md").read_text(encoding="utf-8")
-    return {
-        "nome": "Jurerê Spot III (demo)",
-        "achados": achados,
-        "parecer_md": parecer_md,
-        "negocio": {"recomendacao": "GO COM RESSALVAS"},
-        "doc_url": "",        # sem escrita no Drive em modo demo
-        "out_folder": None,   # sem pasta de saída em demo
-    }
+# --------------------------------------------------------------------------- #
+# Auditoria — job assíncrono. SEMPRE reexecuta.
+# --------------------------------------------------------------------------- #
+
+class DDRequest(BaseModel):
+    id: str
+    nome: str
+    contraditor: bool = True
+
+
+def _novo_job(emp_id: str, nome: str) -> str:
+    jid = uuid.uuid4().hex[:10]
+    with _LOCK:
+        _JOBS[jid] = {"id": jid, "emp_id": emp_id, "nome": nome, "estado": "na_fila",
+                      "progresso": [], "erro": None, "resultado": None}
+    return jid
+
+
+def _progresso(jid: str):
+    def _p(msg: str):
+        with _LOCK:
+            j = _JOBS.get(jid)
+            if j:
+                j["progresso"].append(msg)
+                j["progresso"] = j["progresso"][-60:]
+    return _p
+
+
+def _rodar(jid: str, folder_id: str, nome: str, contraditor: bool) -> None:
+    with _LOCK:
+        _JOBS[jid]["estado"] = "rodando"
+    try:
+        out = pipeline.auditar(folder_id, nome, progresso=_progresso(jid),
+                               rodar_contraditor=contraditor)
+        livro = out["livro"]
+        resumo = out["resumo"]
+        resumo["markdown"] = out["markdown"]
+        resumo["xlsx_url"] = f"/api/dd/{livro.emp_id}/xlsx"
+        resumo["docx_url"] = f"/api/dd/{livro.emp_id}/docx"
+        with _LOCK:
+            _JOBS[jid]["estado"] = "pronto"
+            _JOBS[jid]["resultado"] = resumo
+    except Exception as e:  # noqa: BLE001
+        traceback.print_exc()
+        with _LOCK:
+            _JOBS[jid]["estado"] = "erro"
+            _JOBS[jid]["erro"] = str(e)[:800]
 
 
 @app.post("/api/dd")
 def gerar_dd(req: DDRequest):
-    rid = uuid.uuid4().hex[:8]
+    """
+    Dispara uma auditoria NOVA. Nunca devolve resultado anterior.
 
+    Em modo demo devolve o exemplo fixo, mas explicitamente rotulado como tal.
+    """
     if demo_mode():
-        data = _demo_result(req.id)
-        data["xlsx"] = docs_writer.gerar_xlsx_bytes(
-            data["nome"], data["achados"], data.get("negocio", {}).get("recomendacao", "—"))
-        _RESULTS[rid] = data
-        return _public(rid, data)
+        return {"modo": "demo", "job": None, "resultado": _demo(req.id),
+                "aviso": health()["aviso"]}
+    emp_id = pipeline._extrair_emp_id(req.nome, req.id)
+    jid = _novo_job(emp_id, req.nome)
+    _POOL.submit(_rodar, jid, req.id, req.nome, req.contraditor)
+    return {"modo": "produção", "job": jid, "estado": "na_fila"}
 
-    # Produção: localiza fontes no Drive -> Claude -> Google Doc + xlsx
-    from core import drive_client, locator
+
+@app.get("/api/dd/job/{jid}")
+def job(jid: str):
+    j = _JOBS.get(jid)
+    if not j:
+        raise HTTPException(404, "Job não encontrado.")
+    return j
+
+
+@app.get("/api/dd/{emp_id}/livro")
+def livro(emp_id: str, rodada: int | None = None):
+    """
+    Lê um Livro JÁ GRAVADO. É consulta ao histórico — não substitui rodar de novo.
+    """
+    lv = estado.ler_livro(emp_id, rodada)
+    if not lv:
+        raise HTTPException(404, "Nenhuma auditoria gravada para este empreendimento.")
+    anterior = estado.ler_livro(emp_id, lv.rodada - 1) if lv.rodada > 1 else None
+    from auditor.livro import diff_livros
+    return relatorio.resumo_api(lv, diff_livros(anterior, lv))
+
+
+@app.get("/api/dd/{emp_id}/historico")
+def historico(emp_id: str):
+    return {"emp_id": emp_id, "rodadas": estado.historico(emp_id)}
+
+
+# --------------------------------------------------------------------------- #
+# Sessão de contestação — o "jogo" (§1.3-I1)
+# --------------------------------------------------------------------------- #
+
+class Contestacao(BaseModel):
+    afirmacao_id: str
+    argumento: str
+    autor: str = "humano"
+
+
+@app.post("/api/dd/{emp_id}/contestar")
+def contestar(emp_id: str, body: Contestacao):
     try:
-        # 1. Localiza os documentos da DD nas subpastas (última versão em PDF) + links
-        fontes = locator.localizar(req.id)
-
-        # 2. Baixa os arquivos localizados para enviar ao motor
-        docs = []
-        for tipo, val in fontes.items():
-            itens = val if isinstance(val, list) else ([val] if val else [])
-            for it in itens:
-                try:
-                    data, mime = drive_client.download_file_by_id(it["id"], it.get("mime", ""))
-                    docs.append({"name": it["nome"], "mime": mime, "data": data, "link": it.get("link", "")})
-                except Exception:  # noqa: BLE001
-                    continue
-        if not docs:
-            raise HTTPException(422, "Nenhum documento da DD encontrado nas subpastas do empreendimento.")
-
-        # 3. Audita
-        result = dd_engine.audit(req.nome, docs)
-        achados = result.get("achados", [])
-
-        # 4. Anexa os links das fontes a cada achado (rastreabilidade)
-        locator.anexar_links(achados, fontes)
-        # Imagens (localização/drone) entram como um achado próprio, com links
-        imgs = fontes.get("imagens") or []
-        if imgs:
-            ach_img = {
-                "etapa": "Imagens (localização/drone)", "documento": f"{len(imgs)} imagem(ns)",
-                "status": "OK", "severidade": "OK",
-                "observacao": "Imagens de localização/drone usadas para avaliar entorno, contexto urbano e vistas.",
-                "acao": "—", "fonte": "; ".join(i["nome"] for i in imgs[:4]),
-                "link": imgs[0].get("link", ""),
-            }
-            if len(imgs) > 1:
-                ach_img["link2"] = imgs[1].get("link", "")
-            achados.append(ach_img)
-        result["achados"] = achados
-        # Figuras de LOCALIZAÇÃO (imagens reais) — thumbnail p/ tela + bytes p/ embutir no doc
-        figuras, doc_images = [], {}
-        for i in (fontes.get("imagens") or []):
-            url = f"https://drive.google.com/thumbnail?id={i['id']}&sz=w640"
-            figuras.append({"url": url, "cap": i["nome"]})
-            try:
-                b, _ = drive_client.download_file_by_id(i["id"], i.get("mime", "image/png"))
-                doc_images[url] = b
-            except Exception:  # noqa: BLE001
-                pass
-        result["figuras"] = figuras
-        # Figura por seção = thumbnail (1ª página) do documento de cada tópico
-        def _thumb(tipo, cap):
-            f = fontes.get(tipo)
-            if isinstance(f, dict) and f.get("id"):
-                return {"url": f"https://drive.google.com/thumbnail?id={f['id']}&sz=w640", "cap": cap}
-            return None
-        result["figuras_secao"] = {k: v for k, v in {
-            "topografia": _thumb("topografico", "Levantamento topográfico"),
-            "ambiental": _thumb("ambiental", "Estudo de viabilidade ambiental (EVA)"),
-            "validacao_ep": _thumb("validacao_ep", "Validação do estudo preliminar"),
-            "sondagem": _thumb("sondagem", "Relatório de sondagem"),
-            "estrutura_fundacao": _thumb("estrutura", "Estrutura / fundação"),
-        }.items() if v}
-        parecer_md = docs_writer.render_parecer_md(req.nome, result)
-
-        # 5. Grava o Google Doc na pasta 07 - DD Técnica (fallback: raiz do empreendimento)
-        out_folder = locator.find_dd_folder(req.id) or req.id
-        try:
-            doc = docs_writer.create_google_doc(
-                out_folder, f"[{req.nome}] DD Técnica (auto)", parecer_md, images=doc_images)
-            doc_url = doc.get("url", "")
-        except Exception:  # noqa: BLE001  (não trava a DD se a escrita falhar)
-            doc_url = ""
-        data = {
-            "nome": req.nome, "achados": achados, "parecer_md": parecer_md,
-            "negocio": result.get("negocio", {}), "doc_url": doc_url,
-            "out_folder": out_folder, "figuras": figuras, "doc_images": doc_images,
-            "xlsx": docs_writer.gerar_xlsx_bytes(
-                req.nome, achados, result.get("negocio", {}).get("recomendacao", "—")),
-        }
-        _RESULTS[rid] = data
-        return _public(rid, data)
-    except HTTPException:
-        raise
+        return pipeline.contestar_afirmacao(
+            emp_id, body.afirmacao_id, body.argumento, body.autor)
     except Exception as e:  # noqa: BLE001
-        raise HTTPException(500, f"Falha ao gerar a DD: {e}")
+        raise HTTPException(400, str(e))
 
 
-def _public(rid: str, data: dict) -> dict:
-    return {
-        "rid": rid, "nome": data["nome"], "achados": data["achados"],
-        "parecer_md": data["parecer_md"], "negocio": data.get("negocio", {}),
-        "doc_url": data.get("doc_url", ""),
-        "xlsx_url": f"/api/dd/{rid}/xlsx",
-    }
+class Aceite(BaseModel):
+    ids: list[str]
+    autor: str = "humano"
 
 
-class GDocRequest(BaseModel):
-    parecer_md: str | None = None
+@app.post("/api/dd/{emp_id}/aceitar")
+def aceitar(emp_id: str, body: Aceite):
+    try:
+        return pipeline.aceitar_afirmacoes(emp_id, body.ids, body.autor)
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(400, str(e))
 
 
-@app.post("/api/dd/{rid}/gdoc")
-def gerar_gdoc(rid: str, body: GDocRequest | None = None):
-    """Cria o parecer como Google Doc na pasta 07 - DD Técnica (sob demanda).
-    Aceita opcionalmente um parecer_md editado no body (edições feitas na UI)."""
-    data = _RESULTS.get(rid)
-    if not data:
-        raise HTTPException(404, "Resultado não encontrado.")
-    # Se o cliente enviou um parecer editado, sobrescreve o original
-    if body and body.parecer_md:
-        data["parecer_md"] = body.parecer_md
-    if data.get("doc_url"):
-        return {"doc_url": data["doc_url"], "msg": "Google Doc já criado."}
-    # Produção: cria o Google Doc de verdade na pasta 07 - DD Técnica
-    if not demo_mode() and data.get("out_folder"):
-        try:
-            doc = docs_writer.create_google_doc(
-                data["out_folder"], f"[{data['nome']}] DD Técnica (auto)",
-                data["parecer_md"], images=data.get("doc_images"))
-            data["doc_url"] = doc.get("url", "")
-            return {"doc_url": data["doc_url"]}
-        except Exception as e:  # noqa: BLE001
-            raise HTTPException(500, f"Falha ao criar Google Doc: {e}")
-    # Demo / sem credenciais: oferece download de um .doc (abre no Word)
-    return {"doc_url": "", "download_url": f"/api/dd/{rid}/doc",
-            "msg": "Documento gerado para download (.doc). Em produção, é criado direto no "
-                   "Google Docs e salvo na pasta “07 - DD Técnica”."}
+@app.get("/api/dd/{emp_id}/base-conhecimento")
+def linhas_base(emp_id: str):
+    """
+    Linhas prontas para a base histórica, no schema de engine/schema.py.
+
+    Só inclui afirmações ACEITAS por uma pessoa (§11.2). Não escreve na base do Vini —
+    o acesso é somente leitura; isto é insumo para PR.
+    """
+    linhas = pipeline.gerar_linhas_para_base(emp_id)
+    return {"emp_id": emp_id, "total": len(linhas), "linhas": linhas,
+            "nota": ("Somente afirmações aceitas por revisão humana. Entregar ao "
+                     "responsável pela base (seazone-tech/base-conhecimento-dd-tecnica) "
+                     "— este app não escreve lá.")}
 
 
-@app.get("/api/dd/{rid}/doc")
-def baixar_doc(rid: str):
-    """Parecer como documento .docx formatado (Word) — usado no modo demo."""
-    data = _RESULTS.get(rid)
-    if not data:
-        raise HTTPException(404, "Resultado não encontrado.")
+# --------------------------------------------------------------------------- #
+# Saídas
+# --------------------------------------------------------------------------- #
+
+def _achados_legado(resumo: dict) -> list[dict]:
+    """Adapta os achados do Livro ao formato que a planilha de controle espera."""
+    out = []
+    for a in resumo.get("achados", []):
+        ev = (a.get("evidencias") or [{}])[0]
+        out.append({
+            "etapa": a.get("disciplina", ""),
+            "documento": ev.get("ref", ""),
+            "status": {"Crítico": "Divergência", "Atenção": "Pendente"}.get(
+                a.get("severidade"), "OK"),
+            "severidade": a.get("severidade", "OK"),
+            "observacao": a.get("texto", ""),
+            "acao": a.get("acao", "—"),
+            "fonte": ev.get("trecho", "")[:200],
+            "link": ev.get("link", ""),
+        })
+    for l in resumo.get("lacunas", []):
+        out.append({
+            "etapa": l.get("disciplina", ""), "documento": "—",
+            "status": "Pendente", "severidade": l.get("severidade", "Atenção"),
+            "observacao": l.get("texto", ""), "acao": l.get("como_obter", "—"),
+            "fonte": "lacuna declarada", "link": "",
+        })
+    return out
+
+
+def _resumo_de(emp_id: str) -> dict:
+    lv = estado.ler_livro(emp_id)
+    if not lv:
+        raise HTTPException(404, "Nenhuma auditoria gravada para este empreendimento.")
+    r = relatorio.resumo_api(lv)
+    r["markdown"] = relatorio.render_markdown(lv)
+    return r
+
+
+@app.get("/api/dd/{emp_id}/xlsx")
+def baixar_xlsx(emp_id: str):
     import unicodedata
-    docx_bytes = docs_writer.gerar_docx_bytes(data["nome"], data["parecer_md"], data.get("doc_images"))
-    base = (unicodedata.normalize("NFKD", f"DD_Tecnica_{data['nome']}")
-            .encode("ascii", "ignore").decode("ascii")).replace(" ", "_")
+    r = _resumo_de(emp_id)
+    dados = docs_writer.gerar_xlsx_bytes(
+        r["nome"], _achados_legado(r), "decisão humana — ver exposição técnica")
+    base = (unicodedata.normalize("NFKD", f"controle-dd-{r['nome']}")
+            .encode("ascii", "ignore").decode("ascii")).replace(" ", "_") or "controle-dd"
     return Response(
-        content=docx_bytes,
-        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        headers={"Content-Disposition": f'attachment; filename="{base}.docx"'},
-    )
-
-
-@app.get("/api/dd/{rid}/xlsx")
-def baixar_xlsx(rid: str):
-    data = _RESULTS.get(rid)
-    if not data or "xlsx" not in data:
-        raise HTTPException(404, "Resultado não encontrado.")
-    import unicodedata
-    base = f"controle-dd-{data['nome']}".replace(" ", "_")
-    # nome ASCII puro p/ o header (HTTP headers são latin-1)
-    ascii_name = (unicodedata.normalize("NFKD", base)
-                  .encode("ascii", "ignore").decode("ascii")) or "controle-dd"
-    fname = f"{ascii_name}.xlsx"
-    return Response(
-        content=data["xlsx"],
+        content=dados,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f'attachment; filename="{fname}"'},
-    )
+        headers={"Content-Disposition": f'attachment; filename="{base}.xlsx"'})
 
 
-# ----------------- Monitor automático -----------------
+@app.get("/api/dd/{emp_id}/docx")
+def baixar_docx(emp_id: str):
+    import unicodedata
+    r = _resumo_de(emp_id)
+    dados = docs_writer.gerar_docx_bytes(r["nome"], r["markdown"], None)
+    base = (unicodedata.normalize("NFKD", f"DD_Tecnica_{r['nome']}")
+            .encode("ascii", "ignore").decode("ascii")).replace(" ", "_") or "DD_Tecnica"
+    return Response(
+        content=dados,
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers={"Content-Disposition": f'attachment; filename="{base}.docx"'})
+
+
+@app.post("/api/dd/{emp_id}/gdoc")
+def gerar_gdoc(emp_id: str):
+    if demo_mode():
+        raise HTTPException(400, "Indisponível em modo demo.")
+    r = _resumo_de(emp_id)
+    from core import locator
+    lv = estado.ler_livro(emp_id)
+    folder = (lv.proveniencia or {}).get("folder_id") or ""
+    destino = (locator.find_dd_folder(folder) or folder) if folder else ""
+    if not destino:
+        raise HTTPException(400, "Pasta de destino não identificada nesta rodada.")
+    try:
+        doc = docs_writer.create_google_doc(
+            destino, f"[{r['nome']}] DD Técnica (auto)", r["markdown"], images=None)
+        return {"doc_url": doc.get("url", "")}
+    except Exception as e:  # noqa: BLE001
+        raise HTTPException(500, f"Falha ao criar Google Doc: {e}")
+
+
+# --------------------------------------------------------------------------- #
+# Monitor — reexecução por mudança, não por completude
+# --------------------------------------------------------------------------- #
 
 @app.get("/api/monitor")
 def monitor_status():
-    """Varre '02 - Projetos' e mostra a completude de cada empreendimento."""
+    """
+    Varre os empreendimentos e diz quais MUDARAM desde a última auditoria.
+
+    O critério do v1 ("tem todos os documentos e ainda não tem DD") estava errado por
+    duas razões: (a) `list_files` não é recursivo, então nada era considerado completo e
+    o monitor nunca disparava; (b) no modelo novo, auditoria incompleta é saída VÁLIDA —
+    com as lacunas declaradas. O critério passa a ser mudança. Ver §9.4.
+    """
     if demo_mode():
-        return {"modo": "demo", "itens": [
-            {
-                "id": "demo-jurere-iii", "nome": "Jurerê Spot III (demo)",
-                "completo": True, "ja_tem_dd": True, "elegivel": False,
-                "presentes": ["(demo)"], "faltando": [],
-            },
-            {
-                "id": "demo-farol-barra", "nome": "Farol da Barra Spot (demo)",
-                "completo": False, "ja_tem_dd": False, "elegivel": False,
-                "presentes": ["matrícula", "topografia", "sondagem", "estudo ambiental"],
-                "faltando": ["aprovações", "validação EP", "proposta CCV"],
-            },
-            {
-                "id": "demo-novo-campeche-iii", "nome": "Novo Campeche Spot III (demo)",
-                "completo": False, "ja_tem_dd": True, "elegivel": False,
-                "presentes": ["matrícula", "IPTU", "certidão ônus", "hipoteca TQ", "estudo de massa", "estudo preliminar"],
-                "faltando": ["topografia", "EVA", "sondagem SPT", "viabilidade PMF", "proposta CCV"],
-            },
-        ]}
-    from core import monitor
-    try:
-        return {"modo": "produção", "itens": monitor.varrer()}
-    except Exception as e:  # noqa: BLE001
-        raise HTTPException(500, f"Erro no monitor: {e}")
+        return {"modo": "demo", "itens": []}
+    from auditor import cartografo
+    from core import drive_client
+    out = []
+    for emp in drive_client.list_empreendimentos():
+        emp_id = pipeline._extrair_emp_id(emp["name"], emp["id"])
+        try:
+            inv = cartografo.varrer(emp["id"], drive_client)
+            delta = cartografo.calcular_delta(emp_id, inv)
+        except Exception as e:  # noqa: BLE001
+            out.append({"id": emp["id"], "emp_id": emp_id, "nome": emp["name"],
+                        "erro": str(e)[:200]})
+            continue
+        out.append({
+            "id": emp["id"], "emp_id": emp_id, "nome": emp["name"],
+            "arquivos": inv["total_arquivos"],
+            "novos": len(delta["novos"]), "alterados": len(delta["alterados"]),
+            "removidos": len(delta["removidos"]),
+            "rodadas": estado.ultima_rodada(emp_id) or 0,
+            "elegivel": delta["houve_mudanca"] or not estado.ultima_rodada(emp_id),
+        })
+    return {"modo": "produção", "itens": out}
 
 
 @app.post("/api/monitor/run")
 def monitor_run():
-    """Dispara a DD automaticamente para os empreendimentos elegíveis (cron do Coolify)."""
+    """Dispara auditoria para todo empreendimento que mudou (chamável por cron)."""
     if demo_mode():
-        return {"modo": "demo", "processados": [], "msg": "Sem ação em modo demo."}
-    from core import monitor
-    processados = []
-    for emp in monitor.varrer():
+        return {"modo": "demo", "disparados": []}
+    st = monitor_status()
+    disparados = []
+    for emp in st["itens"]:
         if emp.get("elegivel"):
-            try:
-                res = gerar_dd(DDRequest(id=emp["id"], nome=emp["nome"]))
-                processados.append({"nome": emp["nome"], "rid": res["rid"], "doc_url": res.get("doc_url", "")})
-            except Exception as e:  # noqa: BLE001
-                processados.append({"nome": emp["nome"], "erro": str(e)})
-    return {"modo": "produção", "processados": processados, "total": len(processados)}
+            jid = _novo_job(emp["emp_id"], emp["nome"])
+            _POOL.submit(_rodar, jid, emp["id"], emp["nome"], True)
+            disparados.append({"nome": emp["nome"], "job": jid})
+    return {"modo": "produção", "disparados": disparados, "total": len(disparados)}
 
 
-# ----------------- Frontend -----------------
+# --------------------------------------------------------------------------- #
+# Demo — mantido, mas impossível de confundir com produção
+# --------------------------------------------------------------------------- #
+
+def _demo(emp_id: str) -> dict:
+    slug, nome = next(((s, n) for eid, s, n in DEMOS if eid == emp_id),
+                      ("jurere-iii", "Jurerê Spot III"))
+    try:
+        achados = json.loads(
+            (EXEMPLOS / f"{slug}-achados.json").read_text(encoding="utf-8"))["itens"]
+        md = (EXEMPLOS / f"{slug}-parecer.md").read_text(encoding="utf-8")
+    except Exception as e:  # noqa: BLE001
+        achados = []
+        md = (f"**Exemplo indisponível neste build.** O arquivo "
+              f"`claude.md/exemplos/{slug}-achados.json` não foi encontrado "
+              f"({type(e).__name__}). Isto é uma falha do modo demo, não um "
+              f"resultado de auditoria.")
+    return {
+        "demo": True,
+        "nome": f"{nome} (EXEMPLO FIXO — não é uma auditoria)",
+        "rodada": 0,
+        "markdown": ("> ⚠️ **Este conteúdo é um exemplo estático versionado no "
+                     "repositório.** Nenhum documento foi lido do Drive e nenhuma "
+                     "análise foi executada.\n\n") + md,
+        "achados": [{
+            "id": f"DEMO-{i:03d}", "disciplina": a.get("etapa", ""),
+            "texto": a.get("observacao", ""), "severidade": a.get("severidade", "OK"),
+            "tipo": "fato", "acao": a.get("acao", ""), "confianca": "media",
+            "estado": "aberta", "evidencias": [], "contestacoes": [],
+        } for i, a in enumerate(achados, 1)],
+        "lacunas": [], "precedentes": [], "perguntas_ao_humano": [],
+        "cobertura": {}, "changelog": {}, "trilha": [],
+        "contadores": {
+            "criticos": sum(1 for a in achados if a.get("severidade") == "Crítico"),
+            "atencao": sum(1 for a in achados if a.get("severidade") == "Atenção"),
+            "ok": sum(1 for a in achados if a.get("severidade") == "OK"),
+            "lacunas": 0, "documentos_lidos": 0, "nao_lidos_criticos": 0,
+            "precedentes": 0, "consultas": 0,
+        },
+        "exposicao": {},
+    }
+
+
+# --------------------------------------------------------------------------- #
 
 @app.get("/", response_class=HTMLResponse)
 def index():
-    content = (STATIC / "index.html").read_text(encoding="utf-8")
-    return HTMLResponse(content=content, headers={
-        "Cache-Control": "no-cache, no-store, must-revalidate",
-        "Pragma": "no-cache", "Expires": "0",
-    })
+    return HTMLResponse(
+        content=(STATIC / "index.html").read_text(encoding="utf-8"),
+        headers={"Cache-Control": "no-cache, no-store, must-revalidate",
+                 "Pragma": "no-cache", "Expires": "0"})
 
 
 app.mount("/static", StaticFiles(directory=str(STATIC)), name="static")
