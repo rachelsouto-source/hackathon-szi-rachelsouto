@@ -521,76 +521,96 @@ def teste_cruzamento(inv):
 
 def teste_parecer_oficial(inv):
     """
-    O entregavel segue o formato REAL, extraido de DD TECNICA_SEAZONE_ID - 12235_R00 e
-    do Patacho R03: Analise Tecnica em quadros, nao parecer em prosa.
+    O entregavel e o `[Empreendimento] DD Tecnica Spot` — PARECER TECNICO – DUE
+    DILIGENCE, em prosa por disciplina, com FIGURAS NUMERADAS. Confirmado no
+    `[Jurere Spot III] DD Tecnica Spot.docx` (196 paragrafos, 21 imagens) e no
+    `[Foz Spot] DD Tecnica Spot` da pasta 07 - DD Tecnica do Drive.
     """
-    print("\n[12] DD Tecnica — documento entregavel")
+    print("\n[12] DD Técnica — documento entregável")
     from auditor.livro import Evidencia
 
     lv = _livro_base(inv)
     lv.proveniencia.update({
-        "imovel": {"inscricoes": "12.34.567", "endereco": "Praia do Toque, s/n",
-                   "area_matricula_total": "8.573,00 m2", "matriculas": "2.007"},
-        "proprietarios": ["Marcos T. S."],
-        "resumo_geral": {
-            "area_total": "8.573,00 m2",
-            "deducoes": [{"item": "Terrenos da Marinha", "area": "1.331,65 m2"},
-                         {"item": "Estrada vicinal", "area": "109,45 m2"}],
-            "area_final": "7.131,90 m2"},
+        "imovel": {"inscricoes": "23.52.072", "endereco": "Rua X, s/n",
+                   "area_matricula_total": "8.573,00 m2", "matriculas": "6.698 e 7.568"},
+        "proprietarios": ["Beiramar Empresa de Shopping"],
+        "areas_tabela": {"matricula": [{"ref": "Matricula 6.698", "area": "1.382,40 m2"}],
+                         "cadastro_pmf": [{"ref": "23.52.072", "area": "1.145,10 m2"}],
+                         "topografico": "1.158,96 m2"},
+        "resumo_geral": {"area_total": "8.573,00 m2",
+                         "deducoes": [{"item": "Terrenos da Marinha", "area": "1.331,65 m2"}],
+                         "area_final": "7.241,35 m2"},
         "parametros_urbanisticos": {
-            "recuos": {"valor": "FRENTE MAR 50,00 m; LATERAIS 5 m", "observacao": "-"},
-            "altura_maxima": {"valor": "9 m",
-                              "observacao": "ver caixa d agua na secretaria"},
-            "taxa_ocupacao": {"valor": "NAO INFORMADO", "observacao": "-"},
-            "coeficiente_aproveitamento": {"valor": "1", "observacao": "-"}},
-        "quadro_areas": [
-            {"item": "Area do terreno", "valor": "8.573,00", "unidade": "m2"},
-            {"item": "TO", "valor": "18,76", "unidade": "%"}],
-        "licenciamento": {"licenca_previa": "nao protocolada"},
-        "validacao": {"ajustes": ["Rever afastamento frontal"],
-                      "docs_alvara": ["PPCI"]},
-        "conclusao": {"final": "Ha impedimentos relevantes a endereçar."},
-        "exposicao": {"situacao": "Terreno majoritariamente sob dominio da Uniao.",
-                      "impacto_custo_prazo": "Laudemio nao orcado."},
+            "recuos": {"valor": "FRENTE 5 m; LATERAIS 5 m", "observacao": "-"},
+            "taxa_ocupacao": {"valor": "NAO INFORMADO", "observacao": "-"}},
+        "quadro_areas": [{"item": "Area do terreno", "valor": "8.573,00", "unidade": "m2"}],
+        "validacao": {"ajustes": ["Adequar nucleo de escada enclausurada (EEE)"],
+                      "docs_aprovacao": ["ART/RRT Projeto Arquitetonico"],
+                      "docs_alvara": ["PPCI aprovado"]},
+        "conclusao": {"topografia": "Area real de 1.158,96 m2, divergente da matricula.",
+                      "ambiental": "Terreno em area urbana consolidada.",
+                      "final": "Nao ha impedimentos relevantes, observadas as exigencias."},
+        "exposicao": {"situacao": "Divergencia de area exige retificacao.",
+                      "impacto_custo_prazo": "Retificacao antes do protocolo."},
     })
     lv.afirmacoes[1].evidencias.append(Evidencia(
-        origem="legislacao", ref="Lei Municipal 622/2024",
-        trecho="Plano Diretor Participativo de Sao Miguel dos Milagres",
-        link="https://saomigueldosmilagres.al.gov.br/lei-622-2024",
-        localizacao="Lei Municipal no 622/2024 - Plano Diretor",
+        origem="legislacao", ref="LC 482/2014",
+        trecho="zoneamento ATR-4.5", link="https://leismunicipais.com.br/x",
+        localizacao="LC 482/2014, Plano Diretor",
         consultado_em="2026-07-30T10:00:00+00:00"))
     lv.cobertura["imagens"] = [
-        {"id": "img1", "nome": "Implantacao.jpg", "caminho": "/09 Drone",
-         "link": "https://drive/img1", "secao": "localizacao", "mime": "image/jpeg"}]
+        {"id": "i1", "nome": "Levantamento topografico", "caminho": "/03 Topo",
+         "link": "https://drive/i1", "secao": "topografia", "mime": "image/png"},
+        {"id": "i2", "nome": "Mapa de restricoes ambientais", "caminho": "/04 Amb",
+         "link": "https://drive/i2", "secao": "ambiental", "mime": "image/png"},
+        {"id": "i3", "nome": "Escada enclausurada IT SC", "caminho": "/05 EP",
+         "link": "https://drive/i3", "secao": "validacao_ep", "mime": "image/png"}]
+    lv.cobertura["lidos"] = [
+        {"nome": "Matricula 6.698.pdf", "caminho": "/05 Juridico",
+         "disciplina": "juridico-cartorial", "link": "https://drive/m1"},
+        {"nome": "EVA_Seazone_REVA.pdf", "caminho": "/04 Ambiental",
+         "disciplina": "ambiental", "link": "https://drive/e1"},
+        {"nome": "Relatorio de Sondagem.pdf", "caminho": "/08 Sondagem",
+         "disciplina": "engenharia", "link": "https://drive/s1"}]
     regras.aplicar(lv)
 
     doc = parecer.render(lv)
-    ok(doc.startswith("# ANALISE TECNICA") or doc.startswith("# ANÁLISE TÉCNICA"),
-       "abre como ANALISE TECNICA, nao como parecer juridico")
-    ok("DD T" in doc and "_SEAZONE_ID" in doc and "_R00" in doc,
-       "carrega o codigo do documento no padrao real (DD TECNICA_SEAZONE_ID .. _R00)")
-    for secao in ("IMPLANTA", "CONSULTA DE VIABILIDADE", "QUADRO DE",
-                  "ANÁLISE DE PROJETO", "PEND", "ATA DE APROVA"):
+    ok(doc.startswith("# PARECER T"),
+       "abre como PARECER TECNICO – DUE DILIGENCE, o formato do [X] DD Tecnica Spot")
+    ok("Trata-se de parecer tecnico" in doc or "Trata-se de parecer técnico" in doc,
+       "traz o paragrafo de abertura padrao da casa")
+    for secao in ("DOCUMENTOS ANALISADOS", "TOPOGRAFIA", "ESTUDO PR",
+                  "VIABILIDADE URBAN", "VALIDA", "SONDAGEM", "ESTRUTURA", "CONCLUS"):
         ok(secao in doc, f"secao do documento real presente: {secao}")
-    ok("RESUMO GERAL" in doc and "7.131,90" in doc and "1.331,65" in doc,
-       "RESUMO GERAL desconta marinha e estrada e chega na AREA FINAL")
-    ok("NORMATIVAS E LEGISLA" in doc and "Fonte de pesquisa" in doc,
-       "quadro NORMATIVAS com coluna de fonte de pesquisa")
-    ok("622/2024" in doc, "cita a lei municipal encontrada")
-    ok("NÃO INFORMADO" in doc,
+    ok("**ESTUDOS:**" in doc and "**VALIDA" in doc,
+       "documentos analisados agrupados em blocos, com ESTUDOS e VALIDACAO")
+    ok("Matricula 6.698.pdf" in doc,
+       "lista o NOME DO ARQUIVO de cada documento analisado")
+    ok("Figura 01" in doc and "Figura 02" in doc and "Figura 03" in doc,
+       "figuras numeradas em sequencia GLOBAL ao longo do documento")
+    ok(doc.index("Figura 01") < doc.index("Figura 02") < doc.index("Figura 03"),
+       "numeracao das figuras segue a ordem das secoes")
+    ok("rea de Matr" in doc and "rea Levantamento Topogr" in doc,
+       "as tres tabelas de area do documento real")
+    ok("7.241,35" in doc and "1.331,65" in doc,
+       "resumo geral com deducoes chega na area final aproveitavel")
+    ok("Normativas e legisla" in doc and "Fonte de pesquisa" in doc and "482/2014" in doc,
+       "normativas com fonte de pesquisa e a lei conferida")
+    ok("NAO INFORMADO" in doc or "NÃO INFORMADO" in doc,
        "parametro ausente sai como NAO INFORMADO, sem estimativa")
-    ok("Taxa de Permeabilidade" in doc or "TAXA DE PERMEABILIDADE" in doc,
-       "lista todos os parametros do quadro, mesmo os ausentes")
-    ok("![Implantacao.jpg]" in doc, "embute as figuras")
-    ok("( ) GO" in doc and "CONTRATANTE" in doc,
-       "ATA DE APROVACAO com recomendacao em branco para assinatura")
-    ok("ID –" in doc, "cabecalho de ID repetido nas secoes")
-    ok(parecer.nome_arquivo(lv).startswith("DD T"),
-       f"nome de arquivo no padrao da casa ({parecer.nome_arquivo(lv)})")
+    ok("código de obras" in doc or "digo de obras" in doc,
+       "traz a frase padrao sobre codigo de obras e plano diretor")
+    ok("( ) GO" in doc and "Respons" in doc,
+       "recomendacao em branco para assinatura humana")
+    ok(parecer.nome_arquivo(lv).startswith("[") and "DD T" in parecer.nome_arquivo(lv),
+       f"nome no padrao [X] DD Tecnica Spot ({parecer.nome_arquivo(lv)})")
 
     lv2 = _livro_base(inv)
     ok("Nenhuma norma foi conferida" in parecer.render(lv2),
        "sem legislacao conferida, o documento diz isso em vez de fingir")
+    ok("nao analisado nesta rodada" in parecer.render(lv2)
+       or "o analisado nesta rodada" in parecer.render(lv2),
+       "bloco documental sem arquivo é declarado, não omitido")
 
     painel = relatorio.render_markdown(lv)
     ok(doc != painel and "Cobertura documental" in painel,

@@ -356,10 +356,17 @@ def _resumo_de(emp_id: str) -> dict:
     return r
 
 
+def _resumo_demo() -> dict:
+    """Permite baixar o documento de exemplo — o entregável nunca some do painel."""
+    r = _demo("demo-sao-miguel")
+    r["nome"] = r["nome"].replace(" (EXEMPLO FIXO — não é uma auditoria)", " (exemplo)")
+    return r
+
+
 @app.get("/api/dd/{emp_id}/xlsx")
 def baixar_xlsx(emp_id: str):
     import unicodedata
-    r = _resumo_de(emp_id)
+    r = _resumo_demo() if emp_id == "demo" else _resumo_de(emp_id)
     dados = docs_writer.gerar_xlsx_bytes(
         r["nome"], _achados_legado(r), "decisão humana — ver exposição técnica")
     base = (unicodedata.normalize("NFKD", f"controle-dd-{r['nome']}")
@@ -374,17 +381,18 @@ def baixar_xlsx(emp_id: str):
 def baixar_docx(emp_id: str):
     """Parecer Técnico oficial em .docx — o entregável, não a tela de auditoria."""
     import unicodedata
-    r = _resumo_de(emp_id)
+    r = _resumo_demo() if emp_id == "demo" else _resumo_de(emp_id)
     imagens = None
-    if not demo_mode():
+    if not demo_mode() and emp_id != "demo":
         try:
             from core import drive_client
             imagens = parecer.imagens_para_doc(estado.ler_livro(emp_id), drive_client)
         except Exception:  # noqa: BLE001
             imagens = None
     dados = docs_writer.gerar_docx_bytes(r["nome"], r["parecer_md"], imagens)
-    base = (unicodedata.normalize("NFKD", f"DD_Tecnica_{r['nome']}")
-            .encode("ascii", "ignore").decode("ascii")).replace(" ", "_") or "DD_Tecnica"
+    # O arquivo sai com o nome que a Rachel usa no Drive: `[Foz Spot] DD Técnica Spot`.
+    base = (unicodedata.normalize("NFKD", parecer.nome_arquivo_de(r["nome"]))
+            .encode("ascii", "ignore").decode("ascii")) or "DD Tecnica Spot"
     return Response(
         content=dados,
         media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -511,6 +519,85 @@ def _comparativo_ilustrativo(achado: dict) -> list[dict]:
     }]
 
 
+# Os achados de exemplo têm "etapa" em prosa; o Livro exige a taxonomia fechada.
+_ETAPA_PARA_DISCIPLINA = [
+    ("topografia", "topografia"), ("ambiental", "ambiental"),
+    ("urbanístic", "urbanístico"), ("aprovaç", "urbanístico"),
+    ("jurídic", "jurídico-cartorial"), ("dominial", "jurídico-cartorial"),
+    ("sondagem", "engenharia"), ("estrutura", "engenharia"), ("fundaç", "engenharia"),
+    ("concession", "concessionárias"), ("incêndio", "incêndio"),
+    ("validação do ep", "arquitetura-projeto"), ("estudo preliminar", "arquitetura-projeto"),
+    ("negócio", "negócio"),
+]
+
+
+def _disciplina_de(etapa: str) -> str:
+    e = (etapa or "").lower()
+    for chave, disc in _ETAPA_PARA_DISCIPLINA:
+        if chave in e:
+            return disc
+    return "negócio"
+
+
+_CIDADE_DEMO = {
+    "jurere-iii": ("Florianópolis", "SC"), "farol-barra": ("Salvador", "BA"),
+    "novo-campeche": ("Florianópolis", "SC"),
+    "sao-miguel": ("São Miguel dos Milagres", "AL"),
+}
+
+# Dados de imóvel dos exemplos — só o que já está no parecer versionado do repositório.
+_PROVENIENCIA_DEMO = {
+    "sao-miguel": {
+        "imovel": {"inscricoes": "Lote 177 — Sítio Toque",
+                   "endereco": "Povoado do Toque, São Miguel dos Milagres/AL",
+                   "area_matricula_total": "8.573,00 m²",
+                   "matriculas": "Cartório do Único Ofício de Porto de Pedras/AL"},
+        "areas_tabela": {
+            "matricula": [{"ref": "Matrícula (Livro 2, 2007)", "area": "8.573,00 m²"}],
+            "topografico": "NÃO INFORMADO — levantamento não entregue"},
+        "parametros_urbanisticos": {
+            "altura_maxima": {"valor": "2 pavimentos / ~10 m",
+                              "observacao": "projeto adotou 3 pav — sem base legal escrita"},
+            "taxa_ocupacao": {"valor": "NÃO INFORMADO",
+                              "observacao": "orientação verbal do secretário, não normativa"}},
+    },
+}
+
+AVISO_PARECER_DEMO = (
+    "> ⚠️ **Exemplo.** Este documento saiu do renderizador real da DD Técnica, mas foi "
+    "alimentado pelos achados de exemplo versionados no repositório — nenhum documento "
+    "foi lido do Drive nesta execução, e por isso ele não traz figuras. Serve para "
+    "conferir o FORMATO do entregável.\n\n")
+
+
+def _parecer_demo(nome: str, slug: str, achados: list[dict]) -> str:
+    """
+    Renderiza a DD Técnica de exemplo pelo MESMO renderizador da produção.
+
+    O demo antes servia um markdown antigo versionado no repositório, então a aba
+    "Parecer Técnico" e o botão de download mostravam um formato que não é mais o que
+    o Auditor produz. Aqui o exemplo passa pelo `parecer.render()` real — é o formato
+    `[X] DD Técnica Spot` de verdade. Sem figuras: em demo não há arquivo no Drive, e
+    figura inventada seria pior que figura ausente.
+    """
+    from auditor.livro import Afirmacao, Evidencia, Livro, PerfilCaso
+
+    ref = f"claude.md/exemplos/{slug}-achados.json"
+    cidade, uf = _CIDADE_DEMO.get(slug, ("", ""))
+    lv = Livro(emp_id=slug, nome=nome,
+               perfil=PerfilCaso(emp_id=slug, nome=nome, cidade=cidade, uf=uf))
+    for i, a in enumerate(achados, 1):
+        lv.afirmacoes.append(Afirmacao(
+            id=f"EX-{i:03d}", disciplina=_disciplina_de(a.get("etapa", "")),
+            texto=a.get("observacao", ""), severidade=a.get("severidade", "OK"),
+            acao=a.get("acao", ""),
+            evidencias=[Evidencia(origem="documento_emp", ref=ref,
+                                  trecho=a.get("observacao", ""),
+                                  localizacao="exemplo versionado no repositório")]))
+    lv.proveniencia.update(_PROVENIENCIA_DEMO.get(slug, {}))
+    return AVISO_PARECER_DEMO + parecer.render(lv)
+
+
 def _demo(emp_id: str) -> dict:
     slug, nome = next(((s, n) for eid, s, n in DEMOS if eid == emp_id),
                       ("jurere-iii", "Jurerê Spot III"))
@@ -540,11 +627,7 @@ def _demo(emp_id: str) -> dict:
         } for i, a in enumerate(achados, 1)],
         "lacunas": [], "precedentes": [], "perguntas_ao_humano": [],
         "cobertura": {}, "changelog": {}, "trilha": [], "legislacao": [], "imagens": [],
-        "parecer_md": ("> ⚠️ **Exemplo fixo do repositório.** Em produção, esta aba traz o "
-                       "Parecer Técnico no formato oficial da Seazone (1. IMÓVEL, "
-                       "2. PROPRIETÁRIO, 3. CONCLUSÃO com as seções por disciplina, "
-                       "tabelas de área, figuras e o campo de recomendação para "
-                       "assinatura).\n\n") + md,
+        "parecer_md": _parecer_demo(f"{nome} (exemplo)", slug, achados),
         "contadores": {
             "criticos": sum(1 for a in achados if a.get("severidade") == "Crítico"),
             "atencao": sum(1 for a in achados if a.get("severidade") == "Atenção"),
