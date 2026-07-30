@@ -321,6 +321,122 @@ def teste_diario_parse():
     ok("<!--" not in e["texto"], "remove o comentário HTML do texto citável")
 
 
+def teste_precedentes():
+    """
+    Ranqueamento multi-critério com dados no schema REAL de engine/schema.py.
+
+    Não bate na planilha (exige service account) — injeta fixture no cache. O que se
+    verifica é a LÓGICA: que o peso muda por disciplina, que distância geográfica
+    domina em engenharia, que regime dominial domina em jurídico-cartorial, e que o
+    canal de negativos vem separado em vez de diluído no ranking.
+    """
+    print("\n[9] Recuperação de precedentes")
+    import os as _os
+    _os.environ["BASE_SHEET_ID"] = "fixture"
+    _os.environ["AUDITOR_COORDS"] = ("0584:-9.2361,-35.2372;2595:-27.6786,-48.4897;"
+                                     "12235:-9.2789,-35.3897")
+    from auditor.fontes import historica as h
+    h.limpar_cache()
+    h._CACHE["sintese"] = [
+        {"empreendimento": "Japaratinga", "emp_id": "0584", "cidade": "Japaratinga, AL",
+         "uf": "AL", "disciplina": "jurídico-cartorial", "categoria": "gargalo",
+         "sintese": ("Terreno de marinha em regime de ocupação; a transferência exigiu "
+                     "anuência da SPU."),
+         "linhas_ref": "A-1,A-2"},
+        {"empreendimento": "Campeche Spot", "emp_id": "2595", "cidade": "Florianópolis, SC",
+         "uf": "SC", "disciplina": "jurídico-cartorial", "categoria": "acerto",
+         "sintese": "Cadeia dominial limpa.", "linhas_ref": "A-3"},
+        {"empreendimento": "Japaratinga", "emp_id": "0584", "cidade": "Japaratinga, AL",
+         "uf": "AL", "disciplina": "engenharia", "categoria": "conhecimento-geral",
+         "sintese": "Areia fofa até 6 m, NA a 1,2 m.", "linhas_ref": "A-5"},
+    ]
+    h._CACHE["aprendizados"] = [
+        {"id": "A-1", "empreendimento": "Japaratinga", "emp_id": "0584",
+         "cidade": "Japaratinga, AL", "uf": "AL", "disciplina": "jurídico-cartorial",
+         "categoria": "gargalo", "tema": "terreno de marinha",
+         "resumo": "Área da União maior que a estimada.",
+         "desfecho": "Renegociação; atraso de 5 meses.", "link": "https://drive/A1"},
+        {"id": "A-2", "empreendimento": "Japaratinga", "emp_id": "0584",
+         "cidade": "Japaratinga, AL", "uf": "AL", "disciplina": "jurídico-cartorial",
+         "categoria": "erro", "tema": "laudêmio", "resumo": "Laudêmio não orçado.",
+         "desfecho": "Custo extra absorvido.", "link": "https://drive/A2"},
+        {"id": "A-5", "empreendimento": "Japaratinga", "emp_id": "0584",
+         "cidade": "Japaratinga, AL", "uf": "AL", "disciplina": "engenharia",
+         "categoria": "conhecimento-geral", "tema": "sondagem",
+         "resumo": "Areia fofa até 6 m.", "desfecho": "Estaca hélice.",
+         "link": "https://drive/A5"},
+    ]
+
+    perfil = PerfilCaso(emp_id="12235", nome="São Miguel dos Milagres",
+                        cidade="São Miguel dos Milagres", uf="AL",
+                        lat=-9.2789, lon=-35.3897, regime_dominial="ocupação",
+                        flags=["marinha"])
+
+    r = h.buscar(perfil, "jurídico-cartorial")
+    nomes = [p["empreendimento"] for p in r["precedentes"]]
+    ok(nomes and nomes[0] == "Japaratinga",
+       f"AL/17 km/mesmo regime vence SC/2.464 km (ordem: {nomes})")
+    jap = r["precedentes"][0]
+    camp = next(p for p in r["precedentes"] if p["emp_id"] == "2595")
+    ok(jap["score"] > camp["score"] * 10,
+       f"score separa bem os dois ({jap['score']} × {camp['score']})")
+    ok("mesmo regime dominial" in jap["por_que_este"],
+       f"explica POR QUE foi escolhido ({jap['por_que_este']})")
+
+    # O critério de regime é substring em texto livre — heurística, não campo estruturado.
+    # Este teste fixa o comportamento e documenta a fragilidade: síntese que não NOMEIA o
+    # regime não pontua por ele, mesmo sendo o mesmo regime na prática.
+    perfil_sem = PerfilCaso(emp_id="12235", nome="x", cidade="São Miguel dos Milagres",
+                            uf="AL", lat=-9.2789, lon=-35.3897,
+                            regime_dominial="enfiteuse")
+    r_sem = h.buscar(perfil_sem, "jurídico-cartorial")
+    ok(r_sem["precedentes"][0]["score"] < jap["score"],
+       "regime que não casa pontua menos — o critério realmente pesa")
+
+    ok(len(r["negativos"]) == 2,
+       "canal de negativos traz os 2 casos ruins, separado do ranking")
+    ok(all(n["desfecho"] for n in r["negativos"]),
+       "negativos carregam o DESFECHO — é o que dá peso ao precedente")
+    ok(all(n["link"] for n in r["negativos"]), "negativos carregam link verificável")
+
+    r2 = h.buscar(perfil, "engenharia")
+    ok(r2["precedentes"] and r2["precedentes"][0]["granulares"],
+       "desce da síntese para as granulares via linhas_ref")
+
+    r3 = h.buscar(perfil, "incêndio")
+    ok(not r3["encontrado"] and r3.get("declaracao_de_ausencia"),
+       "ausência de precedente é DECLARADA, não silenciosa")
+
+    perfil_proprio = PerfilCaso(emp_id="0584", nome="Japaratinga", uf="AL")
+    r4 = h.buscar(perfil_proprio, "jurídico-cartorial")
+    ok(all(p["emp_id"] != "0584" for p in r4["precedentes"]),
+       "empreendimento não é precedente de si mesmo")
+
+
+def teste_diario_real():
+    """Conector do Diário contra o repositório de verdade, se ele estiver por perto."""
+    print("\n[10] Diário — repositório real")
+    from auditor.fontes import diario as d
+    disp, msg = d.disponivel()
+    if not disp:
+        print(f"  ⏭️  pulado — {msg[:80]}")
+        return
+    emps = d.listar_empreendimentos()
+    ok(bool(emps), f"encontra diários no repo ({len(emps)} empreendimentos)")
+    alvo = next((e.split("-")[0] for e in emps), None)
+    if not alvo:
+        return
+    r = d.consultar(alvo, secao="riscos")
+    ok(r.get("encontrado"), f"lê o diário do {alvo}")
+    ok(r.get("total_eventos", 0) > 0, f"extrai eventos ({r.get('total_eventos')})")
+    evs = r.get("eventos") or []
+    if evs:
+        ok(any(e["ancora"] for e in evs), "eventos trazem âncora estável (citação exata)")
+        ok(any(e["link"] for e in evs), "eventos trazem link para reunião/Slack")
+        ok(all("<!--" not in e["texto"] for e in evs),
+           "texto citável limpo, sem comentário HTML")
+
+
 def main():
     print("=" * 74)
     print("SMOKE TEST — Auditor de DD Técnica v2 (offline)")
@@ -333,6 +449,8 @@ def main():
     teste_persistencia(inv, lv1)
     teste_render(inv, lv1)
     teste_diario_parse()
+    teste_precedentes()
+    teste_diario_real()
 
     print("\n" + "=" * 74)
     if FALHAS:
