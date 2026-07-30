@@ -229,6 +229,39 @@ function classeSev(s) {
   return ({ "Crítico": "crit", "Atenção": "aten", "OK": "ok" })[s] || "";
 }
 
+/* Cruzamento com casos anteriores, DENTRO do achado.
+ * Precedente numa aba separada obriga quem lê a fazer o join de cabeça — e o valor
+ * está justamente no join: o mesmo parâmetro, este caso × cada precedente. */
+function renderComparativos(comps) {
+  if (!comps || !comps.length) return "";
+  return comps.map((c) => {
+    const cols = c.colunas || [];
+    const cab = `<tr><th>Parâmetro</th><th class="col-este">Este caso</th>` +
+      cols.map((k) => `<th>${esc(k)}</th>`).join("") +
+      `<th class="col-impl">O que significa aqui</th></tr>`;
+    const corpo = (c.linhas || []).map((l) => `
+      <tr>
+        <td class="p-param">${esc(l.parametro)}</td>
+        <td class="col-este"><strong>${esc(l.este_caso)}</strong></td>
+        ${(l.valores || []).map((v) => `<td>${esc(v)}</td>`).join("")}
+        <td class="col-impl">${esc(l.implicacao)}</td>
+      </tr>`).join("");
+    return `
+      <div class="cruzamento">
+        <div class="cruz-head">⇄ Cruzamento com casos anteriores — ${esc(c.tema)}</div>
+        <div class="cruz-scroll"><table class="cruz-tab">${cab}${corpo}</table></div>
+        ${c.premissa_de_trabalho ? `
+          <div class="premissa-trab">
+            <strong>→ Premissa de trabalho:</strong> ${esc(c.premissa_de_trabalho)}
+            <span class="sub">(analogia · confiança ${esc(c.confianca_da_analogia)})</span>
+          </div>` : ""}
+        ${c.ressalva ? `<div class="cruz-ressalva">⚠️ ${esc(c.ressalva)}</div>` : ""}
+        ${(c.fontes || []).length
+          ? `<div class="cruz-fontes">Fontes: ${c.fontes.map(esc).join(" · ")}</div>` : ""}
+      </div>`;
+  }).join("");
+}
+
 function renderAchados(as) {
   if (!as.length) { $("tab-achados").innerHTML = "<p class='vazio'>Nenhum achado.</p>"; return; }
   $("tab-achados").innerHTML = as.map((a) => {
@@ -259,6 +292,7 @@ function renderAchados(as) {
       ${a.premissa_normativa ? `<p class="premissa">Premissa: ${esc(a.premissa_normativa)}</p>` : ""}
       ${a.acao ? `<p class="acao"><strong>Ação:</strong> ${esc(a.acao)}</p>` : ""}
       ${ev ? `<ul class="evidencias">${ev}</ul>` : ""}
+      ${renderComparativos(a.comparativos)}
       ${cont}
       ${ESTADO.empId ? `
         <div class="acoes-achado">
@@ -286,6 +320,7 @@ function renderLacunas(ls, perguntas) {
         ${l.como_obter ? `<p><strong>Como obter:</strong> ${esc(l.como_obter)}</p>` : ""}
         ${l.depende_de_humano
           ? `<p class="humano">👤 Depende de uma pessoa — credencial, acesso ou decisão.</p>` : ""}
+        ${renderComparativos(l.comparativos)}
       </article>`).join("");
   }
   if (perguntas.length) {

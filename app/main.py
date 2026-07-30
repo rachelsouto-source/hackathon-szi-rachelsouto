@@ -458,6 +458,47 @@ def monitor_run():
 # Demo — mantido, mas impossível de confundir com produção
 # --------------------------------------------------------------------------- #
 
+def _comparativo_ilustrativo(achado: dict) -> list[dict]:
+    """
+    Mostra o FORMATO do cruzamento no modo demo, sem inventar dado técnico.
+
+    Os exemplos fixos do repositório são texto corrido antigo — não têm os parâmetros
+    comparáveis. Em produção o cruzamento é montado pelo agente a partir das granulares
+    da base histórica. Aqui a estrutura aparece com os valores marcados como
+    ilustrativos, para que dê para avaliar o layout sem que ninguém confunda um número
+    de exemplo com número apurado de um empreendimento real.
+    """
+    texto = f"{achado.get('etapa','')} {achado.get('observacao','')}".lower()
+    if not any(p in texto for p in ("sondagem", "fundação", "fundacao", "estrutura")):
+        return []
+    return [{
+        "tema": "sondagem e fundação",
+        "disciplina": "engenharia",
+        "colunas": ["Patacho (a X km)", "Japaratinga (a Y km)"],
+        "linhas": [
+            {"parametro": "Sondagem realizada", "este_caso": "❌ não realizada",
+             "valores": ["—", "—"],
+             "implicacao": "risco geotécnico DESCONHECIDO, não baixo (R6.c)"},
+            {"parametro": "Perfil do subsolo", "este_caso": "—",
+             "valores": ["—", "—"], "implicacao": "define o tipo de fundação"},
+            {"parametro": "Nível d'água", "este_caso": "—",
+             "valores": ["—", "—"], "implicacao": "define necessidade de rebaixamento"},
+            {"parametro": "Fundação adotada", "este_caso": "verba padrão",
+             "valores": ["—", "—"],
+             "implicacao": "se os vizinhos exigiram fundação profunda, a verba está baixa"},
+            {"parametro": "Custo real da fundação", "este_caso": "previsto no handover",
+             "valores": ["—", "—"], "implicacao": "calibra a verba deste caso"},
+        ],
+        "premissa_de_trabalho": "",
+        "confianca_da_analogia": "baixa",
+        "ressalva": ("EXEMPLO DE FORMATO — os valores não foram apurados. Em produção "
+                     "estas células são preenchidas com os números reais das granulares "
+                     "da base histórica (nº de furos, perfil, NA, tipo de fundação, "
+                     "custo), e daí sai a premissa de trabalho."),
+        "fontes": ["(demo — sem fonte)"],
+    }]
+
+
 def _demo(emp_id: str) -> dict:
     slug, nome = next(((s, n) for eid, s, n in DEMOS if eid == emp_id),
                       ("jurere-iii", "Jurerê Spot III"))
@@ -483,6 +524,7 @@ def _demo(emp_id: str) -> dict:
             "texto": a.get("observacao", ""), "severidade": a.get("severidade", "OK"),
             "tipo": "fato", "acao": a.get("acao", ""), "confianca": "media",
             "estado": "aberta", "evidencias": [], "contestacoes": [],
+            "comparativos": _comparativo_ilustrativo(a),
         } for i, a in enumerate(achados, 1)],
         "lacunas": [], "precedentes": [], "perguntas_ao_humano": [],
         "cobertura": {}, "changelog": {}, "trilha": [],

@@ -1006,10 +1006,53 @@ não milhares. Nível 3 abre 3–8 documentos, não 400.
   "casos semelhantes indicam que..." — genérico, exatamente o que a Tati diagnosticou como o
   problema original.
 
-### 8.4 O formato de saída que foi pedido
+### 8.4 O formato de saída — narrativa não basta, tem que CRUZAR
 
-Vinícius deu o template literalmente em 19:23. Vale codificá-lo como o formato de um bloco de
-precedente:
+> **Revisão de 30/07.** A primeira versão desta seção previa apenas um bloco narrativo de
+> precedente, numa seção própria do parecer. **É insuficiente**, e a crítica foi direta:
+> um achado dizia *"verba de fundação em valor padrão (~R$ 790 mil), a confirmar após
+> sondagem"* e parava aí — quando já existe sondagem feita em empreendimento próximo.
+> Precedente numa aba e achado em outra obriga quem lê a fazer o join de cabeça, **e o
+> valor está no join.**
+
+O formato correto tem três partes, e as três ficam **dentro do achado**:
+
+**1. O quadro comparativo — mesmo parâmetro, lado a lado.**
+
+| Parâmetro | Este caso | Patacho (38 km) | Japaratinga (17 km) | O que significa aqui |
+|---|---|---|---|---|
+| Sondagem realizada | **❌ não realizada** | 6 furos | 4 furos | risco geotécnico DESCONHECIDO, não baixo |
+| Perfil do subsolo | **—** | areia + turfa | areia fofa até 6 m | define o tipo de fundação |
+| Nível d'água | **—** | 0,80 m | 1,20 m | define necessidade de rebaixamento |
+| Fundação adotada | **verba padrão** | estaca hélice | estaca hélice | os dois exigiram fundação profunda |
+| Custo da fundação | **R$ 790 mil previsto** | R$ 1,9 mi | R$ 1,4 mi | verba provavelmente subdimensionada |
+
+Regras do quadro: a coluna do caso nomeia **o empreendimento E a relação** — a distância é
+o que justifica a comparação; `este caso` pode ser "❌ não realizada", e é justamente aí
+que o cruzamento vale mais; a última coluna diz o que a diferença **significa aqui**, não
+repete o número.
+
+**2. A premissa de trabalho** — o que transforma "pendente" em acionável:
+
+> → Os dois casos comparáveis do litoral de AL exigiram fundação profunda, a 1,8–2,4× a
+> verba padrão. **Provisionar fundação profunda até a sondagem sair.**
+> *(analogia · confiança média)*
+
+**3. A ressalva** — nunca omitida:
+
+> ⚠️ Analogia geográfica, não medição. **NÃO substitui a sondagem** (AGS, contratada).
+
+**Por que a premissa de trabalho não viola "precedente não é prova":** ela sai como
+`tipo=hipotese`, com confiança explícita e ressalva anexada. A diferença entre isso e um
+palpite é que aqui o raciocínio inteiro está visível — dados de origem, distância,
+implicação e limite. O que se proíbe é a inferência silenciosa, não a analogia declarada.
+
+**Auto-cobrança.** A regra `R-CRUZAMENTO` (`regras.py`) verifica ao fim da auditoria se
+sobrou achado crítico ou lacuna **sem** comparativo, havendo precedente recuperado. Se
+sobrou, vira um achado sobre o próprio parecer — é falha do Auditor, não do terreno.
+
+**A forma narrativa continua valendo** para o que não é parametrizável (uma exigência de
+órgão, um desfecho processual):
 
 ```markdown
 > **Precedente — [Patacho Spot] (Maragogi/AL · 38 km · disciplina: jurídico-cartorial)**

@@ -52,7 +52,7 @@ def aplicar(livro: Livro, ctx=None) -> list[str]:
     disparos: list[str] = []
     for regra in (_r_higiene, _r10_fonte_declarada, _r6b_nao_lidos,
                   _r_marinha_sem_spu, _r1_areas, _r_precedente_nao_e_fato,
-                  _r_pastas_vazias):
+                  _r_pastas_vazias, _r_cruzamento_faltando):
         try:
             msg = regra(livro, ctx)
             if msg:
@@ -289,3 +289,47 @@ def _r_pastas_vazias(livro: Livro, ctx) -> str | None:
             trecho="; ".join(vazias[:8]), localizacao="árvore de pastas")],
     ))
     return f"R6.a: {len(vazias)} pasta(s) vazia(s)"
+
+
+def _r_cruzamento_faltando(livro: Livro, ctx) -> str | None:
+    """
+    Lacuna ou achado crítico SEM cruzamento, havendo precedente disponível na disciplina,
+    é falha do próprio Auditor — não do terreno.
+
+    Nasceu de uma crítica direta ao formato anterior: o achado dizia "verba de fundação
+    em valor padrão, a confirmar após sondagem" e parava aí, quando havia sondagem feita
+    em empreendimento próximo. O valor está no cruzamento; sem ele o parecer é uma lista
+    de pendências, não uma análise.
+    """
+    if not livro.precedentes:
+        return None      # sem precedente recuperado, não há o que cruzar
+
+    orfas = [a for a in livro.afirmacoes
+             if (a.tipo == "lacuna" or a.severidade == "Crítico")
+             and not a.comparativos
+             and not a.id.startswith(("R6B", "R6A", "R10"))]
+    if not orfas:
+        return None
+
+    ids = ", ".join(a.id for a in orfas[:8])
+    livro.afirmacoes.append(Afirmacao(
+        id=_proximo_id(livro, "XRF"),
+        disciplina="arquitetura-projeto",
+        texto=(f"{len(orfas)} achado(s)/lacuna(s) crítica(s) ficaram SEM cruzamento com "
+               f"os casos anteriores, embora haja precedente recuperado nesta auditoria "
+               f"({ids}). O parecer perde a comparação justamente onde ela mais vale."),
+        tipo="lacuna",
+        confianca="alta",
+        severidade="Atenção",
+        regra="R-CRUZAMENTO",
+        o_que_falta=("Quadro comparativo — mesmo parâmetro, este caso × casos anteriores "
+                     "— e a premissa de trabalho decorrente."),
+        como_obter=("Rodar a auditoria novamente; se persistir, verificar se a base "
+                    "histórica cobre a disciplina em questão."),
+        evidencias=[Evidencia(
+            origem="base_historica", ref="auto-verificação",
+            trecho=f"{len(livro.precedentes)} precedente(s) recuperado(s), "
+                   f"{len(orfas)} achado(s) crítico(s) sem cruzamento",
+            localizacao="Livro de Evidências")],
+    ))
+    return f"R-CRUZAMENTO: {len(orfas)} achado(s) crítico(s) sem comparativo"

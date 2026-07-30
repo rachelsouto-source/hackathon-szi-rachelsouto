@@ -288,3 +288,30 @@ footer{text-align:center;color:#8a93a6;font-size:12px;padding:26px;display:flex;
 .tabpane h3.alerta { color: #c0392b; }
 .tabpane .sub { font-size: .82rem; color: #718096; }
 .vazio { color: #718096; font-style: italic; padding: 18px 0; }
+
+/* ---- Cruzamento com casos anteriores (dentro do achado) ---- */
+.cruzamento { margin: 14px 0 4px; border: 1px solid #cfe0f5; border-radius: 10px;
+  background: #f4f8fd; overflow: hidden; }
+.cruz-head { background: #e3edf9; color: #2c4f7c; font-size: .78rem; font-weight: 700;
+  letter-spacing: .02em; padding: 7px 12px; border-bottom: 1px solid #cfe0f5; }
+.cruz-scroll { overflow-x: auto; }
+.cruz-tab { width: 100%; border-collapse: collapse; font-size: .82rem;
+  white-space: nowrap; }
+.cruz-tab th { text-align: left; font-weight: 600; color: #4a5568; padding: 7px 12px;
+  border-bottom: 1px solid #dbe7f4; background: #eef4fb; font-size: .74rem;
+  text-transform: uppercase; letter-spacing: .03em; }
+.cruz-tab td { padding: 7px 12px; border-bottom: 1px solid #e6eef8; vertical-align: top; }
+.cruz-tab tr:last-child td { border-bottom: 0; }
+.cruz-tab .p-param { font-weight: 600; color: #2d3748; }
+.cruz-tab .col-este { background: #fffdf5; border-left: 2px solid #d4a017;
+  border-right: 2px solid #d4a017; }
+.cruz-tab th.col-este { background: #fdf6e3; }
+.cruz-tab .col-impl { white-space: normal; min-width: 200px; color: #4a5568;
+  font-style: italic; }
+.premissa-trab { padding: 10px 12px; background: #eaf7f0; border-top: 1px solid #cfe0f5;
+  font-size: .86rem; line-height: 1.5; color: #22543d; }
+.premissa-trab .sub { color: #4a7a5f; font-size: .78rem; }
+.cruz-ressalva { padding: 8px 12px; background: #fef9e7; font-size: .82rem;
+  color: #7d6608; border-top: 1px solid #f2e3a8; }
+.cruz-fontes { padding: 6px 12px; font-size: .73rem; color: #718096;
+  border-top: 1px solid #e6eef8; }

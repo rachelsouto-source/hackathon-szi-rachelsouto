@@ -440,6 +440,81 @@ def teste_diario_real():
            "texto citável limpo, sem comentário HTML")
 
 
+def teste_cruzamento(inv):
+    """
+    O cruzamento é a resposta a uma crítica concreta: o achado dizia "verba de fundação
+    em valor padrão, a confirmar após sondagem" e parava aí — quando havia sondagem
+    feita em empreendimento próximo. O valor está no join, e o join tem de estar DENTRO
+    do achado, não numa aba ao lado.
+    """
+    print("\n[11] Cruzamento de dados com casos anteriores")
+    from auditor.livro import Comparativo, LinhaComparativa
+
+    comp = Comparativo(
+        tema="sondagem e fundação", disciplina="engenharia",
+        linhas=[
+            LinhaComparativa(parametro="Sondagem realizada", este_caso="❌ não realizada",
+                             casos={"Patacho (38 km)": "6 furos",
+                                    "Japaratinga (17 km)": "4 furos"},
+                             implicacao="risco geotécnico DESCONHECIDO, não baixo"),
+            LinhaComparativa(parametro="Fundação adotada",
+                             este_caso="verba padrão R$ 790 mil",
+                             casos={"Patacho (38 km)": "estaca hélice, R$ 1,9 mi"},
+                             implicacao="verba provavelmente subdimensionada"),
+        ],
+        premissa_de_trabalho="Provisionar fundação profunda até a sondagem sair.",
+        confianca_da_analogia="media",
+        ressalva="Analogia geográfica, não medição. NÃO substitui a sondagem.",
+        fontes=["granular A-1234"])
+
+    lv = _livro_base(inv)
+    lac = Afirmacao(
+        id="AF-020", disciplina="engenharia", tipo="lacuna", severidade="Crítico",
+        texto="Projetos de estrutura/fundação não entregues; verba em valor padrão.",
+        o_que_falta="Sondagem SPT e projeto de fundação.",
+        comparativos=[comp])
+    lv.afirmacoes.append(lac)
+    lv.precedentes = [{"empreendimento": "Japaratinga", "emp_id": "0584"}]
+    regras.aplicar(lv)
+
+    md = relatorio.render_markdown(lv)
+    ok("⇄ Cruzamento" in md, "o quadro aparece no parecer")
+    ok("Patacho (38 km)" in md and "Japaratinga (17 km)" in md,
+       "as colunas nomeiam o caso E a relação (distância)")
+    ok("| Sondagem realizada | **❌ não realizada** |" in md,
+       "o mesmo parâmetro aparece lado a lado, com o valor deste caso destacado")
+    ok("Premissa de trabalho" in md and "Provisionar fundação profunda" in md,
+       "lacuna vira acionável: sai uma premissa de trabalho, não só 'pendente'")
+    ok("NÃO substitui a sondagem" in md,
+       "a ressalva de que analogia não é medição vem junto, sempre")
+
+    api = relatorio.resumo_api(lv)
+    alvo = next((l for l in api["lacunas"] if l["id"] == "AF-020"), None)
+    ok(alvo is not None and alvo["comparativos"],
+       "o painel recebe o cruzamento dentro da lacuna, não numa aba separada")
+    if alvo and alvo["comparativos"]:
+        c0 = alvo["comparativos"][0]
+        ok(c0["colunas"] == ["Patacho (38 km)", "Japaratinga (17 km)"],
+           "colunas normalizadas para a tabela do painel")
+        ok(c0["linhas"][0]["valores"] == ["6 furos", "4 furos"],
+           "valores alinhados às colunas")
+        ok(c0["linhas"][1]["valores"][1] == "—",
+           "célula ausente vira travessão, sem desalinhar a tabela")
+
+    # Auto-cobrança: crítico sem cruzamento, havendo precedente, é falha do Auditor
+    lv2 = _livro_base(inv)
+    lv2.precedentes = [{"empreendimento": "Japaratinga", "emp_id": "0584"}]
+    disparos = regras.aplicar(lv2)
+    ok(any("R-CRUZAMENTO" in d for d in disparos),
+       f"Auditor se auto-cobra quando deixa crítico sem cruzamento ({disparos})")
+
+    lv3 = _livro_base(inv)
+    lv3.precedentes = []
+    d3 = regras.aplicar(lv3)
+    ok(not any("R-CRUZAMENTO" in d for d in d3),
+       "não cobra cruzamento quando não há precedente recuperado")
+
+
 def main():
     print("=" * 74)
     print("SMOKE TEST — Auditor de DD Técnica v2 (offline)")
@@ -454,6 +529,7 @@ def main():
     teste_diario_parse()
     teste_precedentes()
     teste_diario_real()
+    teste_cruzamento(inv)
 
     print("\n" + "=" * 74)
     if FALHAS:

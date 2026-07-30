@@ -37,6 +37,39 @@ def _fmt_evidencia(e) -> str:
     return linha
 
 
+def _fmt_comparativo(c) -> str:
+    """
+    Renderiza o cruzamento como TABELA, dentro do achado.
+
+    Precedente em aba separada obriga o leitor a fazer o join de cabeça — e o valor está
+    justamente no join. Aqui o mesmo parâmetro aparece lado a lado: este caso × cada
+    precedente, com a implicação da diferença.
+    """
+    if not c.linhas:
+        return ""
+    colunas = []
+    for l in c.linhas:
+        for k in l.casos:
+            if k not in colunas:
+                colunas.append(k)
+
+    L = [f"\n  **⇄ Cruzamento — {c.tema}**\n"]
+    L.append("  | Parâmetro | Este caso | " + " | ".join(colunas) + " | O que significa aqui |")
+    L.append("  |---|---|" + "---|" * len(colunas) + "---|")
+    for l in c.linhas:
+        vals = " | ".join(l.casos.get(k, "—") for k in colunas)
+        L.append(f"  | {l.parametro} | **{l.este_caso}** | {vals} | {l.implicacao} |")
+
+    if c.premissa_de_trabalho:
+        L.append(f"\n  → **Premissa de trabalho:** {c.premissa_de_trabalho} "
+                 f"<sub>(analogia · confiança {c.confianca_da_analogia})</sub>")
+    if c.ressalva:
+        L.append(f"\n  ⚠️ {c.ressalva}")
+    if c.fontes:
+        L.append(f"\n  <sub>Fontes: {' · '.join(c.fontes[:6])}</sub>")
+    return "\n".join(L)
+
+
 def _fmt_afirmacao(a: Afirmacao, detalhado: bool = True) -> str:
     ic = ICONE.get(a.severidade or "", "·")
     cab = f"**{ic} [{a.id}] {a.texto}**"
@@ -53,6 +86,8 @@ def _fmt_afirmacao(a: Afirmacao, detalhado: bool = True) -> str:
     if detalhado:
         for e in a.evidencias:
             linhas.append(_fmt_evidencia(e))
+        for comp in a.comparativos:
+            linhas.append(_fmt_comparativo(comp))
         for c in a.contestacoes:
             if c.veredito != "improcede":
                 linhas.append(f"  - *Contraditor ({c.veredito}):* {c.argumento}")
@@ -108,6 +143,10 @@ def render_markdown(livro: Livro, changelog: dict | None = None) -> str:
                 L.append(f"  - Como obter: {a.como_obter}")
             if a.depende_de_humano:
                 L.append("  - 👤 **Depende de uma pessoa** (credencial, acesso ou decisão)")
+            # Lacuna com caso comparável não para em "pendente": mostra o quadro e a
+            # premissa de trabalho. É o que torna a pendência acionável.
+            for comp in a.comparativos:
+                L.append(_fmt_comparativo(comp))
         if livro.perguntas_ao_humano:
             L.append("\n### Perguntas ao humano")
             for q in livro.perguntas_ao_humano:
@@ -298,6 +337,25 @@ def render_cobertura(livro: Livro) -> str:
     return "\n".join(L)
 
 
+def _comp_api(c) -> dict:
+    """Comparativo em formato de tabela pronta para o painel."""
+    colunas: list[str] = []
+    for l in c.linhas:
+        for k in l.casos:
+            if k not in colunas:
+                colunas.append(k)
+    return {
+        "tema": c.tema, "disciplina": c.disciplina,
+        "colunas": colunas,
+        "linhas": [{"parametro": l.parametro, "este_caso": l.este_caso,
+                    "valores": [l.casos.get(k, "—") for k in colunas],
+                    "implicacao": l.implicacao} for l in c.linhas],
+        "premissa_de_trabalho": c.premissa_de_trabalho,
+        "confianca_da_analogia": c.confianca_da_analogia,
+        "ressalva": c.ressalva, "fontes": c.fontes,
+    }
+
+
 def resumo_api(livro: Livro, changelog: dict | None = None) -> dict[str, Any]:
     """Payload enxuto para o painel."""
     p = livro.proveniencia or {}
@@ -337,11 +395,13 @@ def resumo_api(livro: Livro, changelog: dict | None = None) -> dict[str, Any]:
             } for e in a.evidencias],
             "contestacoes": [{"autor": c.autor, "veredito": c.veredito,
                               "argumento": c.argumento} for c in a.contestacoes],
+            "comparativos": [_comp_api(c) for c in a.comparativos],
         } for a in livro.achados()],
         "lacunas": [{
             "id": a.id, "disciplina": a.disciplina, "texto": a.texto,
             "severidade": a.severidade, "o_que_falta": a.o_que_falta,
             "como_obter": a.como_obter, "depende_de_humano": a.depende_de_humano,
+            "comparativos": [_comp_api(c) for c in a.comparativos],
         } for a in livro.lacunas_abertas()],
         "perguntas_ao_humano": livro.perguntas_ao_humano,
         "precedentes": livro.precedentes,

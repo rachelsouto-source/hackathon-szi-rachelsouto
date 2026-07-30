@@ -98,6 +98,32 @@ class Contestacao:
 
 
 @dataclass
+class LinhaComparativa:
+    """Uma linha do cruzamento: o mesmo parâmetro, neste caso e nos precedentes."""
+    parametro: str                      # "Sondagem realizada", "Perfil", "NA", "Fundação"
+    este_caso: str                      # "❌ não realizada" · "R$ 790 mil (verba padrão)"
+    casos: dict[str, str] = field(default_factory=dict)   # {"Patacho (38 km)": "areia..."}
+    implicacao: str = ""                # o que a diferença significa AQUI
+
+
+@dataclass
+class Comparativo:
+    """
+    Cruzamento de um tema deste empreendimento contra os casos anteriores.
+
+    É a resposta ao vazio do formato anterior: precedente numa aba e achado em outra
+    obrigava o leitor a fazer o join de cabeça. O valor está no join.
+    """
+    tema: str                           # "sondagem e fundação", "área de marinha"
+    disciplina: str
+    linhas: list[LinhaComparativa] = field(default_factory=list)
+    premissa_de_trabalho: str = ""      # o que assumir enquanto o dado real não chega
+    confianca_da_analogia: Confianca = "media"
+    ressalva: str = ""                  # por que a analogia NÃO substitui o dado real
+    fontes: list[str] = field(default_factory=list)   # ids de granulares / links
+
+
+@dataclass
 class Afirmacao:
     id: str
     disciplina: str
@@ -105,6 +131,8 @@ class Afirmacao:
     tipo: TipoAfirmacao = "fato"
     confianca: Confianca = "media"
     evidencias: list[Evidencia] = field(default_factory=list)
+    # Precedentes ANEXADOS a este achado — renderizados junto, não numa aba distante.
+    comparativos: list[Comparativo] = field(default_factory=list)
     regra: str | None = None                    # "R1" ... "R10"
     premissa_normativa: str | None = None       # "DL 9.760/1946 art. 2º (preamar 1831)"
     depende_de: list[str] = field(default_factory=list)   # define o subgrafo a reabrir
@@ -267,10 +295,19 @@ class Livro:
         def ct(x):
             return Contestacao(**{k: v for k, v in x.items() if k in Contestacao.__annotations__})
 
+        def cp(x):
+            campos = {k: v for k, v in x.items() if k in Comparativo.__annotations__}
+            campos["linhas"] = [
+                LinhaComparativa(**{k: v for k, v in l.items()
+                                    if k in LinhaComparativa.__annotations__})
+                for l in x.get("linhas", [])]
+            return Comparativo(**campos)
+
         def af(x):
             campos = {k: v for k, v in x.items() if k in Afirmacao.__annotations__}
             campos["evidencias"] = [ev(e) for e in x.get("evidencias", [])]
             campos["contestacoes"] = [ct(c) for c in x.get("contestacoes", [])]
+            campos["comparativos"] = [cp(c) for c in x.get("comparativos", [])]
             return Afirmacao(**campos)
 
         perfil = PerfilCaso(**{k: v for k, v in (d.get("perfil") or {}).items()

@@ -20,7 +20,8 @@ import os
 from typing import Any, Callable
 
 from . import cartografo, ferramentas
-from .livro import (Afirmacao, Contestacao, Evidencia, Livro, PerfilCaso)
+from .livro import (Afirmacao, Comparativo, Contestacao, Evidencia, LinhaComparativa,
+                    Livro, PerfilCaso)
 
 MODELO = os.getenv("ANTHROPIC_MODEL", "claude-opus-5")
 MODELO_LEVE = os.getenv("ANTHROPIC_MODEL_LEVE", "claude-sonnet-5")
@@ -103,9 +104,33 @@ R-MARINHA — encontrou um RIP, ou menção a marinha/aforamento/ocupação? Cha
 demarcação é POR TRECHO — leia o atributo da feição, não presuma.
 
 R-PRECEDENTE — para CADA disciplina em que encontrar algo relevante, chame
-`buscar_precedentes`. A saída esperada tem esta forma: "Vocês tiveram um caso parecido no
-[X]. Lá aconteceu [Y] e o desfecho foi [Z]. Aqui a assinatura é a mesma porque [W]. Ponto
-de atenção." Se NÃO houver precedente, isso também é informação — declare a ausência.
+`buscar_precedentes`. Se NÃO houver precedente, isso também é informação — declare a
+ausência.
+
+R-CRUZAMENTO — e este é o ponto que mais falta hoje. Não basta narrar o precedente ao
+lado do achado: é preciso CRUZAR OS MESMOS PARÂMETROS, lado a lado, e dizer o que a
+diferença significa aqui.
+
+  Errado (o que se fazia): "Projetos de fundação não entregues; verba em valor padrão
+  (~R$ 790 mil) — a confirmar após sondagem."
+
+  Certo: o mesmo achado, MAIS o cruzamento:
+     Sondagem realizada  · este: NÃO      · Patacho: 6 furos   · Japaratinga: 4 furos
+     Perfil do subsolo   · este: —        · Patacho: areia+turfa · Japaratinga: areia fofa 6 m
+     Nível d'água        · este: —        · Patacho: 0,8 m    · Japaratinga: 1,2 m
+     Fundação adotada    · este: verba padrão · Patacho: estaca hélice · Japaratinga: idem
+     Custo real          · este: R$ 790 mil previsto · Patacho: R$ 1,9 mi · Japaratinga: R$ 1,4 mi
+  → PREMISSA DE TRABALHO: os dois casos comparáveis do litoral de AL exigiram fundação
+    profunda, a 1,8–2,4× a verba padrão. Provisionar fundação profunda até a sondagem sair.
+  → RESSALVA: analogia geográfica, não medição. NÃO substitui a sondagem.
+
+Ou seja: quando faltar um dado, você NÃO para em "pendente". Você busca o caso comparável
+mais próximo, monta o quadro dos mesmos parâmetros, e oferece uma PREMISSA DE TRABALHO
+marcada como analogia — com a ressalva de que não substitui o dado real.
+
+Para isso, ao chamar `buscar_precedentes`, leia as granulares e extraia os NÚMEROS: nº de
+furos, profundidade, NA, perfil, tipo de fundação, prazo, custo, exigência do órgão,
+área, percentual. É desses números que o quadro comparativo é feito.
 
 R-DIÁRIO — chame `consultar_diario` no início. O time registra em reunião e Slack coisas
 que não estão em documento nenhum (suspensão de alvará, ação do MP, atraso real). Trate
@@ -164,6 +189,25 @@ SEVERIDADE: "Crítico" (impede ou muda o negócio), "Atenção", "OK".
 `depende_de`: ids das afirmações que sustentam esta. É o que permite reabrir só o
 subgrafo afetado quando um humano contestar. Preencha com cuidado.
 
+COMPARATIVOS — este é o campo mais importante e o mais negligenciado. ANEXE um
+`comparativo` a TODA afirmação em que exista caso anterior comparável, e OBRIGATORIAMENTE
+a toda `lacuna` de disciplina que tenha precedente na base.
+
+Regras do comparativo:
+- as `linhas` cruzam O MESMO PARÂMETRO — não escreva parágrafo, monte o quadro;
+- `este_caso` pode ser "❌ não realizada" ou "—" quando o dado falta: é justamente aí que
+  o comparativo vale mais;
+- `casos` usa como chave o empreendimento COM a relação ("Patacho (38 km)",
+  "Japaratinga (mesmo município)") — a relação é o que justifica a comparação;
+- `implicacao` diz o que a diferença significa AQUI, não repete o número;
+- `premissa_de_trabalho` é o que assumir enquanto o dado real não chega — é o que
+  transforma "pendente" em algo acionável;
+- `ressalva` diz por que a analogia não substitui o dado real. Nunca omita.
+- `fontes` traz os ids das granulares e os links. Comparativo sem fonte não vale.
+
+Se não houver caso comparável, deixe `comparativos` vazio E registre isso no texto: a
+ausência de precedente é informação.
+
 SOBRE A RECOMENDAÇÃO: você NÃO emite GO/NO-GO. Isso é decisão humana. O que você emite é
 a EXPOSIÇÃO TÉCNICA: qual é a situação, qual a divergência, qual o ponto de atenção, qual
 o precedente, qual o custo/prazo estimado das ressalvas, e o que ainda falta saber.
@@ -188,7 +232,24 @@ Responda APENAS com JSON válido neste schema:
       "depende_de": [], "o_que_falta": "", "como_obter": "", "depende_de_humano": false,
       "evidencias": [{{"origem": "documento_emp", "ref": "<file_id>", "trecho": "",
                        "link": "", "localizacao": "p. 2", "data_do_documento": "",
-                       "fonte_declarada_pelo_doc": null}}]}}
+                       "fonte_declarada_pelo_doc": null}}],
+      "comparativos": [
+        {{"tema": "sondagem e fundação", "disciplina": "engenharia",
+          "linhas": [
+            {{"parametro": "Sondagem realizada",
+              "este_caso": "❌ não realizada",
+              "casos": {{"Patacho (38 km)": "6 furos", "Japaratinga (17 km)": "4 furos"}},
+              "implicacao": "risco geotécnico DESCONHECIDO, não baixo"}},
+            {{"parametro": "Fundação adotada",
+              "este_caso": "verba padrão R$ 790 mil",
+              "casos": {{"Patacho (38 km)": "estaca hélice, R$ 1,9 mi"}},
+              "implicacao": "verba provavelmente subdimensionada"}}
+          ],
+          "premissa_de_trabalho": "Provisionar fundação profunda até a sondagem sair.",
+          "confianca_da_analogia": "media",
+          "ressalva": "Analogia geográfica, não medição. NÃO substitui a sondagem.",
+          "fontes": ["granular A-1234", "https://drive/..."]}}
+      ]}}
   ],
   "precedentes": [
     {{"empreendimento": "", "emp_id": "", "distancia_ou_relacao": "",
@@ -430,8 +491,25 @@ def montar_livro(bruto: dict, ctx: ferramentas.Contexto, rodada: int) -> Livro:
                 fonte_declarada_pelo_doc=e.get("fonte_declarada_pelo_doc"),
                 consultado_em=ferramentas.agora(),
             ))
+        comps = []
+        for c in d.get("comparativos", []) or []:
+            comps.append(Comparativo(
+                tema=c.get("tema", ""),
+                disciplina=c.get("disciplina", d.get("disciplina", "")),
+                linhas=[LinhaComparativa(
+                    parametro=l.get("parametro", ""),
+                    este_caso=str(l.get("este_caso", "")),
+                    casos={k: str(v) for k, v in (l.get("casos") or {}).items()},
+                    implicacao=l.get("implicacao", ""),
+                ) for l in (c.get("linhas") or [])],
+                premissa_de_trabalho=c.get("premissa_de_trabalho", ""),
+                confianca_da_analogia=c.get("confianca_da_analogia", "media"),
+                ressalva=c.get("ressalva", ""),
+                fontes=c.get("fontes", []) or [],
+            ))
         afirmacoes.append(Afirmacao(
             id=d.get("id") or f"AF-{i:03d}",
+            comparativos=comps,
             disciplina=d.get("disciplina", "arquitetura-projeto"),
             texto=d.get("texto", ""),
             tipo=d.get("tipo", "fato"),
