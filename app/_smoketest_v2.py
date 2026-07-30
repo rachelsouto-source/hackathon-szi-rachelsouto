@@ -337,6 +337,9 @@ def teste_precedentes():
                                      "12235:-9.2789,-35.3897")
     from auditor.fontes import historica as h
     h.limpar_cache()
+    # Este teste é sobre RANQUEAMENTO, não sobre credencial: a leitura real da planilha
+    # exige a service account do Google. Neutraliza o gate e injeta a fixture no cache.
+    h.disponivel = lambda: (True, "")
     h._CACHE["sintese"] = [
         {"empreendimento": "Japaratinga", "emp_id": "0584", "cidade": "Japaratinga, AL",
          "uf": "AL", "disciplina": "jurídico-cartorial", "categoria": "gargalo",

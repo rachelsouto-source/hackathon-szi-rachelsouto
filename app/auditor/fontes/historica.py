@@ -62,10 +62,24 @@ def sheet_id() -> str:
 
 
 def disponivel() -> tuple[bool, str]:
+    """
+    A planilha é lida via Sheets API com a MESMA service account do Drive. Ter o
+    BASE_SHEET_ID sem a credencial não serve de nada — reportar "ativo" nesse estado
+    seria um falso verde, exatamente o tipo de coisa que este health check existe para
+    evitar.
+    """
     if not sheet_id():
         return False, ("Base histórica indisponível: defina BASE_SHEET_ID com o ID da "
                        "planilha 'Base de Conhecimento — DD Técnica (Seazone)' e "
                        "compartilhe-a (leitura) com o e-mail da service account.")
+    try:
+        from core import drive_client
+        if not drive_client.is_configured():
+            return False, ("BASE_SHEET_ID está definido, mas a leitura da planilha usa a "
+                           "service account do Google — falta GOOGLE_SERVICE_ACCOUNT_JSON. "
+                           "Compartilhe a planilha (leitura) com o e-mail dela.")
+    except Exception:  # noqa: BLE001
+        return False, "BASE_SHEET_ID definido, mas o cliente do Google não está disponível."
     return True, ""
 
 
