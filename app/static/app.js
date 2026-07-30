@@ -171,12 +171,15 @@ function render(r) {
   $("res-nome").textContent =
     `${r.nome}${r.rodada ? ` — rodada ${r.rodada}` : ""}${ctx ? " · " + ctx : ""}`;
 
-  if (ESTADO.empId) {
-    $("link-xlsx").href = `/api/dd/${ESTADO.empId}/xlsx`;
-    $("link-docx").href = `/api/dd/${ESTADO.empId}/docx`;
-  } else {
-    $("link-xlsx").classList.add("hidden");
-    $("link-docx").classList.add("hidden");
+  // Os downloads do documento NUNCA somem: a DD Técnica é o entregável, e escondê-la
+  // em modo demo fazia parecer que o Auditor não gera documento nenhum.
+  const alvo = ESTADO.empId || (r.demo ? "demo" : null);
+  if (alvo) {
+    $("link-xlsx").href = `/api/dd/${alvo}/xlsx`;
+    $("link-docx").href = `/api/dd/${alvo}/docx`;
+    $("link-xlsx").classList.remove("hidden");
+    $("link-docx").classList.remove("hidden");
+    $("link-docx").textContent = r.demo ? "⬇ DD Técnica (exemplo)" : "⬇ DD Técnica (Word)";
   }
 
   renderFontes(r);
@@ -517,6 +520,9 @@ function md(s) {
   const linhas = esc(s).split("\n");
   let out = "", emLista = false, emTabela = false;
   const inline = (t) => t
+    // Figura antes de link: `![Figura 01 - x](url)` é imagem, não âncora com "!" na frente.
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g,
+             '<img class="figura" src="$2" alt="$1" loading="lazy">')
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/`([^`]+)`/g, "<code>$1</code>")
@@ -524,9 +530,14 @@ function md(s) {
   for (const l of linhas) {
     if (/^\|/.test(l)) {
       if (/^\|[\s:|-]+\|?$/.test(l)) continue;
+      const cabecalho = !emTabela;
+      const celulas = l.split("|").slice(1, -1).map((c) => c.trim());
+      // Tabela de identificação do imóvel abre com `| | |`: sem cabeçalho de verdade,
+      // não pode ganhar o estilo de cabeçalho (era isso que deixava "Inscrição" caixa-alta).
+      if (cabecalho && celulas.every((c) => !c)) { out += "<table>"; emTabela = true; continue; }
       if (!emTabela) { out += "<table>"; emTabela = true; }
-      out += "<tr>" + l.split("|").slice(1, -1)
-        .map((c) => `<td>${inline(c.trim())}</td>`).join("") + "</tr>";
+      const tag = cabecalho ? "th" : "td";
+      out += "<tr>" + celulas.map((c) => `<${tag}>${inline(c)}</${tag}>`).join("") + "</tr>";
       continue;
     }
     if (emTabela) { out += "</table>"; emTabela = false; }
@@ -539,7 +550,12 @@ function md(s) {
     if (emLista) { out += "</ul>"; emLista = false; }
     const h = l.match(/^(#{1,4})\s+(.*)/);
     if (h) { out += `<h${h[1].length + 1}>${inline(h[2])}</h${h[1].length + 1}>`; continue; }
-    if (/^>\s?/.test(l)) { out += `<blockquote>${inline(l.replace(/^>\s?/, ""))}</blockquote>`; continue; }
+    // `esc()` já rodou, então a citação chega como `&gt;` — testar por `>` nunca casava.
+    if (/^(&gt;|>)\s?/.test(l)) {
+      const corpo = l.replace(/^(&gt;|>)\s?/, "");
+      if (corpo.trim()) out += `<blockquote>${inline(corpo)}</blockquote>`;
+      continue;
+    }
     if (!l.trim()) continue;
     out += `<p>${inline(l)}</p>`;
   }

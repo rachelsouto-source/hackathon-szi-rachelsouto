@@ -221,9 +221,11 @@
 .parecer table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .86rem; }
 .parecer td, .parecer th { border: 1px solid var(--linha); padding: 8px 11px;
   text-align: left; vertical-align: top; }
-.parecer tr:first-child td { background: var(--fundo); font-weight: 600;
+.parecer th { background: var(--fundo); font-weight: 600;
   font-size: .72rem; text-transform: uppercase; letter-spacing: .04em;
   color: var(--tinta-2); }
+.parecer figure { margin: 14px 0; }
+.parecer em { color: var(--tinta-2); }
 .parecer h1 { font-size: 1.35rem; color: var(--marca-esc); letter-spacing: .04em; }
 .parecer h2 { font-size: 1.05rem; color: var(--marca-esc); margin: 30px 0 10px;
   padding-bottom: 6px; border-bottom: 2px solid var(--marca-clr); letter-spacing: .03em; }
