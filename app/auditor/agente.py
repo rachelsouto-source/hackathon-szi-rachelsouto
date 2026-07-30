@@ -214,6 +214,20 @@ SEVERIDADE: "Crítico" (impede ou muda o negócio), "Atenção", "OK".
 `depende_de`: ids das afirmações que sustentam esta. É o que permite reabrir só o
 subgrafo afetado quando um humano contestar. Preencha com cuidado.
 
+FORMATO DO DOCUMENTO — os campos acima não são decoração: eles montam a DD Técnica
+no formato real da Seazone, extraído dos documentos entregues (12235 R00, Patacho R03).
+
+  · `resumo_geral` — área total MENOS as deduções que não se pode ocupar (marinha,
+    estrada vicinal, faixa non aedificandi) = ÁREA FINAL. É o número que decide o
+    produto, e ele não aparece em certidão nenhuma: tem de ser montado.
+  · `parametros_urbanisticos` — o quadro PREFEITURA × OBSERVAÇÕES. Escreva
+    literalmente "NÃO INFORMADO" quando o município não publica o parâmetro. No
+    documento real do 12235, TO, TP, vagas e muro lateral estão todos assim. NUNCA
+    estime um parâmetro urbanístico: ausente é ausente.
+  · `quadro_areas` — Item × Valor × Unidade, com as áreas por pavimento e os índices
+    calculados do projeto.
+  · `licenciamento` — situação de licença prévia, de instalação e alvará.
+
 COMPARATIVOS — este é o campo mais importante e o mais negligenciado. ANEXE um
 `comparativo` a TODA afirmação em que exista caso anterior comparável, e OBRIGATORIAMENTE
 a toda `lacuna` de disciplina que tenha precedente na base.
@@ -250,6 +264,40 @@ Responda APENAS com JSON válido neste schema:
   "proprietarios": ["..."],
   "areas_tabela": {{"matricula": [{{"ref": "", "area": ""}}],
                     "cadastro_pmf": [{{"ref": "", "area": ""}}], "topografico": ""}},
+
+  "resumo_geral": {{
+    "area_total": "8.573,00 m²",
+    "deducoes": [{{"item": "Terrenos da Marinha", "area": "1.331,65 m²"}},
+                 {{"item": "Estrada vicinal", "area": "109,45 m²"}}],
+    "area_final": "7.131,90 m²",
+    "observacao": "o que ainda pode reduzir a área aproveitável"
+  }},
+
+  "parametros_urbanisticos": {{
+    "recuos": {{"valor": "FRENTE MAR 50,00 m; FRENTE RUA 5,00 m; LATERAIS 5 m; FUNDOS 5,00 m",
+                "observacao": "-"}},
+    "altura_maxima": {{"valor": "9 m", "observacao": "ver na secretaria a caixa d'água acima"}},
+    "taxa_ocupacao": {{"valor": "NÃO INFORMADO", "observacao": "-"}},
+    "taxa_permeabilidade": {{"valor": "NÃO INFORMADO", "observacao": "-"}},
+    "coeficiente_aproveitamento": {{"valor": "1", "observacao": "-"}},
+    "vagas_garagem": {{"valor": "NÃO INFORMADO", "observacao": "-"}},
+    "muro_lateral": {{"valor": "NÃO INFORMADO", "observacao": "-"}},
+    "outorga": {{"valor": "", "observacao": ""}},
+    "eiv": {{"valor": "obrigatório acima de 2.000 m²", "observacao": ""}},
+    "outros": [{{"parametro": "Trilha pública na faixa de orla", "valor": "8 m",
+                 "observacao": "mais duas faixas paisagísticas de 21 m"}}]
+  }},
+
+  "quadro_areas": [
+    {{"item": "Área do terreno", "valor": "8.573,00", "unidade": "m²"}},
+    {{"item": "Área de construção no térreo", "valor": "1.130,74", "unidade": "m²"}},
+    {{"item": "Área total de construção", "valor": "4.301,43", "unidade": "m²"}},
+    {{"item": "TO — Taxa de Ocupação", "valor": "18,76", "unidade": "%"}},
+    {{"item": "CA — Coeficiente de Aproveitamento", "valor": "0,50", "unidade": "-"}}
+  ],
+
+  "licenciamento": {{"licenca_previa": "", "licenca_instalacao": "",
+                     "alvara_construcao": ""}},
   "afirmacoes": [
     {{"id": "AF-001", "disciplina": "jurídico-cartorial", "texto": "",
       "tipo": "fato", "confianca": "alta", "severidade": "Crítico",

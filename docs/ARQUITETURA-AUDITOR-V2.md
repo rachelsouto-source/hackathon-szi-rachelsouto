@@ -1315,6 +1315,37 @@ endereçada a quem opera a etapa anterior.
 
 ## 12. Estratégia de geração de parecer
 
+### 12.0 ⚠️ Correção de 30/07 — o formato do entregável não era o que eu supus
+
+As §12.1–12.4 abaixo foram escritas sobre `templates/parecer-tecnico.md`. Ao abrir os
+documentos **reais** — `DD TÉCNICA_SEAZONE_ID - 12235_R00` (São Miguel, 23 pp.) e
+`DD TÉCNICA_SEAZONE_ID 5966 PATACHO SPOT_R03` — o formato é outro: **ANÁLISE TÉCNICA em
+quadros**, não parecer em prosa corrida.
+
+| | Template que eu segui | Documento real |
+|---|---|---|
+| Título | PARECER TÉCNICO – DUE DILIGENCE | **ANÁLISE TÉCNICA** |
+| Nome do arquivo | livre | `DD TÉCNICA_SEAZONE_ID <id> <NOME>_R<rev>` |
+| Corpo | prosa técnico-formal | **quadros**, com cabeçalho de ID em toda seção |
+| Áreas | 3 tabelas de confronto | **RESUMO GERAL** (total − deduções = **área final**) + **QUADRO DE ÁREAS** (Item × Valor × Unidade) |
+| Legislação | parágrafo genérico | **NORMATIVAS E LEGISLAÇÃO**: `RESTRIÇÕES × FONTE DE PESQUISA` |
+| Parâmetros | prosa | **PREFEITURA × OBSERVAÇÕES**, com **"NÃO INFORMADO"** explícito |
+| Fecho | conclusão + recomendação | **ATA DE APROVAÇÃO – ETAPA VALIDAÇÃO** (contratado × contratante) |
+
+Duas coisas que o documento real ensina, e que valem como princípio:
+
+1. **"NÃO INFORMADO" é resposta legítima e frequente.** No 12235, taxa de ocupação, taxa
+   de permeabilidade, vagas e muro lateral estão todos assim. O documento registra a
+   ausência em vez de estimar — é o mesmo princípio do Livro de Evidências, e já era
+   prática da casa antes de existir Auditor.
+2. **A coluna "FONTE DE PESQUISA" sempre existiu.** A rastreabilidade da legislação não é
+   invenção da v2; é o formato da casa. O que a v2 acrescenta é preencher essa coluna com
+   link para texto primário e data da consulta, em vez de "Lei X".
+
+`auditor/parecer.py` renderiza este formato. O que segue nas §12.1–12.4 continua valendo
+como *princípio* (renderizar do Livro, não escrever livre; decisão humana no fecho); o
+*formato* é o de cima.
+
 ### 12.1 O Redator não escreve — ele renderiza
 
 Regra dura: **o Redator só pode afirmar o que está no Livro.** Se não há Afirmação, não há frase.

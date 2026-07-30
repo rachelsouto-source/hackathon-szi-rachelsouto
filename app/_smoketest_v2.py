@@ -521,69 +521,80 @@ def teste_cruzamento(inv):
 
 def teste_parecer_oficial(inv):
     """
-    O parecer é o ENTREGÁVEL, distinto do painel. Segue o template oficial da Seazone
-    (claude.md/templates/parecer-tecnico.md), leva figuras e deixa a recomendação em
-    branco para assinatura humana.
+    O entregavel segue o formato REAL, extraido de DD TECNICA_SEAZONE_ID - 12235_R00 e
+    do Patacho R03: Analise Tecnica em quadros, nao parecer em prosa.
     """
-    print("\n[12] Parecer Técnico oficial")
+    print("\n[12] DD Tecnica — documento entregavel")
     from auditor.livro import Evidencia
 
     lv = _livro_base(inv)
     lv.proveniencia.update({
-        "imovel": {"inscricoes": "12.34.567.8901", "endereco": "Praia do Toque, s/n",
-                   "area_matricula_total": "8.573,00 m²", "matriculas": "2.007, Porto de Pedras"},
+        "imovel": {"inscricoes": "12.34.567", "endereco": "Praia do Toque, s/n",
+                   "area_matricula_total": "8.573,00 m2", "matriculas": "2.007"},
         "proprietarios": ["Marcos T. S."],
-        "conclusao": {"topografia": "O levantamento apurou 8.656,71 m².",
-                      "ambiental": "Interseção com manguezal (APP).",
-                      "urbanistico": "Zoneamento a confirmar na consulta municipal.",
-                      "final": "Há impedimentos relevantes a endereçar antes da aquisição."},
+        "resumo_geral": {
+            "area_total": "8.573,00 m2",
+            "deducoes": [{"item": "Terrenos da Marinha", "area": "1.331,65 m2"},
+                         {"item": "Estrada vicinal", "area": "109,45 m2"}],
+            "area_final": "7.131,90 m2"},
+        "parametros_urbanisticos": {
+            "recuos": {"valor": "FRENTE MAR 50,00 m; LATERAIS 5 m", "observacao": "-"},
+            "altura_maxima": {"valor": "9 m",
+                              "observacao": "ver caixa d agua na secretaria"},
+            "taxa_ocupacao": {"valor": "NAO INFORMADO", "observacao": "-"},
+            "coeficiente_aproveitamento": {"valor": "1", "observacao": "-"}},
+        "quadro_areas": [
+            {"item": "Area do terreno", "valor": "8.573,00", "unidade": "m2"},
+            {"item": "TO", "valor": "18,76", "unidade": "%"}],
+        "licenciamento": {"licenca_previa": "nao protocolada"},
         "validacao": {"ajustes": ["Rever afastamento frontal"],
-                      "docs_aprovacao": ["ART do responsável"], "docs_alvara": ["PPCI"]},
-        "exposicao": {"situacao": "Terreno majoritariamente sob domínio da União.",
-                      "pontos_de_atencao": ["Regime de ocupação, não domínio pleno"],
-                      "impacto_custo_prazo": "Laudêmio não orçado."},
+                      "docs_alvara": ["PPCI"]},
+        "conclusao": {"final": "Ha impedimentos relevantes a endereçar."},
+        "exposicao": {"situacao": "Terreno majoritariamente sob dominio da Uniao.",
+                      "impacto_custo_prazo": "Laudemio nao orcado."},
     })
-    # evidência de legislação, para a seção nova
     lv.afirmacoes[1].evidencias.append(Evidencia(
-        origem="legislacao", ref="DL 9.760/1946",
-        trecho="terrenos de marinha … preamar-média de 1831",
-        link="https://www.planalto.gov.br/ccivil_03/decreto-lei/del9760.htm",
-        localizacao="DL 9.760/1946, art. 2º", consultado_em="2026-07-30T10:00:00+00:00"))
+        origem="legislacao", ref="Lei Municipal 622/2024",
+        trecho="Plano Diretor Participativo de Sao Miguel dos Milagres",
+        link="https://saomigueldosmilagres.al.gov.br/lei-622-2024",
+        localizacao="Lei Municipal no 622/2024 - Plano Diretor",
+        consultado_em="2026-07-30T10:00:00+00:00"))
     lv.cobertura["imagens"] = [
-        {"id": "img1", "nome": "Vista aerea.jpg", "caminho": "/09 Drone",
+        {"id": "img1", "nome": "Implantacao.jpg", "caminho": "/09 Drone",
          "link": "https://drive/img1", "secao": "localizacao", "mime": "image/jpeg"}]
     regras.aplicar(lv)
 
     doc = parecer.render(lv)
-    ok(doc.startswith("# PARECER TÉCNICO – DUE DILIGENCE"),
-       "abre com o cabeçalho do template oficial")
-    for secao in ("## 1. IMÓVEL", "## 2. PROPRIETÁRIO(A)", "## 3. CONCLUSÃO",
-                  "### TOPOGRAFIA", "### ESTUDO PRÉVIO AMBIENTAL",
-                  "### VALIDAÇÃO DO ESTUDO PRELIMINAR SEAZONE", "### SONDAGEM",
-                  "### ESTRUTURA / FUNDAÇÃO"):
-        ok(secao in doc, f"seção obrigatória presente: {secao}")
-    ok("### VIABILIDADE URBANÍSTICA E LEGISLAÇÃO" in doc,
-       "legislação ganhou seção própria (antes ficava diluída no ambiental)")
-    ok("Legislação verificada nesta análise" in doc and "DL 9.760/1946" in doc,
-       "lista a legislação conferida com norma, link e data")
-    ok("Área de Matrícula" in doc and "Área Levantamento Topográfico" in doc,
-       "traz as tabelas de área do template")
-    ok("![Vista aerea.jpg]" in doc, "embute as figuras no documento")
-    ok("( ) GO" in doc and "**Responsável**" in doc,
-       "recomendação fica em branco para assinatura humana")
-    ok("Sem documentação disponível nesta rodada" in doc,
-       "seção sem conteúdo é DECLARADA, não omitida")
-    ok("### PENDÊNCIAS" in doc, "pendências com responsável sugerido")
+    ok(doc.startswith("# ANALISE TECNICA") or doc.startswith("# ANÁLISE TÉCNICA"),
+       "abre como ANALISE TECNICA, nao como parecer juridico")
+    ok("DD T" in doc and "_SEAZONE_ID" in doc and "_R00" in doc,
+       "carrega o codigo do documento no padrao real (DD TECNICA_SEAZONE_ID .. _R00)")
+    for secao in ("IMPLANTA", "CONSULTA DE VIABILIDADE", "QUADRO DE",
+                  "ANÁLISE DE PROJETO", "PEND", "ATA DE APROVA"):
+        ok(secao in doc, f"secao do documento real presente: {secao}")
+    ok("RESUMO GERAL" in doc and "7.131,90" in doc and "1.331,65" in doc,
+       "RESUMO GERAL desconta marinha e estrada e chega na AREA FINAL")
+    ok("NORMATIVAS E LEGISLA" in doc and "Fonte de pesquisa" in doc,
+       "quadro NORMATIVAS com coluna de fonte de pesquisa")
+    ok("622/2024" in doc, "cita a lei municipal encontrada")
+    ok("NÃO INFORMADO" in doc,
+       "parametro ausente sai como NAO INFORMADO, sem estimativa")
+    ok("Taxa de Permeabilidade" in doc or "TAXA DE PERMEABILIDADE" in doc,
+       "lista todos os parametros do quadro, mesmo os ausentes")
+    ok("![Implantacao.jpg]" in doc, "embute as figuras")
+    ok("( ) GO" in doc and "CONTRATANTE" in doc,
+       "ATA DE APROVACAO com recomendacao em branco para assinatura")
+    ok("ID –" in doc, "cabecalho de ID repetido nas secoes")
+    ok(parecer.nome_arquivo(lv).startswith("DD T"),
+       f"nome de arquivo no padrao da casa ({parecer.nome_arquivo(lv)})")
 
-    # sem legislação nenhuma, o parecer avisa em vez de fingir
     lv2 = _livro_base(inv)
-    ok("Nenhuma legislação foi verificada" in parecer.render(lv2),
-       "sem legislação conferida, o parecer diz isso explicitamente")
+    ok("Nenhuma norma foi conferida" in parecer.render(lv2),
+       "sem legislacao conferida, o documento diz isso em vez de fingir")
 
-    # o parecer é DIFERENTE da tela de auditoria
     painel = relatorio.render_markdown(lv)
-    ok(doc != painel and "Cobertura documental" in painel and "Cobertura documental" not in doc,
-       "parecer (entregável) e painel (área de trabalho) são documentos distintos")
+    ok(doc != painel and "Cobertura documental" in painel,
+       "documento e painel continuam sendo artefatos distintos")
 
 
 def teste_legislacao():
@@ -615,6 +626,29 @@ def teste_legislacao():
     ok(len(fl["perguntar"]) >= 8, "checklist de legislação cobre os temas obrigatórios")
     ok(any("NUNCA citar lei" in r for r in fl["regras_inviolaveis"]),
        "regra de nunca citar lei de memória vai junto")
+
+    # --- varredura de portal: precisa funcionar para município SEM registro ---
+    pl = leg.plano_de_varredura("Ubatuba", "SP")
+    ok(not pl["ja_registrado"], "Ubatuba não está no registro — é o caso comum")
+    ok(any(d.startswith("ubatuba.sp") for d in pl["dominios_candidatos"]),
+       f"deriva o domínio candidato pelo padrão .uf.gov.br ({pl['dominios_candidatos'][:2]})")
+    ok(len(pl["consultas_por_tema"]) >= 8, "monta consultas para todos os temas")
+    ok(any("plano diretor" in q.lower()
+           for q in pl["consultas_por_tema"]["zoneamento"]),
+       "consulta de zoneamento procura o plano diretor")
+    ok("NÃO INFORMADO" in " ".join(pl["como_executar"]),
+       "instrui a registrar NÃO INFORMADO em vez de estimar")
+    ok(len(pl["parametros_alvo"]) >= 8, "lista os parâmetros a extrair do portal")
+
+    okk, _ = leg.dominio_e_oficial("https://ubatuba.sp.gov.br/lei/123")
+    ok(okk, "aceita domínio .gov.br como fonte de lei")
+    okk, motivo = leg.dominio_e_oficial("https://blogimobiliaria.com.br/ubatuba")
+    ok(not okk and "não é domínio oficial" in motivo,
+       "recusa blog como fonte de lei, e explica por quê")
+    okk, _ = leg.dominio_e_oficial("https://www.leismunicipais.com.br/x")
+    ok(okk, "aceita base compilada de legislação")
+    okk, _ = leg.dominio_e_oficial("https://camara.ubatuba.sp.leg.br/lei")
+    ok(okk, "aceita câmara municipal (.leg.br)")
 
 
 def main():

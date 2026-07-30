@@ -1,0 +1,235 @@
+/* ═══════════════════════ Auditor de DD Técnica — camada v2 ═══════════════════════
+
+   Sistema visual deliberadamente pequeno: um azul de marca (o accent #4F81BD do
+   template Word da Seazone, para o painel e o documento falarem a mesma língua),
+   três cores de severidade e uma escala de cinzas. Cor aqui carrega significado —
+   crítico, atenção, ok, lacuna — e nada mais.
+
+   Separado de style.css de propósito: aquele é o v1, esta é a camada nova.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --marca: #4F81BD;  --marca-esc: #365F91;  --marca-clr: #eaf2fa;
+  --crit: #c0392b;   --crit-bg: #fdecea;    --crit-bd: #f3c0ba;
+  --aten: #b7791f;   --aten-bg: #fef9e7;    --aten-bd: #f2e3a8;
+  --ok:   #1a8f66;   --ok-bg:   #eafaf3;
+  --lac:  #6b46c1;   --lac-bg:  #f6f1fe;    --lac-bd:  #ddd0f7;
+  --tinta: #1f2933;  --tinta-2: #52606d;    --tinta-3: #7b8794;
+  --linha: #e4e9f0;  --fundo: #f7f9fc;      --raio: 10px;
+  --sombra: 0 1px 2px rgba(31,41,51,.05), 0 4px 12px rgba(31,41,51,.04);
+}
+
+/* ---------- Avisos de capacidade ---------- */
+.aviso { border-radius: var(--raio); padding: 18px 22px; margin: 18px 0; line-height: 1.55; }
+.aviso h3 { margin: 0 0 8px; font-size: 1rem; letter-spacing: -.01em; }
+.aviso ul { margin: 10px 0 0; padding-left: 18px; }
+.aviso li { margin-bottom: 8px; }
+.aviso .sub { opacity: .78; font-size: .84rem; }
+.aviso-erro { background: var(--crit-bg); border: 1px solid var(--crit-bd); color: #7b241c; }
+.aviso-alerta { background: var(--aten-bg); border: 1px solid var(--aten-bd); color: #7d6608; }
+.hint-forte { font-size: .86rem; color: var(--tinta-2); margin: 12px 0 0; }
+
+/* ---------- Progresso do job ---------- */
+.progresso { list-style: none; margin: 14px 0 0; padding: 12px 14px; max-height: 190px;
+  overflow-y: auto; background: var(--fundo); border: 1px solid var(--linha);
+  border-radius: var(--raio); font-family: ui-monospace, Menlo, monospace;
+  font-size: .77rem; color: var(--tinta-2); }
+.progresso li { padding: 2px 0; }
+.progresso li::before { content: "\203A\00a0"; color: var(--marca); }
+
+/* ---------- Faixa de procedência ----------
+   Diz de cara QUAIS fontes entraram. Fonte apagada = não consultada; a borda
+   superior acesa é o único sinal necessário. */
+.fontes { margin: 20px 0 4px; }
+.fontes-titulo { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em;
+  color: var(--tinta-3); font-weight: 700; margin-bottom: 10px; }
+.fontes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  gap: 10px; }
+.fonte { border: 1px solid var(--linha); border-top: 3px solid var(--linha);
+  border-radius: var(--raio); padding: 11px 13px; background: #fff;
+  display: flex; flex-direction: column; gap: 2px; }
+.fonte.on { border-top-color: var(--marca); }
+.fonte.off { background: #fbfcfe; border-top-color: #eef1f6; }
+.fonte-rot { font-size: .74rem; color: var(--tinta-2); font-weight: 600; line-height: 1.3; }
+.fonte-val { font-size: 1.3rem; font-weight: 700; color: var(--marca-esc); line-height: 1.15;
+  font-variant-numeric: tabular-nums; }
+.fonte.off .fonte-val { color: #c3ccd6; font-weight: 400; }
+.fonte-sub { font-size: .69rem; color: var(--tinta-3); line-height: 1.3; }
+
+/* ---------- Exposição técnica ---------- */
+.exposicao { background: #fff; border: 1px solid var(--linha);
+  border-left: 4px solid var(--marca); border-radius: var(--raio);
+  padding: 20px 24px; margin: 18px 0; box-shadow: var(--sombra); }
+.exposicao h3 { margin: 0 0 12px; font-size: 1rem; color: var(--marca-esc); }
+.exp-situacao { font-size: 1.02rem; line-height: 1.6; margin: 0 0 16px; color: var(--tinta); }
+.exp-bloco { margin: 14px 0; padding-left: 13px; border-left: 3px solid var(--linha); }
+.exp-bloco h4 { margin: 0 0 6px; font-size: .72rem; text-transform: uppercase;
+  letter-spacing: .07em; color: var(--tinta-3); font-weight: 700; }
+.exp-bloco ul { margin: 0; padding-left: 18px; line-height: 1.6; font-size: .92rem; }
+.exp-bloco.div { border-left-color: var(--crit); }
+.exp-bloco.aten { border-left-color: var(--aten); }
+.exp-bloco.falta { border-left-color: var(--tinta-3); }
+.exp-humana { margin: 18px 0 0; padding-top: 14px; border-top: 1px dashed #cfd8e3;
+  font-size: .86rem; color: var(--tinta-2); }
+.exp-demo { background: var(--crit-bg); color: #7b241c; padding: 12px 16px;
+  border-radius: 8px; font-weight: 600; font-size: .92rem; }
+
+/* ---------- KPIs ---------- */
+.resumo { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 8px; margin: 18px 0; }
+.kpi { background: #fff; border: 1px solid var(--linha); border-radius: var(--raio);
+  padding: 13px 8px; text-align: center; }
+.kpi-n { display: block; font-size: 1.6rem; font-weight: 700; line-height: 1;
+  color: var(--tinta); font-variant-numeric: tabular-nums; }
+.kpi-r { display: block; font-size: .67rem; text-transform: uppercase;
+  letter-spacing: .07em; color: var(--tinta-3); margin-top: 5px; font-weight: 600; }
+.kpi.k-crit { background: var(--crit-bg); border-color: var(--crit-bd); }
+.kpi.k-crit .kpi-n { color: var(--crit); }
+.kpi.k-aten { background: var(--aten-bg); border-color: var(--aten-bd); }
+.kpi.k-aten .kpi-n { color: var(--aten); }
+.kpi.k-ok .kpi-n { color: var(--ok); }
+.kpi.k-lac { background: var(--lac-bg); border-color: var(--lac-bd); }
+.kpi.k-lac .kpi-n { color: var(--lac); }
+
+/* ---------- Abas ---------- */
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 22px 0 0;
+  border-bottom: 2px solid var(--linha); }
+.tab { border: 0; background: transparent; padding: 10px 14px; cursor: pointer;
+  font-size: .87rem; color: var(--tinta-2); border-bottom: 2px solid transparent;
+  margin-bottom: -2px; border-radius: 6px 6px 0 0; font-weight: 500; }
+.tab:hover { background: var(--fundo); color: var(--tinta); }
+.tab.active { color: var(--marca-esc); border-bottom-color: var(--marca); font-weight: 700; }
+.tab .chip { display: inline-block; min-width: 17px; padding: 0 5px; margin-left: 5px;
+  background: var(--linha); border-radius: 9px; font-size: .68rem; color: var(--tinta-2);
+  font-weight: 700; }
+.tab.active .chip { background: var(--marca); color: #fff; }
+/* A aba do entregável fica separada da área de trabalho, não só destacada. */
+.tab.entrega { background: var(--marca-clr); color: var(--marca-esc); font-weight: 700;
+  border: 1px solid #c5dcf2; border-bottom: 0; margin-right: 10px; }
+.tab.entrega.active { background: var(--marca); color: #fff; border-color: var(--marca); }
+.tabpane { padding-top: 20px; }
+.entrega-nota { font-size: .85rem; color: var(--tinta-2); background: var(--marca-clr);
+  border-left: 3px solid var(--marca); padding: 11px 15px; border-radius: 0 8px 8px 0;
+  margin: 0 0 18px; line-height: 1.55; }
+
+/* ---------- Achados ---------- */
+.achado { border: 1px solid var(--linha); border-radius: var(--raio); padding: 16px 18px;
+  margin-bottom: 12px; background: #fff; box-shadow: var(--sombra); }
+.achado.sev-crit { border-left: 4px solid var(--crit); }
+.achado.sev-aten { border-left: 4px solid var(--aten); }
+.achado.sev-ok { border-left: 4px solid var(--ok); }
+.achado header { display: flex; align-items: baseline; gap: 8px; }
+.achado header h4 { margin: 0; font-size: .98rem; line-height: 1.5; flex: 1;
+  color: var(--tinta); font-weight: 600; }
+.aid { font-family: ui-monospace, Menlo, monospace; font-size: .7rem;
+  background: var(--fundo); padding: 2px 6px; border-radius: 4px; color: var(--tinta-3);
+  border: 1px solid var(--linha); }
+.achado .meta, .lacuna .meta { font-size: .74rem; color: var(--tinta-3); margin: 7px 0 0; }
+.premissa { font-size: .84rem; color: var(--tinta-2); margin: 9px 0 0; font-style: italic; }
+.acao { font-size: .89rem; margin: 9px 0 0; color: var(--tinta); }
+.evidencias { list-style: none; margin: 13px 0 0; padding: 0; }
+.ev { border-left: 2px solid var(--linha); padding: 5px 0 5px 13px; margin-bottom: 10px; }
+.ev-origem { font-size: .68rem; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--marca); font-weight: 700; }
+.ev-loc { font-size: .7rem; color: var(--tinta-3); margin-left: 8px; }
+.ev blockquote { margin: 5px 0; padding: 0; font-size: .87rem; color: var(--tinta);
+  line-height: 1.55; font-style: italic; }
+.ev a { font-size: .79rem; color: var(--marca); }
+.r10 { margin-top: 6px; font-size: .78rem; color: #7b241c; background: var(--crit-bg);
+  padding: 4px 9px; border-radius: 5px; display: inline-block; }
+.contest { margin-top: 10px; padding: 9px 12px; background: var(--aten-bg);
+  border-radius: 6px; font-size: .84rem; color: #7d6608; }
+.acoes-achado { margin-top: 13px; display: flex; gap: 8px; }
+.mini { font-size: .78rem; padding: 6px 13px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--linha); background: #fff; color: var(--tinta-2); font-weight: 500; }
+.mini:hover { background: var(--fundo); }
+.mini.ok { border-color: #a8e6c8; color: #14663f; }
+.mini.ok:hover { background: var(--ok-bg); }
+
+/* ---------- Lacunas e perguntas ---------- */
+.lacuna, .pergunta { border: 1px solid var(--lac-bd); background: var(--lac-bg);
+  border-radius: var(--raio); padding: 15px 18px; margin-bottom: 11px; }
+.pergunta { border-color: #bee3f8; background: #ecf7ff; }
+.lacuna header, .pergunta h4 { display: flex; align-items: baseline; gap: 8px; margin: 0; }
+.lacuna header h4, .pergunta h4 { margin: 0; font-size: .95rem; line-height: 1.5;
+  font-weight: 600; }
+.lacuna p, .pergunta p { font-size: .86rem; margin: 7px 0 0; line-height: 1.55; }
+.humano { color: #553c9a; font-weight: 600; }
+
+/* ---------- Precedentes ---------- */
+.precedente { border-left: 4px solid var(--marca); background: var(--fundo); margin: 0 0 13px;
+  padding: 15px 19px; border-radius: 0 var(--raio) var(--raio) 0; }
+.precedente h4 { margin: 0 0 8px; font-size: .95rem; color: var(--marca-esc); }
+.precedente .rel { font-weight: 400; font-size: .79rem; color: var(--tinta-3);
+  margin-left: 8px; }
+.precedente p { margin: 6px 0; font-size: .88rem; line-height: 1.6; }
+.precedente footer { margin-top: 11px; font-size: .74rem; color: var(--tinta-3); }
+.ausencia { border: 1px dashed #cfd8e3; border-radius: var(--raio); padding: 20px 24px;
+  background: var(--fundo); }
+.ausencia h4 { margin: 0 0 8px; font-size: .95rem; color: var(--tinta); }
+.ausencia p, .nota { font-size: .87rem; color: var(--tinta-2); line-height: 1.6; margin: 0; }
+.nota { margin-top: 14px; font-style: italic; }
+
+/* ---------- Cruzamento com casos anteriores ----------
+   A coluna "este caso" é emoldurada em âmbar: é a única que o leitor precisa
+   localizar de relance no meio de N colunas de precedente. */
+.cruzamento { margin: 15px 0 4px; border: 1px solid #cfe0f5; border-radius: var(--raio);
+  background: #f5f9fd; overflow: hidden; }
+.cruz-head { background: #e2edf9; color: var(--marca-esc); font-size: .74rem;
+  font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+  padding: 8px 13px; border-bottom: 1px solid #cfe0f5; }
+.cruz-scroll { overflow-x: auto; }
+.cruz-tab { width: 100%; border-collapse: collapse; font-size: .82rem; white-space: nowrap; }
+.cruz-tab th { text-align: left; font-weight: 700; color: var(--tinta-2); padding: 8px 13px;
+  border-bottom: 1px solid #dbe7f4; background: #edf4fb; font-size: .68rem;
+  text-transform: uppercase; letter-spacing: .05em; }
+.cruz-tab td { padding: 8px 13px; border-bottom: 1px solid #e8eff8; vertical-align: top; }
+.cruz-tab tr:last-child td { border-bottom: 0; }
+.cruz-tab .p-param { font-weight: 600; color: var(--tinta); }
+.cruz-tab .col-este { background: #fffcf2;
+  box-shadow: inset 2px 0 0 var(--aten), inset -2px 0 0 var(--aten); }
+.cruz-tab th.col-este { background: #fdf6e3; }
+.cruz-tab .col-impl { white-space: normal; min-width: 190px; color: var(--tinta-2);
+  font-style: italic; }
+.premissa-trab { padding: 11px 13px; background: var(--ok-bg); border-top: 1px solid #cfe0f5;
+  font-size: .86rem; line-height: 1.55; color: #14663f; }
+.premissa-trab .sub { color: #3d7a5c; font-size: .77rem; }
+.cruz-ressalva { padding: 9px 13px; background: var(--aten-bg); font-size: .81rem;
+  color: #7d6608; border-top: 1px solid var(--aten-bd); }
+.cruz-fontes { padding: 7px 13px; font-size: .72rem; color: var(--tinta-3);
+  border-top: 1px solid #e8eff8; }
+
+/* ---------- Listas de mudanças, cobertura, trilha ---------- */
+.docs, .mud, .cob, .trilha { list-style: none; margin: 8px 0 20px; padding: 0;
+  font-size: .86rem; line-height: 1.75; }
+.docs li, .mud li, .cob li, .trilha li { padding: 4px 0; border-bottom: 1px solid #f2f5f9; }
+.cob code, .docs code, .trilha code { font-size: .79rem; background: var(--fundo);
+  padding: 2px 6px; border-radius: 4px; color: var(--tinta-2); }
+.cob.ruim li { background: #fef7f6; }
+.cob .sub, .docs .sub, .mud .sub { color: var(--tinta-3); font-size: .77rem; margin-left: 8px; }
+.tabpane h3 { font-size: .93rem; margin: 20px 0 7px; color: var(--tinta); }
+.tabpane h3.alerta { color: var(--crit); }
+.tabpane .sub { font-size: .83rem; color: var(--tinta-3); }
+.vazio { color: var(--tinta-3); font-style: italic; padding: 22px 0; }
+
+/* ---------- Documento entregável ----------
+   Aqui a tipografia imita o documento final: tabelas com moldura, títulos em
+   azul de marca, figuras com borda. O que se vê na aba é o que sai no Word. */
+.parecer { font-size: .93rem; line-height: 1.65; color: var(--tinta); }
+.parecer img { max-width: 100%; height: auto; border-radius: 8px; margin: 12px 0;
+  border: 1px solid var(--linha); display: block; }
+.parecer table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .86rem; }
+.parecer td, .parecer th { border: 1px solid var(--linha); padding: 8px 11px;
+  text-align: left; vertical-align: top; }
+.parecer tr:first-child td { background: var(--fundo); font-weight: 600;
+  font-size: .72rem; text-transform: uppercase; letter-spacing: .04em;
+  color: var(--tinta-2); }
+.parecer h1 { font-size: 1.35rem; color: var(--marca-esc); letter-spacing: .04em; }
+.parecer h2 { font-size: 1.05rem; color: var(--marca-esc); margin: 30px 0 10px;
+  padding-bottom: 6px; border-bottom: 2px solid var(--marca-clr); letter-spacing: .03em; }
+.parecer h3 { font-size: .93rem; color: var(--tinta); margin: 20px 0 8px;
+  letter-spacing: .02em; }
+.parecer blockquote { border-left: 3px solid var(--marca); background: var(--fundo);
+  margin: 12px 0; padding: 10px 15px; border-radius: 0 6px 6px 0; font-size: .88rem;
+  color: var(--tinta-2); }
+.parecer sub { color: var(--tinta-3); font-size: .72rem; letter-spacing: .05em; }

@@ -1,342 +1,429 @@
 """
-PARECER TÉCNICO — o documento oficial da DD Técnica.
+DD TÉCNICA — o documento entregável, no formato real da Seazone.
 
-DISTINÇÃO QUE EU TINHA PERDIDO E QUE É O PONTO DE TUDO:
+FORMATO EXTRAÍDO DOS DOCUMENTOS REAIS, não de um template idealizado:
+  · DD TÉCNICA_SEAZONE_ID - 12235_R00.pdf        (São Miguel dos Milagres, 23 pp.)
+  · DD TÉCNICA_SEAZONE_ID 5966 PATACHO SPOT_R03  (Patacho, 20 pp.)
+  · [Jurerê Spot III] DD Técnica Spot.docx
 
-  · `relatorio.py` renderiza a ÁREA DE TRABALHO — achados, cruzamentos, lacunas,
-    cobertura, trilha. É o que o painel mostra enquanto se audita.
-  · `parecer.py` (este módulo) renderiza o ENTREGÁVEL — o documento no formato oficial
-    da Seazone, o mesmo que a Rachel monta à mão, que espelha
-    "[Empreendimento] DD Técnica Spot.docx" e segue
-    `claude.md/templates/parecer-tecnico.md`.
+A DD Técnica NÃO é um parecer em prosa corrida — é uma **ANÁLISE TÉCNICA em quadros**,
+com cabeçalho de ID em toda seção. A primeira versão deste módulo renderizava o parecer
+jurídico-formal do template antigo; os documentos reais mostram outra coisa:
 
-Na v2 inicial eu substituí o segundo pelo primeiro. O painel passou a mostrar uma tela
-de auditoria e o documento oficial sumiu — exatamente a reclamação: "não está claro o que
-está refletindo no painel; preciso gerar um documento da DD técnica conforme repassei".
+    ANÁLISE TÉCNICA (capa: projeto, município, área, proprietário)
+    IMPLANTAÇÃO GERAL [+ trechos]
+    CONSULTA DE VIABILIDADE E ÍNDICES URBANÍSTICOS
+        RESUMO GERAL          — área total menos as deduções → ÁREA FINAL
+        NORMATIVAS E LEGISLAÇÃO — RESTRIÇÕES × FONTE DE PESQUISA
+        PREFEITURA × OBSERVAÇÕES — parâmetro, valor, observação ("NÃO INFORMADO" quando falta)
+    QUADRO DE ÁREAS           — Item × Valor × Unidade
+    ANÁLISE DE PROJETO        — relação projeto × topografia, afastamentos
+    ANÁLISE DE PROJETO – SUGESTÕES
+    CORTE ESQUEMÁTICO
+    LICENCIAMENTO             — licença prévia, de instalação, alvará
+    PROJETO DE REFERÊNCIA
+    ATA DE APROVAÇÃO – ETAPA VALIDAÇÃO
 
-O formato tem seções fixas, três tabelas de área e FIGURAS. Revisão de 29/07, 29:31 —
-"ele montou essa DD técnica igual eu faço, então vou colocando imagens e tudo mais".
+Duas coisas que o documento real ensina e que valem como regra:
 
-Uma diferença deliberada em relação ao template original: a linha de RECOMENDAÇÃO sai
-marcada como decisão humana, com espaço para assinatura, em vez de o Auditor cravar
-GO/NO-GO. Ver docs/ARQUITETURA-AUDITOR-V2.md §12.3 — pendente de validação com a Caroline.
+1. **"NÃO INFORMADO" é uma resposta legítima e frequente.** No 12235, TO, TP, vagas e
+   muro lateral estão todos assim. O documento registra a ausência em vez de estimar —
+   exatamente o princípio do Livro de Evidências.
+2. **A coluna "FONTE DE PESQUISA" existe desde sempre.** A rastreabilidade da legislação
+   não é invenção nossa; é o formato da casa.
 """
 from __future__ import annotations
 
 import datetime as _dt
 from typing import Any
 
-from .livro import Afirmacao, Livro
+from .livro import Livro
 
 ICONE = {"Crítico": "🔴", "Atenção": "🟡", "OK": "🟢"}
+NAO_INFORMADO = "NÃO INFORMADO"
 
-# Ordem canônica das seções de conclusão do parecer oficial. `urbanistico` é acréscimo
-# nosso — a legislação precisava de lugar próprio, e antes ficava diluída no ambiental.
-SECOES = [
-    ("topografia", "TOPOGRAFIA"),
-    ("ambiental", "ESTUDO PRÉVIO AMBIENTAL"),
-    ("urbanistico", "VIABILIDADE URBANÍSTICA E LEGISLAÇÃO"),
-    ("juridico_dominial", "SITUAÇÃO DOMINIAL"),
-    ("validacao_ep", "VALIDAÇÃO DO ESTUDO PRELIMINAR SEAZONE"),
-    ("sondagem", "SONDAGEM"),
-    ("estrutura_fundacao", "ESTRUTURA / FUNDAÇÃO"),
+# Parâmetros do quadro PREFEITURA × OBSERVAÇÕES, na ordem do documento real.
+PARAMETROS = [
+    ("recuos", "RECUOS GERAIS"),
+    ("altura_maxima", "ALTURA MÁXIMA"),
+    ("taxa_ocupacao", "TAXA DE OCUPAÇÃO"),
+    ("taxa_permeabilidade", "TAXA DE PERMEABILIDADE"),
+    ("coeficiente_aproveitamento", "COEFICIENTE DE APROVEITAMENTO"),
+    ("vagas_garagem", "VAGAS DE GARAGEM"),
+    ("muro_lateral", "MURO LATERAL"),
+    ("outorga", "OUTORGA ONEROSA"),
+    ("eiv", "EIV — ESTUDO DE IMPACTO DE VIZINHANÇA"),
 ]
 
-# Disciplinas do Livro que alimentam cada seção — é assim que os achados entram no
-# parecer sem o Redator precisar reescrevê-los.
-DISCIPLINAS_DA_SECAO = {
-    "topografia": {"topografia"},
-    "ambiental": {"ambiental", "concessionárias", "sanitário"},
-    "urbanistico": {"urbanístico", "patrimônio", "incêndio"},
-    "juridico_dominial": {"jurídico-cartorial"},
-    "validacao_ep": {"arquitetura-projeto"},
-    "sondagem": {"engenharia"},
-    "estrutura_fundacao": {"engenharia"},
-}
+# Seções de análise de projeto e as disciplinas que as alimentam.
+ANALISES = [
+    ("topografia", "RELAÇÃO PROJETO × TOPOGRAFIA", {"topografia"}),
+    ("implantacao", "IMPLANTAÇÃO E AFASTAMENTOS", {"arquitetura-projeto", "urbanístico"}),
+    ("ambiental", "RESTRIÇÕES AMBIENTAIS", {"ambiental"}),
+    ("dominial", "SITUAÇÃO DOMINIAL", {"jurídico-cartorial"}),
+    ("geotecnico", "SONDAGEM, ESTRUTURA E FUNDAÇÃO", {"engenharia"}),
+    ("incendio", "SEGURANÇA CONTRA INCÊNDIO", {"incêndio"}),
+    ("infraestrutura", "INFRAESTRUTURA E CONCESSIONÁRIAS",
+     {"concessionárias", "sanitário"}),
+]
+
+LICENCAS = [("licenca_previa", "LICENÇA PRÉVIA"),
+            ("licenca_instalacao", "LICENÇA DE INSTALAÇÃO"),
+            ("alvara_construcao", "ALVARÁ DE CONSTRUÇÃO")]
 
 
 def _hoje() -> str:
     return _dt.date.today().strftime("%d/%m/%Y")
 
 
+def _cab(livro: Livro) -> str:
+    """`ID – 12235 | MILAGRES SPOT - SÃO MIGUEL DOS MILAGRES/AL` — em toda seção."""
+    p = livro.perfil
+    local = f" - {p.cidade.upper()}/{p.uf}" if p.cidade else ""
+    return f"<sub>ID – {p.emp_id} | {livro.nome.upper()}{local}</sub>"
+
+
 def _fig(f: dict) -> str:
-    """Figura embutida por thumbnail do Drive — funciona no MD, no HTML e no Word."""
-    url = f.get("url") or (f"https://drive.google.com/thumbnail?id={f['id']}&sz=w900"
+    url = f.get("url") or (f"https://drive.google.com/thumbnail?id={f['id']}&sz=w1000"
                            if f.get("id") else "")
     if not url:
         return ""
-    legenda = f.get("nome") or f.get("cap") or "Figura"
-    return f"\n![{legenda}]({url})\n*{legenda}*\n"
+    return f"\n![{f.get('nome','Figura')}]({url})\n*{f.get('nome','')}*\n"
 
 
-def _figuras_da_secao(livro: Livro, secao: str) -> str:
+def _figuras(livro: Livro, secao: str, limite: int = 3) -> str:
     imgs = ((livro.cobertura or {}).get("imagens") or [])
-    sel = [i for i in imgs if i.get("secao") == secao]
-    return "".join(_fig(i) for i in sel[:4])
+    return "".join(_fig(i) for i in [x for x in imgs if x.get("secao") == secao][:limite])
 
 
-def _tabela_areas(titulo: str, itens: list[dict], rotulo: str) -> str:
-    if not itens:
-        return ""
-    L = [f"\n**{titulo}**\n", f"| {rotulo} | Área (m²) |", "|---|---|"]
-    for it in itens:
-        L.append(f"| {it.get('ref','')} | {it.get('area','')} |")
-    return "\n".join(L) + "\n"
-
-
-def _achados_da_secao(livro: Livro, secao: str) -> str:
-    """
-    Os achados entram no parecer resumidos e com a ação — não como tabela de auditoria.
-
-    O parecer é prosa técnica; a tabela completa vive no painel e na planilha de controle.
-    """
-    discs = DISCIPLINAS_DA_SECAO.get(secao, set())
+def _bullets(livro: Livro, discs: set[str], severidades: tuple[str, ...]) -> list[str]:
     itens = [a for a in livro.afirmacoes
-             if a.disciplina in discs and a.severidade in ("Crítico", "Atenção")]
-    if not itens:
-        return ""
+             if a.disciplina in discs and a.severidade in severidades
+             and a.tipo != "lacuna"]
     itens.sort(key=lambda a: 0 if a.severidade == "Crítico" else 1)
-    L = ["\n**Pontos de atenção desta seção**\n"]
-    for a in itens[:10]:
-        L.append(f"- {ICONE.get(a.severidade,'·')} {a.texto}")
-        if a.acao:
-            L.append(f"  - *Ação:* {a.acao}")
-        for c in a.comparativos:
-            if c.premissa_de_trabalho:
-                L.append(f"  - *Premissa de trabalho (analogia com casos anteriores):* "
-                         f"{c.premissa_de_trabalho}")
+    return [f"- {ICONE.get(a.severidade,'·')} **{a.texto}**"
+            + (f"\n  - *Ação:* {a.acao}" if a.acao else "") for a in itens]
+
+
+# --------------------------------------------------------------------------- #
+# Quadros
+# --------------------------------------------------------------------------- #
+
+def _resumo_geral(p: dict) -> str:
+    """
+    Área total menos as deduções → ÁREA FINAL.
+
+    No 12235: 8.573,00 m² − 1.331,65 (marinha) − 109,45 (estrada vicinal) = 7.131,90 m².
+    É o número que importa para o produto, e ele não aparece em nenhuma certidão.
+    """
+    rg = p.get("resumo_geral") or {}
+    total = rg.get("area_total")
+    deducoes = rg.get("deducoes") or []
+    final = rg.get("area_final")
+    if not (total or deducoes or final):
+        return ""
+    L = ["\n**RESUMO GERAL**\n", "| Terreno | Área |", "|---|---|"]
+    if total:
+        L.append(f"| ÁREA TOTAL | {total} |")
+    for d in deducoes:
+        L.append(f"| {str(d.get('item','')).upper()} | −{d.get('area','')} |")
+    if final:
+        L.append(f"| **ÁREA FINAL** | **{final}** |")
+    if rg.get("observacao"):
+        L.append(f"\n<sub>{rg['observacao']}</sub>")
     return "\n".join(L) + "\n"
 
 
-def _legislacao_verificada(livro: Livro) -> str:
+def _normativas(livro: Livro) -> str:
     """
-    Seção nova, e a que estava faltando: o que foi conferido em texto legal, com link e
-    data. Sem isto, "foi verificado o plano diretor" é uma frase de template.
+    NORMATIVAS E LEGISLAÇÃO — RESTRIÇÕES × FONTE DE PESQUISA.
+
+    A coluna de fonte é do formato original da casa. Aqui ela é preenchida com o link
+    do texto primário e a data da consulta.
     """
-    evs = []
+    L = ["\n**NORMATIVAS E LEGISLAÇÃO**\n",
+         "| Restrições | Fonte de pesquisa | Consultado em |", "|---|---|---|"]
+    vistos, n = set(), 0
     for a in livro.afirmacoes:
         for e in a.evidencias:
-            if e.origem == "legislacao":
-                evs.append((e, a))
-    if not evs:
-        return ("\n> ⚠️ **Nenhuma legislação foi verificada em texto primário nesta rodada.** "
-                "Os parâmetros urbanísticos citados vêm da Viabilidade Técnica Construtiva; "
-                "a norma que os fundamenta não foi conferida. Registrar como pendência.\n")
-
-    vistos, L = set(), ["\n**Legislação verificada nesta análise**\n",
-                        "| Norma / dispositivo | O que fundamenta | Fonte | Consultado em |",
-                        "|---|---|---|---|"]
-    for e, a in evs:
-        chave = (e.ref, e.localizacao)
-        if chave in vistos:
-            continue
-        vistos.add(chave)
-        fonte = f"[link]({e.link})" if e.link else e.ref
-        L.append(f"| {e.localizacao or e.ref} | {a.texto[:110]} | {fonte} | "
-                 f"{(e.consultado_em or e.data_do_documento or '—')[:10]} |")
-    L.append("\n<sub>Legislação conferida em texto primário na data indicada. "
-             "A vigência se reconfere a cada DD.</sub>\n")
-    return "\n".join(L)
-
-
-def _documentos_analisados(livro: Livro) -> str:
-    """Tabela de rastreabilidade — a base do parecer inteiro (06-estrutura §3)."""
-    cob = livro.cobertura or {}
-    lidos = cob.get("lidos") or []
-    nao = cob.get("nao_lidos_criticos") or []
-    if not lidos and not nao:
-        return ""
-    L = ["\n| Documento | Disciplina | Situação | Link |", "|---|---|---|---|"]
-    for d in lidos[:60]:
-        link = f"[abrir]({d['link']})" if d.get("link") else "—"
-        L.append(f"| {d['nome']} | {d.get('disciplina') or '—'} | analisado | {link} |")
-    for d in nao[:30]:
-        link = f"[abrir]({d['link']})" if d.get("link") else "—"
-        L.append(f"| {d['nome']} | {d.get('disciplina') or '—'} | **NÃO ANALISADO** | {link} |")
+            if e.origem != "legislacao":
+                continue
+            chave = (e.localizacao or e.ref)
+            if chave in vistos:
+                continue
+            vistos.add(chave)
+            n += 1
+            fonte = f"[{e.link[:60]}…]({e.link})" if e.link else (e.ref or "—")
+            L.append(f"| {chave} | {fonte} | {(e.consultado_em or '')[:10] or '—'} |")
+    if not n:
+        return ("\n**NORMATIVAS E LEGISLAÇÃO**\n\n"
+                "> ⚠️ Nenhuma norma foi conferida em texto primário nesta rodada. Os "
+                "parâmetros abaixo, quando presentes, vêm da consulta de viabilidade — "
+                "a lei que os fundamenta **não** foi verificada.\n")
     return "\n".join(L) + "\n"
+
+
+def _prefeitura(p: dict) -> str:
+    """
+    PREFEITURA × OBSERVAÇÕES.
+
+    Parâmetro ausente sai como NÃO INFORMADO — é o que o documento real faz, e é a
+    diferença entre registrar a lacuna e inventar um número.
+    """
+    par = p.get("parametros_urbanisticos") or {}
+    L = ["\n**PREFEITURA**\n", "| Parâmetro | Valor | Observações |", "|---|---|---|"]
+    for chave, rotulo in PARAMETROS:
+        v = par.get(chave)
+        if isinstance(v, dict):
+            valor, obs = v.get("valor") or NAO_INFORMADO, v.get("observacao") or "-"
+        elif v:
+            valor, obs = str(v), "-"
+        else:
+            valor, obs = NAO_INFORMADO, "-"
+        destaque = "**" if valor == NAO_INFORMADO else ""
+        L.append(f"| {rotulo} | {destaque}{valor}{destaque} | {obs} |")
+    for extra in (par.get("outros") or []):
+        L.append(f"| {str(extra.get('parametro','')).upper()} | "
+                 f"{extra.get('valor') or NAO_INFORMADO} | {extra.get('observacao') or '-'} |")
+    faltando = sum(1 for c, _ in PARAMETROS
+                   if not (par.get(c) if not isinstance(par.get(c), dict)
+                           else par[c].get("valor")))
+    if faltando:
+        L.append(f"\n<sub>{faltando} parâmetro(s) como NÃO INFORMADO — a prefeitura não "
+                 f"publica, ou não foi possível confirmar em texto legal. Não estimados "
+                 f"de propósito.</sub>")
+    return "\n".join(L) + "\n"
+
+
+def _quadro_areas(p: dict) -> str:
+    """QUADRO DE ÁREAS — Item × Valor × Unidade."""
+    q = p.get("quadro_areas") or []
+    if not q:
+        at = p.get("areas_tabela") or {}
+        if at.get("topografico"):
+            q = [{"item": "Área do terreno (levantamento)",
+                  "valor": at["topografico"], "unidade": "m²"}]
+    if not q:
+        return ""
+    L = ["\n## QUADRO DE ÁREAS\n", "| Item | Valor | Unidade |", "|---|---|---|"]
+    for it in q:
+        L.append(f"| {it.get('item','')} | {it.get('valor','')} | {it.get('unidade','')} |")
+    return "\n".join(L) + "\n"
+
+
+def _comparativos(livro: Livro) -> str:
+    """Cruzamento com casos anteriores — a seção que o documento manual não tinha."""
+    blocos = []
+    for a in livro.afirmacoes:
+        for c in a.comparativos:
+            if not c.linhas:
+                continue
+            cols = []
+            for l in c.linhas:
+                for k in l.casos:
+                    if k not in cols:
+                        cols.append(k)
+            B = [f"\n**{c.tema.upper()}**\n",
+                 "| Parâmetro | Este caso | " + " | ".join(cols) + " | Significado |",
+                 "|---|---|" + "---|" * len(cols) + "---|"]
+            for l in c.linhas:
+                B.append(f"| {l.parametro} | **{l.este_caso}** | "
+                         + " | ".join(l.casos.get(k, "—") for k in cols)
+                         + f" | {l.implicacao} |")
+            if c.premissa_de_trabalho:
+                B.append(f"\n→ **Premissa de trabalho:** {c.premissa_de_trabalho} "
+                         f"<sub>(analogia · confiança {c.confianca_da_analogia})</sub>")
+            if c.ressalva:
+                B.append(f"\n⚠️ {c.ressalva}")
+            blocos.append("\n".join(B))
+    if not blocos:
+        return ""
+    return ("\n## CRUZAMENTO COM CASOS ANTERIORES\n"
+            + "\n".join(blocos)
+            + "\n\n<sub>Precedente embasa recomendação; não é fato sobre este "
+              "terreno.</sub>\n")
 
 
 # --------------------------------------------------------------------------- #
 
 def render(livro: Livro, changelog: dict | None = None) -> str:
-    """Parecer Técnico no formato oficial SZI, renderizado a partir do Livro."""
     p = livro.proveniencia or {}
-    im = p.get("imovel") or {}
-    con = p.get("conclusao") or {}
-    val = p.get("validacao") or {}
-    at = p.get("areas_tabela") or {}
-    expo = p.get("exposicao") or {}
     perfil = livro.perfil
+    cab = _cab(livro)
+    rev = f"R{max(0, livro.rodada - 1):02d}"
 
     L: list[str] = []
-    L.append(f"# PARECER TÉCNICO – DUE DILIGENCE – {livro.nome.upper()}\n")
-    L.append("> Elaborado pelo Auditor de DD Técnica a partir dos documentos do "
-             "empreendimento, da base histórica da Seazone, do Diário de Lançamentos e da "
-             "legislação vigente consultada. **Rascunho técnico — requer revisão humana.**\n")
 
-    # ---- 1. IMÓVEL ----------------------------------------------------------
-    L.append("## 1. IMÓVEL\n")
-    L.append("| Item | Descrição |\n|---|---|")
-    L.append(f"| **Inscrição** | {im.get('inscricoes') or '(pendente)'} |")
-    L.append(f"| **Endereço** | {im.get('endereco') or '(pendente)'} |")
-    L.append(f"| **Município** | {perfil.cidade or '(pendente)'}"
+    # ---- CAPA ---------------------------------------------------------------
+    L.append(f"# ANÁLISE TÉCNICA\n")
+    L.append(f"## DD TÉCNICA_SEAZONE_ID {perfil.emp_id} {livro.nome.upper()}_{rev}\n")
+    L.append("| | |\n|---|---|")
+    L.append(f"| **PROJETO** | {livro.nome} |")
+    L.append(f"| **MUNICÍPIO** | {perfil.cidade or '(pendente)'}"
              f"{'/' + perfil.uf if perfil.uf else ''} |")
-    L.append(f"| **Área total** | {im.get('area_matricula_total') or '(pendente)'} |")
-    L.append(f"| **Matrícula** | {im.get('matriculas') or '(pendente)'} |")
+    im = p.get("imovel") or {}
+    L.append(f"| **ÁREA** | {im.get('area_matricula_total') or '(pendente)'} |")
+    L.append(f"| **MATRÍCULA** | {im.get('matriculas') or '(pendente)'} |")
+    L.append(f"| **INSCRIÇÃO** | {im.get('inscricoes') or '(pendente)'} |")
+    props = p.get("proprietarios") or []
+    L.append(f"| **PROPRIETÁRIO DO IMÓVEL** | {'; '.join(props) if props else '(pendente)'} |")
     if perfil.regime_dominial:
-        L.append(f"| **Regime dominial** | {perfil.regime_dominial} |")
+        L.append(f"| **REGIME DOMINIAL** | {perfil.regime_dominial} |")
+    L.append(f"| **DATA** | {_hoje()} |")
     L.append("")
 
-    # ---- 2. PROPRIETÁRIO ----------------------------------------------------
-    L.append("## 2. PROPRIETÁRIO(A)\n")
-    props = p.get("proprietarios") or []
-    L += [f"- {x}" for x in props] if props else ["- (pendente)"]
-    L.append(
-        "\nTrata-se de parecer técnico acerca das diligências e da análise técnica "
-        "realizada pelo Setor de Lançamentos da Seazone Investimentos em relação aos "
-        "estudos de viabilidade referentes ao terreno e ao estudo preliminar desenvolvido, "
-        "objetivando a aquisição do imóvel e a continuidade no processo de estruturação "
-        "do empreendimento.\n")
+    # ---- IMPLANTAÇÃO GERAL --------------------------------------------------
+    L.append("## IMPLANTAÇÃO GERAL")
+    L.append(cab)
+    L.append(_figuras(livro, "localizacao") or "\n::FIG:: Implantação geral / entorno\n")
 
-    L.append("### Documentos analisados")
-    L.append(_documentos_analisados(livro))
-    L.append("Para realização da due diligence foram verificados, entre outros tópicos, "
-             "código de obras, plano diretor e demais legislações vigentes.")
-    L.append(_legislacao_verificada(livro))
+    # ---- CONSULTA DE VIABILIDADE E ÍNDICES URBANÍSTICOS ---------------------
+    L.append("## CONSULTA DE VIABILIDADE E ÍNDICES URBANÍSTICOS")
+    L.append(cab)
+    L.append(_resumo_geral(p))
+    L.append(_normativas(livro))
+    L.append(_prefeitura(p))
+    L.append(_figuras(livro, "topografia"))
 
-    # ---- 3. CONCLUSÃO -------------------------------------------------------
-    L.append("## 3. CONCLUSÃO\n")
-
-    L.append("### LOCALIZAÇÃO\n")
-    L.append("Visão geral de onde o empreendimento (modelo Spot) está inserido:\n")
-    figs_loc = _figuras_da_secao(livro, "localizacao")
-    L.append(figs_loc or "::FIG:: Localização / entorno do terreno\n")
-
-    for chave, titulo in SECOES:
-        texto = (con.get(chave) or "").strip()
-        achados = _achados_da_secao(livro, chave)
-        figs = _figuras_da_secao(livro, chave)
-        if not texto and not achados and not figs:
-            # Seção sem conteúdo NÃO é omitida — é declarada (06-estrutura-do-parecer).
-            L.append(f"### {titulo}\n")
-            L.append("_Sem documentação disponível nesta rodada. Ver seção de pendências._\n")
-            continue
-        L.append(f"### {titulo}\n")
-        L.append(texto or "_Sem análise textual consolidada nesta rodada._")
-        if chave == "topografia":
-            L.append(_tabela_areas("Área de Matrícula", at.get("matricula") or [],
-                                   "Referência (Inscrição Imobiliária)"))
-            L.append(_tabela_areas("Área de Cadastro Imobiliário", at.get("cadastro_pmf") or [],
-                                   "Referência (Inscrição Imobiliária)"))
-            if at.get("topografico"):
-                L.append("\n**Área Levantamento Topográfico**\n\n| Referência | Área (m²) |"
-                         f"\n|---|---|\n| Área Real | {at['topografico']} |\n")
-        if chave == "validacao_ep":
-            if val.get("ajustes"):
-                L.append("\n**Ajustes exigidos no anteprojeto**\n")
-                L += [f"- {x}" for x in val["ajustes"]]
-            if val.get("docs_aprovacao"):
-                L.append("\n**Documentos para Aprovação do Projeto Arquitetônico**\n")
-                L += [f"- {x}" for x in val["docs_aprovacao"]]
-            if val.get("docs_alvara"):
-                L.append("\n**Documentos para o Alvará de Construção**\n")
-                L += [f"- {x}" for x in val["docs_alvara"]]
-        L.append(achados)
-        L.append(figs)
-
-    # ---- Pendências ---------------------------------------------------------
-    lac = livro.lacunas_abertas()
-    if lac or livro.perguntas_ao_humano:
-        L.append("### PENDÊNCIAS\n")
-        L.append("Itens que impedem o fechamento da análise, com o responsável sugerido:\n")
-        for a in sorted(lac, key=lambda x: 0 if x.severidade == "Crítico" else 1):
-            quem = "**equipe Seazone**" if a.depende_de_humano else "fornecedor / disciplina"
-            L.append(f"- {ICONE.get(a.severidade,'·')} **{a.texto}** — {a.o_que_falta or ''} "
-                     f"({quem})")
-            if a.como_obter:
-                L.append(f"  - Como obter: {a.como_obter}")
-        for q in livro.perguntas_ao_humano:
-            L.append(f"- 👤 **{q.get('o_que_preciso','')}** — {q.get('para_que','')}")
+    # ---- QUADRO DE ÁREAS ----------------------------------------------------
+    qa = _quadro_areas(p)
+    if qa:
+        L.append(qa)
+        L.append(cab)
+    at = p.get("areas_tabela") or {}
+    if at.get("matricula") or at.get("cadastro_pmf"):
+        L.append("\n**Confronto de áreas entre fontes**\n")
+        L.append("| Fonte | Referência | Área |\n|---|---|---|")
+        for it in at.get("matricula") or []:
+            L.append(f"| Matrícula | {it.get('ref','')} | {it.get('area','')} |")
+        for it in at.get("cadastro_pmf") or []:
+            L.append(f"| Cadastro municipal | {it.get('ref','')} | {it.get('area','')} |")
+        if at.get("topografico"):
+            L.append(f"| Levantamento topográfico | georreferenciado | {at['topografico']} |")
         L.append("")
 
-    # ---- Precedentes --------------------------------------------------------
-    if livro.precedentes:
-        L.append("### CASOS ANTERIORES COMPARÁVEIS\n")
-        for pr in livro.precedentes:
-            cab = pr.get("empreendimento", "—")
-            if pr.get("distancia_ou_relacao"):
-                cab += f" ({pr['distancia_ou_relacao']})"
-            L.append(f"**{cab}** — {pr.get('o_que_aconteceu_la','')}")
-            if pr.get("por_que_se_aplica_aqui"):
-                L.append(f"Aplicação a este caso: {pr['por_que_se_aplica_aqui']}\n")
-        L.append("<sub>Precedente embasa recomendação; não é fato sobre este terreno.</sub>\n")
+    # ---- ANÁLISE DE PROJETO -------------------------------------------------
+    L.append("## ANÁLISE DE PROJETO")
+    L.append(cab)
+    houve = False
+    for chave, titulo, discs in ANALISES:
+        bl = _bullets(livro, discs, ("Crítico", "Atenção"))
+        figs = _figuras(livro, chave, 2)
+        if not bl and not figs:
+            continue
+        houve = True
+        L.append(f"\n### {titulo}\n")
+        L += bl
+        if figs:
+            L.append(figs)
+    if not houve:
+        L.append("\n_Sem achados consolidados nesta rodada._\n")
 
-    # ---- Conclusão final ----------------------------------------------------
-    L.append("### CONCLUSÃO\n")
-    L.append((con.get("final") or "").strip() or
-             "_Conclusão não consolidada nesta rodada — ver pendências acima._")
+    # ---- SUGESTÕES ----------------------------------------------------------
+    sug = (p.get("validacao") or {}).get("ajustes") or []
+    if sug:
+        L.append("\n## ANÁLISE DE PROJETO – SUGESTÕES")
+        L.append(cab + "\n")
+        L += [f"- {x}" for x in sug]
+        L.append("")
+        L.append(_figuras(livro, "validacao_ep", 2))
 
-    # ---- Leitura de negócio + decisão humana --------------------------------
-    L.append("\n---\n")
-    L.append("## LEITURA DE NEGÓCIO\n")
+    # ---- CRUZAMENTO ---------------------------------------------------------
+    L.append(_comparativos(livro))
+
+    # ---- LICENCIAMENTO ------------------------------------------------------
+    lic = p.get("licenciamento") or {}
+    val = p.get("validacao") or {}
+    if lic or val.get("docs_aprovacao") or val.get("docs_alvara"):
+        L.append("## LICENCIAMENTO")
+        L.append(cab + "\n")
+        for chave, rotulo in LICENCAS:
+            v = lic.get(chave)
+            if v:
+                L.append(f"**{rotulo}** — {v}\n")
+        if val.get("docs_aprovacao"):
+            L.append("**Documentos para aprovação do projeto arquitetônico**\n")
+            L += [f"- {x}" for x in val["docs_aprovacao"]]
+            L.append("")
+        if val.get("docs_alvara"):
+            L.append("**Documentos para o alvará de construção**\n")
+            L += [f"- {x}" for x in val["docs_alvara"]]
+            L.append("")
+
+    # ---- PENDÊNCIAS ---------------------------------------------------------
+    lac = livro.lacunas_abertas()
+    if lac or livro.perguntas_ao_humano:
+        L.append("## PENDÊNCIAS")
+        L.append(cab + "\n")
+        L.append("| Pendência | O que falta | Responsável |\n|---|---|---|")
+        for a in sorted(lac, key=lambda x: 0 if x.severidade == "Crítico" else 1):
+            quem = "Equipe Seazone" if a.depende_de_humano else "Fornecedor / disciplina"
+            L.append(f"| {ICONE.get(a.severidade,'·')} {a.texto} | "
+                     f"{a.o_que_falta or '—'} | {quem} |")
+        for q in livro.perguntas_ao_humano:
+            L.append(f"| 👤 {q.get('o_que_preciso','')} | {q.get('para_que','')} | "
+                     f"Equipe Seazone |")
+        L.append("")
+
+    # ---- CONCLUSÃO ----------------------------------------------------------
+    con = p.get("conclusao") or {}
+    expo = p.get("exposicao") or {}
+    L.append("## CONCLUSÃO")
+    L.append(cab + "\n")
     if expo.get("situacao"):
-        L.append(f"**Situação apurada:** {expo['situacao']}\n")
+        L.append(f"{expo['situacao']}\n")
+    if con.get("final"):
+        L.append(f"{con['final']}\n")
     if expo.get("divergencias"):
         L.append("**Divergências entre documentos**\n")
         L += [f"- {x}" for x in expo["divergencias"]]
         L.append("")
-    if expo.get("pontos_de_atencao"):
-        L.append("**Pontos de atenção**\n")
-        L += [f"- {x}" for x in expo["pontos_de_atencao"]]
-        L.append("")
-    L.append(f"**Impacto em custo e prazo:** {expo.get('impacto_custo_prazo') or '—'}\n")
-    if expo.get("o_que_falta_para_concluir"):
-        L.append("**O que ainda falta para concluir**\n")
-        L += [f"- {x}" for x in expo["o_que_falta_para_concluir"]]
-        L.append("")
-
+    if expo.get("impacto_custo_prazo"):
+        L.append(f"**Impacto em custo e prazo:** {expo['impacto_custo_prazo']}\n")
     crit = sum(1 for a in livro.achados() if a.severidade == "Crítico")
     aten = sum(1 for a in livro.achados() if a.severidade == "Atenção")
-    L.append(f"**Quadro de criticidade:** {crit} achado(s) crítico(s), {aten} de atenção, "
+    L.append(f"**Quadro de criticidade:** {crit} crítico(s), {aten} de atenção, "
              f"{len(lac)} pendência(s) aberta(s).\n")
 
-    L.append("### RECOMENDAÇÃO\n")
-    L.append("> A classificação **GO / GO COM RESSALVAS / NO-GO** é decisão humana. O "
-             "Auditor apresenta acima a exposição técnica, as evidências e as pendências; "
+    # ---- ATA DE APROVAÇÃO ---------------------------------------------------
+    L.append("## ATA DE APROVAÇÃO – ETAPA VALIDAÇÃO")
+    L.append(cab + "\n")
+    L.append("> A classificação **GO / GO COM RESSALVAS / NO-GO** é decisão humana. "
+             "A Análise Técnica apresenta a exposição, as evidências e as pendências; "
              "a recomendação é assinada por quem responde pela análise.\n")
     L.append("| | |\n|---|---|")
-    L.append("| **Recomendação** | ( ) GO   ( ) GO COM RESSALVAS   ( ) NO-GO |")
-    L.append("| **Responsável** | ______________________________ |")
-    L.append("| **Data** | ____ / ____ / ________ |")
-    L.append("| **Justificativa** | |")
+    L.append("| **RECOMENDAÇÃO** | ( ) GO  ( ) GO COM RESSALVAS  ( ) NO-GO |")
+    L.append("| **JUSTIFICATIVA** | |")
+    L.append("| **CONTRATANTE** | Seazone Investimentos — Setor de Lançamentos |")
+    L.append("| **RESPONSÁVEL** | ______________________________ |")
+    L.append("| **DATA** | ____ / ____ / ________ |")
 
     cidade = f"{perfil.cidade}/{perfil.uf}" if perfil.cidade else "Florianópolis/SC"
     L.append(f"\n*{cidade}, {_hoje()}.*")
     L.append("*Setor de Projetos — Estruturação — Seazone Investimentos.*")
 
-    # ---- Rodapé de rastreabilidade -----------------------------------------
     cob = livro.cobertura or {}
-    L.append(f"\n---\n<sub>Auditor de DD Técnica v2 · rodada {livro.rodada} · "
+    L.append(f"\n---\n<sub>Auditor de DD Técnica v2 · {rev} · rodada {livro.rodada} · "
              f"{p.get('documentos_lidos', 0)} de {cob.get('total', 0)} arquivos lidos · "
-             f"{p.get('chamadas_de_ferramenta', 0)} consultas · "
-             f"gerado em {livro.gerado_em[:19]}. "
+             f"{p.get('chamadas_de_ferramenta', 0)} consultas · {livro.gerado_em[:19]}. "
              f"Rascunho técnico para revisão humana.</sub>")
 
     return "\n".join(x for x in L if x is not None)
 
 
-def imagens_para_doc(livro: Livro, drive=None) -> dict[str, bytes]:
-    """
-    Baixa as figuras para embutir no .docx / Google Doc.
+def nome_arquivo(livro: Livro) -> str:
+    """Padrão de nome dos documentos reais: `DD TÉCNICA_SEAZONE_ID 12235 NOME_R00`."""
+    rev = f"R{max(0, livro.rodada - 1):02d}"
+    return f"DD TÉCNICA_SEAZONE_ID {livro.perfil.emp_id} {livro.nome.upper()}_{rev}"
 
-    Chaveado pela MESMA URL usada em `_fig()`, que é como `docs_writer` faz a
-    substituição do markdown pela imagem real.
-    """
+
+def imagens_para_doc(livro: Livro, drive=None) -> dict[str, bytes]:
+    """Baixa as figuras para embutir no .docx / Google Doc."""
     out: dict[str, bytes] = {}
     if drive is None:
         return out
-    for i in ((livro.cobertura or {}).get("imagens") or [])[:12]:
-        url = f"https://drive.google.com/thumbnail?id={i['id']}&sz=w900"
+    for i in ((livro.cobertura or {}).get("imagens") or [])[:14]:
+        url = f"https://drive.google.com/thumbnail?id={i['id']}&sz=w1000"
         try:
             data, _ = drive.download_file_by_id(i["id"], i.get("mime", "image/png"))
             out[url] = data

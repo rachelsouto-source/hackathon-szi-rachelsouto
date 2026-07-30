@@ -197,3 +197,159 @@ def orientar(municipio: str, uf: str = "", tema: str = "") -> dict[str, Any]:
         ],
         "nota": p.get("nota", ""),
     }
+
+
+# --------------------------------------------------------------------------- #
+# VARREDURA DE PORTAL — funciona para qualquer município, com ou sem registro
+# --------------------------------------------------------------------------- #
+#
+# O registro acima cobre os municípios onde a Seazone já operou. Para os demais — e
+# eles são a maioria — não dá para pré-cadastrar o Brasil inteiro. O que dá é dirigir
+# a busca com precisão: padrões de domínio oficial, consultas prontas por tema, e um
+# teste de "isto é fonte oficial ou é blog?".
+#
+# A varredura em si é executada pelo agente com `web_search` / `web_fetch`; este módulo
+# monta o plano e valida o resultado.
+
+# Padrões de domínio oficial de prefeitura no Brasil, em ordem de probabilidade.
+PADROES_DOMINIO = [
+    "{slug}.{uf}.gov.br",
+    "{slug}.{uf}.leg.br",              # câmara municipal (leis publicadas)
+    "prefeitura{slug}.{uf}.gov.br",
+    "www.{slug}.{uf}.gov.br",
+    "{slug}.gov.br",
+]
+
+# Bases que publicam legislação municipal compilada — úteis quando o portal da
+# prefeitura não tem busca decente (o caso comum em município pequeno).
+BASES_COMPILADAS = [
+    ("leismunicipais.com.br", "compilado nacional de legislação municipal"),
+    ("planalto.gov.br", "legislação federal"),
+    ("in.gov.br", "Diário Oficial da União"),
+]
+
+# Um domínio é aceito como fonte de lei se casar um destes. Blog e portal de notícia
+# não entram — a regra é ler TEXTO PRIMÁRIO.
+SUFIXOS_OFICIAIS = (".gov.br", ".leg.br", ".jus.br", ".mp.br", ".org.br")
+
+# Consultas por tema. `{m}` = município, `{uf}` = UF, `{d}` = domínio quando conhecido.
+CONSULTAS: dict[str, list[str]] = {
+    "portal": ['prefeitura "{m}" {uf} site oficial',
+               '"{m}" {uf} câmara municipal legislação'],
+    "zoneamento": ['"{m}" {uf} plano diretor lei municipal zoneamento',
+                   '"{m}" {uf} lei uso e ocupação do solo parâmetros urbanísticos',
+                   '"{m}" código de obras lei municipal'],
+    "parametros": ['"{m}" {uf} taxa de ocupação coeficiente de aproveitamento recuos',
+                   '"{m}" {uf} gabarito altura máxima edificação lei'],
+    "outorga": ['"{m}" {uf} outorga onerosa do direito de construir lei',
+                '"{m}" {uf} transferência do direito de construir'],
+    "licenciamento": ['"{m}" {uf} alvará de construção documentos exigidos',
+                      '"{m}" {uf} licenciamento ambiental municipal',
+                      '"{m}" {uf} estudo de impacto de vizinhança EIV lei'],
+    "ambiental": ['"{m}" {uf} APP área de preservação permanente lei municipal',
+                  '"{m}" {uf} supressão de vegetação autorização compensação'],
+    "orla": ['"{m}" {uf} faixa de orla recuo frente mar lei',
+             '"{m}" {uf} acesso público à praia servidão'],
+    "esgoto": ['"{m}" {uf} concessionária água esgoto viabilidade'],
+    "patrimonio": ['"{m}" {uf} tombamento patrimônio histórico lei'],
+    "bombeiro": ['corpo de bombeiros {uf} instrução normativa edificação'],
+}
+
+
+def _slug(municipio: str) -> str:
+    return _norm(municipio).replace(" ", "")
+
+
+def dominio_e_oficial(url: str, municipio: str = "", uf: str = "") -> tuple[bool, str]:
+    """
+    Testa se a URL serve como fonte de lei.
+
+    Deliberadamente conservador: na dúvida, NÃO é oficial. Um parâmetro urbanístico
+    citado a partir de blog imobiliário é pior que um parâmetro ausente, porque parece
+    apurado.
+    """
+    u = _norm(url)
+    if not u.startswith("http"):
+        return False, "não é URL"
+    host = u.split("//", 1)[-1].split("/", 1)[0]
+    if any(host.endswith(s) for s in SUFIXOS_OFICIAIS):
+        return True, "domínio oficial (.gov.br/.leg.br/.jus.br/.mp.br)"
+    if any(host.endswith(b) or b in host for b, _ in BASES_COMPILADAS):
+        return True, "base compilada de legislação"
+    if municipio:
+        registrados = dominios_permitidos(municipio, uf)
+        if any(d in host for d in registrados):
+            return True, "domínio registrado para este município"
+    return False, (f"'{host}' não é domínio oficial nem base compilada — não serve como "
+                   f"fonte de lei. Procure o texto no portal .gov.br do município, na "
+                   f"câmara municipal (.leg.br) ou no leismunicipais.com.br.")
+
+
+def plano_de_varredura(municipio: str, uf: str = "",
+                       temas: list[str] | None = None) -> dict[str, Any]:
+    """
+    Monta o plano de varredura do portal do município.
+
+    Devolve: domínios candidatos, consultas prontas por tema, o que extrair de cada uma
+    e como validar. O agente executa com `web_search` / `web_fetch`.
+    """
+    p = perfil_municipio(municipio, uf)
+    uf_n = (p.get("uf") or uf or "").lower()
+    slug = _slug(p["municipio"])
+
+    candidatos = list(p.get("dominios") or [])
+    for padrao in PADROES_DOMINIO:
+        d = padrao.format(slug=slug, uf=uf_n)
+        if uf_n and d not in candidatos:
+            candidatos.append(d)
+
+    temas = temas or list(CONSULTAS)
+    consultas = {
+        t: [q.format(m=p["municipio"], uf=(p.get("uf") or uf or "").upper())
+            for q in CONSULTAS[t]]
+        for t in temas if t in CONSULTAS
+    }
+
+    return {
+        "municipio": p["municipio"], "uf": p.get("uf") or uf,
+        "ja_registrado": p["conhecido"],
+        "dominios_candidatos": candidatos,
+        "bases_compiladas": [{"dominio": d, "para": q} for d, q in BASES_COMPILADAS],
+        "consultas_por_tema": consultas,
+        "como_executar": [
+            "1. Rode as consultas de 'portal' primeiro e confirme o domínio oficial "
+            "(deve terminar em .gov.br ou .leg.br).",
+            "2. Para cada tema, rode as consultas e abra com web_fetch APENAS páginas "
+            "em domínio oficial ou em base compilada de legislação.",
+            "3. Extraia o NÚMERO e o ANO da lei, o ARTIGO, e o VALOR do parâmetro. "
+            "Cite o trecho literal.",
+            "4. Se o município não publica um parâmetro, registre 'NÃO INFORMADO' — é "
+            "o que o documento oficial da Seazone faz. Não estime.",
+            "5. Confira se a lei encontrada está vigente e se houve alteração posterior.",
+        ],
+        "o_que_extrair": {
+            "norma": "número, ano e nome (ex.: 'Lei Municipal nº 622/2024 — Plano "
+                     "Diretor Participativo')",
+            "artigo": "dispositivo específico que fixa o parâmetro",
+            "valor": "o número, com unidade",
+            "observacao": "condicionante, exceção ou onde confirmar",
+            "fonte": "URL do texto primário",
+        },
+        "parametros_alvo": [
+            "RECUOS GERAIS (frente, laterais, fundos — e frente-mar em litoral)",
+            "ALTURA MÁXIMA / gabarito",
+            "TAXA DE OCUPAÇÃO",
+            "TAXA DE PERMEABILIDADE",
+            "COEFICIENTE DE APROVEITAMENTO",
+            "VAGAS DE GARAGEM",
+            "MURO LATERAL",
+            "EIV — a partir de que porte é exigido",
+            "OUTORGA ONEROSA — existe? qual a fórmula?",
+        ],
+        "aviso": (
+            "Este município NÃO está no registro de portais — o domínio oficial precisa "
+            "ser confirmado pela busca antes de qualquer citação."
+            if not p["conhecido"] else
+            "Município registrado: os domínios conhecidos vêm primeiro, mas confirme "
+            "que a lei citada está vigente."),
+    }

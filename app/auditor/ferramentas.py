@@ -210,6 +210,42 @@ def schemas() -> list[dict]:
             },
         },
         {
+            "name": "varrer_portal_prefeitura",
+            "description": (
+                "Monta o plano de varredura do portal da prefeitura de QUALQUER município — "
+                "inclusive os que não estão no registro. Devolve os domínios candidatos "
+                "(.gov.br/.leg.br), as consultas prontas por tema e o que extrair de cada "
+                "página. Depois EXECUTE o plano com web_search/web_fetch. Use isto quando o "
+                "município não for Florianópolis, que é o único com base estruturada. "
+                "Só cite lei vinda de domínio oficial ou base compilada — blog não vale."),
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "municipio": {"type": "string"},
+                    "uf": {"type": "string"},
+                    "temas": {"type": "array", "items": {"type": "string", "enum": [
+                        "portal", "zoneamento", "parametros", "outorga", "licenciamento",
+                        "ambiental", "orla", "esgoto", "patrimonio", "bombeiro"]},
+                        "description": "omita para varrer tudo"},
+                },
+                "required": ["municipio"],
+            },
+        },
+        {
+            "name": "conferir_fonte_legal",
+            "description": (
+                "Antes de citar uma lei, confira se a URL serve como fonte. Aceita apenas "
+                "domínio oficial (.gov.br, .leg.br, .jus.br, .mp.br) ou base compilada de "
+                "legislação. Parâmetro urbanístico citado a partir de blog imobiliário é "
+                "pior que parâmetro ausente, porque parece apurado."),
+            "input_schema": {
+                "type": "object",
+                "properties": {"url": {"type": "string"}, "municipio": {"type": "string"},
+                               "uf": {"type": "string"}},
+                "required": ["url"],
+            },
+        },
+        {
             "name": "pedir_ao_humano",
             "description": (
                 "Registra que você PRECISA de algo que não consegue obter e que sem isso "
@@ -271,6 +307,10 @@ def executar(nome: str, args: dict, ctx: Contexto) -> tuple[str, list[dict]]:
             return _spu(args, ctx), []
         if nome == "consultar_legislacao":
             return _legislacao(args, ctx), []
+        if nome == "varrer_portal_prefeitura":
+            return _varrer_portal(args, ctx), []
+        if nome == "conferir_fonte_legal":
+            return _conferir_fonte(args, ctx), []
         if nome == "pedir_ao_humano":
             return _pedido(args, ctx), []
         return f"Ferramenta desconhecida: {nome}", []
@@ -411,6 +451,25 @@ def _legislacao(args: dict, ctx: Contexto) -> str:
                   f"{'com' if r['municipio_conhecido'] else 'SEM'} registro de portais · "
                   f"{len(r['perguntar'])} perguntas")
     return json.dumps(r, ensure_ascii=False, indent=1)
+
+
+def _varrer_portal(args: dict, ctx: Contexto) -> str:
+    r = flegislacao.plano_de_varredura(
+        args.get("municipio", ""), args.get("uf", ""), args.get("temas"))
+    n = sum(len(v) for v in r["consultas_por_tema"].values())
+    ctx.registrar("varrer_portal_prefeitura",
+                  {"municipio": args.get("municipio"), "temas": args.get("temas")},
+                  f"{len(r['dominios_candidatos'])} domínios candidatos, {n} consultas")
+    return json.dumps(r, ensure_ascii=False, indent=1)
+
+
+def _conferir_fonte(args: dict, ctx: Contexto) -> str:
+    ok, motivo = flegislacao.dominio_e_oficial(
+        args.get("url", ""), args.get("municipio", ""), args.get("uf", ""))
+    ctx.registrar("conferir_fonte_legal", {"url": args.get("url", "")[:120]},
+                  "OFICIAL" if ok else "RECUSADA")
+    return json.dumps({"url": args.get("url"), "serve_como_fonte_de_lei": ok,
+                       "motivo": motivo}, ensure_ascii=False)
 
 
 def _pedido(args: dict, ctx: Contexto) -> str:
