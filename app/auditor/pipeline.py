@@ -15,7 +15,8 @@ import datetime as _dt
 import re
 from typing import Any, Callable
 
-from . import agente, cartografo, estado, ferramentas, regras, relatorio
+from . import (agente, cartografo, estado, ferramentas, parecer, regras,
+               relatorio)
 from .livro import Livro, PerfilCaso, diff_livros
 
 RE_EMP_ID = re.compile(r"\[(\d{3,6})\]")
@@ -108,14 +109,21 @@ def auditar(folder_id: str, nome: str, drive=None,
     estado.gravar_livro(livro)
     estado.gravar_manifest(emp_id, cartografo.manifest_de(inventario))
 
+    # DOIS documentos, com propósitos diferentes (ver parecer.py):
+    #   markdown → área de trabalho (painel): achados, cruzamentos, lacunas, cobertura
+    #   parecer  → entregável oficial no template da Seazone, com figuras
     md = relatorio.render_markdown(livro, changelog)
-    aviso("parecer pronto")
+    parecer_md = parecer.render(livro, changelog)
+    aviso("parecer técnico pronto")
 
+    resumo = relatorio.resumo_api(livro, changelog)
+    resumo["parecer_md"] = parecer_md
     return {
         "livro": livro,
         "markdown": md,
+        "parecer_md": parecer_md,
         "changelog": changelog,
-        "resumo": relatorio.resumo_api(livro, changelog),
+        "resumo": resumo,
     }
 
 

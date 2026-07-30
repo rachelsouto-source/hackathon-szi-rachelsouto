@@ -29,10 +29,13 @@ MAX_ARQUIVOS = 4000
 # que precisam de ferramenta própria). Continuam no inventário como "não aplicável" —
 # ficam VISÍVEIS, apenas não entram na fila de leitura.
 EXT_NAO_TEXTUAL = {
-    ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tif", ".tiff", ".webp", ".heic",
     ".mp4", ".mov", ".avi", ".zip", ".rar", ".7z", ".exe", ".ttf", ".otf",
     ".skp", ".3ds", ".max", ".blend", ".rvt", ".ifc",
 }
+# Imagens NÃO são descartáveis: o parecer oficial da Seazone leva figuras (localização,
+# drone, mapa de restrições, locação de sondagem). Além de irem para o documento, o
+# modelo as lê por visão — entorno, contexto urbano e vistas são leitura de negócio.
+EXT_IMAGEM = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tif", ".tiff", ".webp", ".heic"}
 EXT_CAD = {".dwg", ".dxf", ".dwl", ".dwl2", ".kmz", ".kml", ".shp", ".dbf", ".shx", ".prj"}
 
 
@@ -89,6 +92,29 @@ def classificar_disciplina(caminho: str, nome: str) -> str | None:
     return None
 
 
+# Onde cada figura entra no parecer oficial. A ordem importa: a primeira que casar vence.
+SECAO_FIGURA: list[tuple[str, list[str]]] = [
+    ("localizacao", ["localiza", "drone", "aerea", "aérea", "panoram", "vista",
+                     "implantac", "entorno", "satelite", "satélite"]),
+    ("topografia", ["topograf", "planialt", "poligonal", "curvas", "confronto", "prancha"]),
+    ("ambiental", ["ambiental", "app", "restric", "restrições", "mangue", "vegetac",
+                   "supressao", "supressão", "floram"]),
+    ("validacao_ep", ["estudo preliminar", "ep-", "ep_", "anteprojeto", "planta",
+                      "pavimento", "fachada", "volumetria", "render"]),
+    ("sondagem", ["sondagem", "spt", "furo"]),
+    ("estrutura_fundacao", ["estrutura", "fundac", "fundaç", "estaca", "locacao",
+                            "locação"]),
+]
+
+
+def secao_da_figura(caminho: str, nome: str) -> str:
+    alvo = _norm(f"{caminho} {nome}")
+    for secao, pistas in SECAO_FIGURA:
+        if any(p in alvo for p in pistas):
+            return secao
+    return "localizacao"
+
+
 def _relevancia(caminho: str, nome: str, mime: str) -> tuple[str, str]:
     """
     Devolve (situacao, motivo). situacao ∈ {"a_ler", "nao_aplicavel", "requer_ferramenta"}.
@@ -100,8 +126,10 @@ def _relevancia(caminho: str, nome: str, mime: str) -> tuple[str, str]:
     n = _norm(nome)
     if ext in EXT_CAD:
         return "requer_ferramenta", "arquivo CAD/geoespacial — exige ferramenta de geoprocessamento"
+    if ext in EXT_IMAGEM or (mime or "").startswith("image/"):
+        return "imagem", "figura — entra no parecer e é lida por visão"
     if ext in EXT_NAO_TEXTUAL:
-        return "nao_aplicavel", "imagem/mídia/binário sem texto auditável"
+        return "nao_aplicavel", "mídia/binário sem conteúdo auditável"
     if n.startswith("~$") or n.endswith(".tmp"):
         return "nao_aplicavel", "arquivo temporário"
     if "vnd.google-apps.form" in (mime or ""):
@@ -154,6 +182,8 @@ def varrer(root_id: str, drive) -> dict[str, Any]:
                     "disciplina": classificar_disciplina(caminho, nome),
                     "situacao": sit,
                     "motivo": motivo,
+                    "secao_figura": (secao_da_figura(caminho, nome)
+                                     if sit == "imagem" else None),
                     "lido": False,
                 })
 
@@ -249,6 +279,10 @@ def cobertura(inventario: dict, lidos: set[str]) -> dict[str, Any]:
             {"nome": a["nome"], "caminho": a["caminho"], "motivo": a["motivo"],
              "link": a["link"]} for a in arq if a["situacao"] == "requer_ferramenta"],
         "nao_aplicaveis": len([a for a in arq if a["situacao"] == "nao_aplicavel"]),
+        "imagens": [
+            {"id": a["id"], "nome": a["nome"], "caminho": a["caminho"],
+             "link": a["link"], "secao": a["secao_figura"], "mime": a["mime"]}
+            for a in arq if a["situacao"] == "imagem"],
         "pastas_vazias": inventario["pastas_vazias"],
         "erros_de_leitura": inventario["erros_de_leitura"],
         "truncado": inventario.get("truncado", False),

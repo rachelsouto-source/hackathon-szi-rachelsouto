@@ -408,4 +408,10 @@ def resumo_api(livro: Livro, changelog: dict | None = None) -> dict[str, Any]:
         "cobertura": livro.cobertura,
         "changelog": changelog or {},
         "trilha": livro.ferramentas_usadas,
+        "legislacao": [
+            {"norma": e.localizacao or e.ref, "link": e.link,
+             "trecho": e.trecho, "consultado_em": e.consultado_em[:10],
+             "fundamenta": a.texto}
+            for a in livro.afirmacoes for e in a.evidencias if e.origem == "legislacao"],
+        "imagens": (livro.cobertura or {}).get("imagens", []),
     }

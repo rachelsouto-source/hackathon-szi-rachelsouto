@@ -25,9 +25,11 @@ from .livro import (Afirmacao, Comparativo, Contestacao, Evidencia, LinhaCompara
 
 MODELO = os.getenv("ANTHROPIC_MODEL", "claude-opus-5")
 MODELO_LEVE = os.getenv("ANTHROPIC_MODEL_LEVE", "claude-sonnet-5")
-MAX_TOKENS_INVESTIGACAO = int(os.getenv("DD_MAX_TOKENS_INV", "8000"))
+MAX_TOKENS_INVESTIGACAO = int(os.getenv("DD_MAX_TOKENS_INV", "16000"))
 MAX_TOKENS_CONSOLIDACAO = int(os.getenv("DD_MAX_TOKENS", "32000"))
 MAX_ITERACOES = int(os.getenv("DD_MAX_ITERACOES", "40"))
+EFFORT = os.getenv("DD_EFFORT", "high")          # low|medium|high|xhigh|max
+MAX_PAUSAS = 8                                    # retomadas de pause_turn por auditoria
 
 
 class AgenteError(RuntimeError):
@@ -136,6 +138,29 @@ R-DIÁRIO — chame `consultar_diario` no início. O time registra em reunião e
 que não estão em documento nenhum (suspensão de alvará, ação do MP, atraso real). Trate
 como GERADOR DE PERGUNTA: "o pessoal está preocupado com X — deixa eu investigar X".
 Nunca como fato isolado.
+
+R-LEGISLAÇÃO — a DD verifica código de obras, plano diretor e demais legislações
+vigentes. Isso não é opcional e não é retórica:
+
+  1. Chame `consultar_legislacao` com o município assim que souber onde fica o terreno.
+     Ele devolve os PORTAIS OFICIAIS, as leis-chave já conhecidas, as armadilhas
+     recorrentes e o checklist do que perguntar.
+  2. Depois use `web_search` e `web_fetch` para ler o TEXTO PRIMÁRIO no site da
+     prefeitura e nas bases oficiais. Existe base estruturada só para Florianópolis —
+     em qualquer outro município a lei tem de ser buscada.
+  3. NUNCA cite lei ou parâmetro de memória. Blog, portal de notícia e site de
+     imobiliária não são fonte de lei. Cite a norma, o artigo e o LINK, e registre a
+     DATA da consulta na evidência.
+  4. Confira VIGÊNCIA: o dispositivo está em vigor hoje? Houve alteração posterior?
+     Há regra de transição por data de protocolo?
+  5. A fonte oficial do zoneamento deste terreno é a VIABILIDADE TÉCNICA CONSTRUTIVA
+     emitida para ele. A lei é fundamento — ela não substitui a consulta, e a consulta
+     não dispensa conferir a lei que ela invoca.
+
+  Cheque sempre, mesmo que o documento não mencione: outorga onerosa e sua fórmula;
+  se os incentivos são cumulativos ou excludentes; rito de licenciamento e o que exclui
+  do declaratório; EIV; condicionante de esgoto; restrições ambientais; patrimônio; e a
+  norma estadual de bombeiro aplicável ao produto.
 
 R-LACUNA — se falta informação para concluir, você PARA e chama `pedir_ao_humano`. Não
 estime, não presuma, não ofereça sugestão especulativa. Uma lacuna bem declarada vale
@@ -317,17 +342,33 @@ def investigar(ctx: ferramentas.Contexto, delta: dict,
                      f"Diário e lendo os documentos jurídicos e de topografia."}],
     }]
 
-    tools = ferramentas.schemas()
+    tools = ferramentas.schemas() + ferramentas.schemas_servidor()
+    pausas = 0
     for i in range(MAX_ITERACOES):
         try:
             resp = cli.messages.create(
                 model=MODELO, max_tokens=MAX_TOKENS_INVESTIGACAO,
+                output_config={"effort": EFFORT},
                 system=sistema, messages=mensagens, tools=tools,
             )
         except Exception as e:  # noqa: BLE001
             raise AgenteError(f"Falha na investigação (iteração {i+1}): {e}") from e
 
         mensagens.append({"role": "assistant", "content": resp.content})
+
+        # As ferramentas de servidor (web_search/web_fetch) rodam do lado da Anthropic e
+        # têm um teto de iterações internas. Ao bater nele a resposta volta com
+        # stop_reason="pause_turn": basta reenviar para retomar de onde parou — sem
+        # inserir mensagem de usuário, que quebraria a retomada.
+        if getattr(resp, "stop_reason", "") == "pause_turn":
+            pausas += 1
+            if pausas > MAX_PAUSAS:
+                aviso(f"limite de {MAX_PAUSAS} retomadas de busca atingido")
+                break
+            aviso("retomando busca na web…")
+            continue
+
+        # `server_tool_use` NÃO entra aqui: é executada pela Anthropic, não por nós.
         usos = [b for b in resp.content if getattr(b, "type", "") == "tool_use"]
         if not usos:
             break
@@ -341,6 +382,8 @@ def investigar(ctx: ferramentas.Contexto, delta: dict,
                     "type": "tool_result", "tool_use_id": u.id,
                     "content": "Investigação encerrada. Aguarde a fase de consolidação.",
                 })
+                continue
+            if u.name in ferramentas.NOMES_SERVIDOR:      # defesa: não é nossa
                 continue
             aviso(f"{u.name}: {json.dumps(u.input, ensure_ascii=False)[:90]}")
             texto, extras = ferramentas.executar(u.name, dict(u.input), ctx)
@@ -388,7 +431,8 @@ def consolidar(mensagens: list[dict], ctx: ferramentas.Contexto) -> dict:
     }]
     try:
         resp = cli.messages.create(
-            model=MODELO, max_tokens=MAX_TOKENS_CONSOLIDACAO, messages=msgs)
+            model=MODELO, max_tokens=MAX_TOKENS_CONSOLIDACAO,
+            output_config={"effort": EFFORT}, messages=msgs)
     except Exception as e:  # noqa: BLE001
         raise AgenteError(f"Falha ao consolidar: {e}") from e
 

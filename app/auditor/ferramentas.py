@@ -13,6 +13,7 @@ from __future__ import annotations
 import base64
 import datetime as _dt
 import json
+import os as _os
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -20,6 +21,7 @@ from . import cartografo
 from .fontes import diario as fdiario
 from .fontes import externas as fexternas
 from .fontes import historica as fhistorica
+from .fontes import legislacao as flegislacao
 
 MAX_DOCS_LIDOS = 40
 MAX_BYTES_DOC = 28 * 1024 * 1024      # limite prático de document block
@@ -42,6 +44,9 @@ class Contexto:
     chamadas: list[dict] = field(default_factory=list)
     pedidos_ao_humano: list[dict] = field(default_factory=list)
     bytes_gastos: int = 0
+    # Preenchido por consultar_legislacao — usado pela regra que confere se a evidência
+    # de legislação veio de domínio oficial.
+    dominios_legislacao: list[str] = field(default_factory=list)
 
     def registrar(self, nome: str, args: dict, resumo: str) -> None:
         self.chamadas.append({"ferramenta": nome, "args": args,
@@ -50,6 +55,38 @@ class Contexto:
     def ja_tentou(self, nome: str, **args) -> bool:
         return any(c["ferramenta"] == nome and all(c["args"].get(k) == v
                    for k, v in args.items()) for c in self.chamadas)
+
+
+# --------------------------------------------------------------------------- #
+# Ferramentas DE SERVIDOR — executadas pela Anthropic, não por nós
+# --------------------------------------------------------------------------- #
+
+MAX_BUSCAS_WEB = int(_os.getenv("DD_MAX_BUSCAS_WEB", "12"))
+MAX_FETCH_WEB = int(_os.getenv("DD_MAX_FETCH_WEB", "12"))
+
+# Nomes das ferramentas de servidor: aparecem na resposta como `server_tool_use` +
+# `*_tool_result`, e NÃO devem ser despachadas por `executar()` — a Anthropic já as rodou.
+NOMES_SERVIDOR = {"web_search", "web_fetch"}
+
+
+def schemas_servidor() -> list[dict]:
+    """
+    Dá ao agente acesso a sites de prefeitura e a texto legal primário.
+
+    Sem isto, "analisar a legislação do lugar" fica só no discurso: fora de Florianópolis
+    não existe base estruturada (revisão de 29/07, 20:46), então a única forma de ler a
+    lei do município é ir ao site oficial.
+
+    `web_fetch` só busca URLs JÁ PRESENTES na conversa — na prática ele lê o que a
+    `web_search` (ou o `consultar_legislacao`) trouxe. Os dois vêm com filtragem dinâmica
+    embutida, que roda execução de código por baixo: por isso NÃO declaramos
+    `code_execution` junto — dois ambientes de execução confundem o modelo.
+    """
+    return [
+        {"type": "web_search_20260209", "name": "web_search", "max_uses": MAX_BUSCAS_WEB},
+        {"type": "web_fetch_20260209", "name": "web_fetch", "max_uses": MAX_FETCH_WEB,
+         "citations": {"enabled": True}},
+    ]
 
 
 # --------------------------------------------------------------------------- #
@@ -154,16 +191,20 @@ def schemas() -> list[dict]:
         {
             "name": "consultar_legislacao",
             "description": (
-                "Orienta a verificação de legislação municipal/estadual. Existe base "
-                "estruturada apenas para Florianópolis; fora dali, use web_search sobre "
-                "texto primário. Regra inviolável: NUNCA citar lei de memória, sempre "
-                "conferir vigência na data da análise."),
+                "Mapa da legislação do município: portais OFICIAIS onde procurar, leis-chave "
+                "já conhecidas, armadilhas recorrentes e o checklist do que perguntar. "
+                "CHAME ISTO ANTES de sair pesquisando na web — ele diz em quais domínios a "
+                "resposta é confiável. Depois use web_search/web_fetch nesses domínios para "
+                "ler o TEXTO PRIMÁRIO. Existe base estruturada apenas para Florianópolis."),
             "input_schema": {
                 "type": "object",
                 "properties": {
                     "municipio": {"type": "string"},
                     "uf": {"type": "string"},
-                    "tema": {"type": "string"},
+                    "tema": {"type": "string",
+                             "description": "zoneamento, outorga, incentivos, licenciamento, "
+                                            "eiv, esgoto, ambiental, patrimonio, bombeiro, "
+                                            "vigencia — ou vazio para o checklist todo"},
                 },
                 "required": ["municipio"],
             },
@@ -362,8 +403,13 @@ def _spu(args: dict, ctx: Contexto) -> str:
 
 
 def _legislacao(args: dict, ctx: Contexto) -> str:
-    r = fexternas.orientacao_legislacao(args.get("municipio", ""), args.get("uf", ""))
-    ctx.registrar("consultar_legislacao", args, r.get("fonte", ""))
+    r = flegislacao.orientar(args.get("municipio", ""), args.get("uf", ""),
+                             args.get("tema", ""))
+    ctx.dominios_legislacao = r.get("dominios_confiaveis") or []
+    ctx.registrar("consultar_legislacao",
+                  {"municipio": args.get("municipio"), "tema": args.get("tema")},
+                  f"{'com' if r['municipio_conhecido'] else 'SEM'} registro de portais · "
+                  f"{len(r['perguntar'])} perguntas")
     return json.dumps(r, ensure_ascii=False, indent=1)
 
 

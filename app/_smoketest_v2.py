@@ -16,7 +16,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 os.environ["AUDITOR_DADOS_DIR"] = tempfile.mkdtemp(prefix="auditor-smoke-")
 
-from auditor import cartografo, estado, regras, relatorio  # noqa: E402
+from auditor import (cartografo, estado, parecer, regras,  # noqa: E402
+                     relatorio)
 from auditor.livro import (Afirmacao, Evidencia, Livro, PerfilCaso,  # noqa: E402
                            diff_livros)
 
@@ -97,7 +98,10 @@ def teste_cartografo():
     tmp = next(a for a in inv["arquivos"] if a["nome"].startswith("~$"))
     ok(tmp["situacao"] == "nao_aplicavel", "temporário marcado como não aplicável")
     foto = next(a for a in inv["arquivos"] if a["nome"].endswith(".jpg"))
-    ok(foto["situacao"] == "nao_aplicavel", "imagem marcada como não aplicável")
+    ok(foto["situacao"] == "imagem",
+       "imagem é FIGURA do parecer, não descarte — o parecer oficial leva imagens")
+    ok(foto["secao_figura"] in ("localizacao", "validacao_ep"),
+       f"figura classificada por seção do parecer ({foto['secao_figura']})")
 
     mat = next(a for a in inv["arquivos"] if a["nome"] == "Matricula.pdf")
     ok(mat["disciplina"] == "jurídico-cartorial", "matrícula classificada como jurídica")
@@ -515,6 +519,104 @@ def teste_cruzamento(inv):
        "não cobra cruzamento quando não há precedente recuperado")
 
 
+def teste_parecer_oficial(inv):
+    """
+    O parecer é o ENTREGÁVEL, distinto do painel. Segue o template oficial da Seazone
+    (claude.md/templates/parecer-tecnico.md), leva figuras e deixa a recomendação em
+    branco para assinatura humana.
+    """
+    print("\n[12] Parecer Técnico oficial")
+    from auditor.livro import Evidencia
+
+    lv = _livro_base(inv)
+    lv.proveniencia.update({
+        "imovel": {"inscricoes": "12.34.567.8901", "endereco": "Praia do Toque, s/n",
+                   "area_matricula_total": "8.573,00 m²", "matriculas": "2.007, Porto de Pedras"},
+        "proprietarios": ["Marcos T. S."],
+        "conclusao": {"topografia": "O levantamento apurou 8.656,71 m².",
+                      "ambiental": "Interseção com manguezal (APP).",
+                      "urbanistico": "Zoneamento a confirmar na consulta municipal.",
+                      "final": "Há impedimentos relevantes a endereçar antes da aquisição."},
+        "validacao": {"ajustes": ["Rever afastamento frontal"],
+                      "docs_aprovacao": ["ART do responsável"], "docs_alvara": ["PPCI"]},
+        "exposicao": {"situacao": "Terreno majoritariamente sob domínio da União.",
+                      "pontos_de_atencao": ["Regime de ocupação, não domínio pleno"],
+                      "impacto_custo_prazo": "Laudêmio não orçado."},
+    })
+    # evidência de legislação, para a seção nova
+    lv.afirmacoes[1].evidencias.append(Evidencia(
+        origem="legislacao", ref="DL 9.760/1946",
+        trecho="terrenos de marinha … preamar-média de 1831",
+        link="https://www.planalto.gov.br/ccivil_03/decreto-lei/del9760.htm",
+        localizacao="DL 9.760/1946, art. 2º", consultado_em="2026-07-30T10:00:00+00:00"))
+    lv.cobertura["imagens"] = [
+        {"id": "img1", "nome": "Vista aerea.jpg", "caminho": "/09 Drone",
+         "link": "https://drive/img1", "secao": "localizacao", "mime": "image/jpeg"}]
+    regras.aplicar(lv)
+
+    doc = parecer.render(lv)
+    ok(doc.startswith("# PARECER TÉCNICO – DUE DILIGENCE"),
+       "abre com o cabeçalho do template oficial")
+    for secao in ("## 1. IMÓVEL", "## 2. PROPRIETÁRIO(A)", "## 3. CONCLUSÃO",
+                  "### TOPOGRAFIA", "### ESTUDO PRÉVIO AMBIENTAL",
+                  "### VALIDAÇÃO DO ESTUDO PRELIMINAR SEAZONE", "### SONDAGEM",
+                  "### ESTRUTURA / FUNDAÇÃO"):
+        ok(secao in doc, f"seção obrigatória presente: {secao}")
+    ok("### VIABILIDADE URBANÍSTICA E LEGISLAÇÃO" in doc,
+       "legislação ganhou seção própria (antes ficava diluída no ambiental)")
+    ok("Legislação verificada nesta análise" in doc and "DL 9.760/1946" in doc,
+       "lista a legislação conferida com norma, link e data")
+    ok("Área de Matrícula" in doc and "Área Levantamento Topográfico" in doc,
+       "traz as tabelas de área do template")
+    ok("![Vista aerea.jpg]" in doc, "embute as figuras no documento")
+    ok("( ) GO" in doc and "**Responsável**" in doc,
+       "recomendação fica em branco para assinatura humana")
+    ok("Sem documentação disponível nesta rodada" in doc,
+       "seção sem conteúdo é DECLARADA, não omitida")
+    ok("### PENDÊNCIAS" in doc, "pendências com responsável sugerido")
+
+    # sem legislação nenhuma, o parecer avisa em vez de fingir
+    lv2 = _livro_base(inv)
+    ok("Nenhuma legislação foi verificada" in parecer.render(lv2),
+       "sem legislação conferida, o parecer diz isso explicitamente")
+
+    # o parecer é DIFERENTE da tela de auditoria
+    painel = relatorio.render_markdown(lv)
+    ok(doc != painel and "Cobertura documental" in painel and "Cobertura documental" not in doc,
+       "parecer (entregável) e painel (área de trabalho) são documentos distintos")
+
+
+def teste_legislacao():
+    print("\n[13] Legislação e portais de prefeitura")
+    from auditor.fontes import legislacao as leg
+
+    fl = leg.orientar("Florianópolis", "SC")
+    ok(fl["municipio_conhecido"] and fl["tem_base_estruturada"],
+       "Florianópolis tem base estruturada")
+    ok(any("pmf.sc.gov.br" in d for d in fl["dominios_confiaveis"]),
+       "aponta o domínio oficial da prefeitura")
+    ok(any("70-A" in x or "excludentes" in x.lower() for x in fl["armadilhas_conhecidas"]),
+       "carrega a armadilha dos incentivos excludentes (R3.a)")
+
+    sm = leg.orientar("São Miguel dos Milagres", "AL")
+    ok(sm["municipio_conhecido"] and not sm["tem_base_estruturada"],
+       "São Miguel: portal conhecido, sem base estruturada — exige buscar a lei")
+    ok(any("alvar" in x.lower() for x in sm["armadilhas_conhecidas"]),
+       "sabe da suspensão de alvarás no Toque")
+
+    xx = leg.orientar("Cidade Inexistente", "ZZ")
+    ok(not xx["municipio_conhecido"] and xx["nota"],
+       "município desconhecido é declarado, com orientação de como achar o site oficial")
+    ok(leg.dominios_permitidos("Cidade Inexistente") == [],
+       "sem registro, não inventa allowlist de domínio")
+
+    ok(any("planalto.gov.br" in d for d in leg.dominios_permitidos("Florianópolis")),
+       "bases federais entram sempre na allowlist")
+    ok(len(fl["perguntar"]) >= 8, "checklist de legislação cobre os temas obrigatórios")
+    ok(any("NUNCA citar lei" in r for r in fl["regras_inviolaveis"]),
+       "regra de nunca citar lei de memória vai junto")
+
+
 def main():
     print("=" * 74)
     print("SMOKE TEST — Auditor de DD Técnica v2 (offline)")
@@ -530,6 +632,8 @@ def main():
     teste_precedentes()
     teste_diario_real()
     teste_cruzamento(inv)
+    teste_parecer_oficial(inv)
+    teste_legislacao()
 
     print("\n" + "=" * 74)
     if FALHAS:

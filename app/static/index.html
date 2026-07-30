@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Auditor de DD Técnica — SZI Lançamentos</title>
-  <link rel="stylesheet" href="/static/style.css?v=8" />
+  <link rel="stylesheet" href="/static/style.css?v=9" />
 </head>
 <body>
   <header>
@@ -116,25 +116,36 @@
         </div>
       </div>
 
+      <!-- O que efetivamente entrou nesta auditoria. Sem isto o painel não deixa
+           claro se a análise cruzou as fontes ou só leu a pasta. -->
+      <div id="fontes" class="fontes"></div>
+
       <div id="exposicao" class="exposicao"></div>
       <div id="resumo" class="resumo"></div>
 
       <div class="tabs">
+        <button class="tab entrega" data-tab="parecer">📄 Parecer Técnico</button>
         <button class="tab active" data-tab="achados">Achados</button>
         <button class="tab" data-tab="lacunas">Lacunas <span id="c-lac" class="chip"></span></button>
         <button class="tab" data-tab="precedentes">Precedentes <span id="c-prec" class="chip"></span></button>
+        <button class="tab" data-tab="legislacao">Legislação <span id="c-leg" class="chip"></span></button>
         <button class="tab" data-tab="mudancas">Mudanças</button>
         <button class="tab" data-tab="cobertura">Cobertura</button>
-        <button class="tab" data-tab="parecer">Parecer</button>
         <button class="tab" data-tab="trilha">Trilha</button>
       </div>
 
+      <div id="tab-parecer" class="tabpane hidden">
+        <p class="entrega-nota">Este é o <strong>documento entregável</strong>, no formato
+           oficial da Seazone — o mesmo que vai para o Word e para o Google Docs. As demais
+           abas são a área de trabalho da auditoria.</p>
+        <article id="parecer" class="parecer"></article>
+      </div>
       <div id="tab-achados" class="tabpane"></div>
       <div id="tab-lacunas" class="tabpane hidden"></div>
       <div id="tab-precedentes" class="tabpane hidden"></div>
+      <div id="tab-legislacao" class="tabpane hidden"></div>
       <div id="tab-mudancas" class="tabpane hidden"></div>
       <div id="tab-cobertura" class="tabpane hidden"></div>
-      <div id="tab-parecer" class="tabpane hidden"><article id="parecer" class="parecer"></article></div>
       <div id="tab-trilha" class="tabpane hidden"></div>
     </section>
   </main>
@@ -144,6 +155,6 @@
     <p>Gerado com apoio de IA · requer revisão humana · Hackathon SZI 2026</p>
   </footer>
 
-  <script src="/static/app.js?v=8"></script>
+  <script src="/static/app.js?v=9"></script>
 </body>
 </html>

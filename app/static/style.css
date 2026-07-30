@@ -315,3 +315,26 @@ footer{text-align:center;color:#8a93a6;font-size:12px;padding:26px;display:flex;
   color: #7d6608; border-top: 1px solid #f2e3a8; }
 .cruz-fontes { padding: 6px 12px; font-size: .73rem; color: #718096;
   border-top: 1px solid #e6eef8; }
+
+/* ---- Faixa de procedência: que fontes entraram na auditoria ---- */
+.fontes { margin: 16px 0; }
+.fontes-titulo { font-size: .74rem; text-transform: uppercase; letter-spacing: .05em;
+  color: #64748b; font-weight: 600; margin-bottom: 8px; }
+.fontes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px; }
+.fonte { border: 1px solid #e2e8f0; border-radius: 9px; padding: 9px 12px; background: #fff;
+  display: flex; flex-direction: column; gap: 1px; }
+.fonte.off { opacity: .5; border-style: dashed; }
+.fonte.on { border-color: #bcd6f0; background: #f7fbff; }
+.fonte-rot { font-size: .76rem; color: #4a5568; font-weight: 600; }
+.fonte-val { font-size: 1.15rem; font-weight: 700; color: #2c4f7c; line-height: 1.2; }
+.fonte.off .fonte-val { color: #a0aec0; }
+.fonte-sub { font-size: .7rem; color: #718096; }
+
+/* ---- Aba do entregável, visualmente separada da área de trabalho ---- */
+.tab.entrega { background: #eaf3fb; border-color: #9dc3e6; color: #1f4e79; font-weight: 700; }
+.tab.entrega.active { background: #4F81BD; color: #fff; border-color: #4F81BD; }
+.entrega-nota { font-size: .84rem; color: #4a5568; background: #f7f9fc;
+  border-left: 3px solid #4F81BD; padding: 10px 14px; border-radius: 0 8px 8px 0;
+  margin: 0 0 16px; line-height: 1.5; }
+.parecer img { max-width: 100%; height: auto; border-radius: 6px; margin: 10px 0; }

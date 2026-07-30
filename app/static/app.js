@@ -179,6 +179,7 @@ function render(r) {
     $("link-docx").classList.add("hidden");
   }
 
+  renderFontes(r);
   renderExposicao(r.exposicao || {}, r.demo);
   renderContadores(r.contadores || {});
   renderAchados(r.achados || []);
@@ -186,9 +187,69 @@ function render(r) {
   renderPrecedentes(r.precedentes || []);
   renderMudancas(r.changelog || {});
   renderCobertura(r.cobertura || {});
-  $("parecer").innerHTML = md(r.markdown || "");
+  renderLegislacao(r.legislacao || []);
+  // A aba de Parecer mostra o ENTREGÁVEL (formato oficial), não a tela de auditoria.
+  $("parecer").innerHTML = md(r.parecer_md || r.markdown || "");
   renderTrilha(r.trilha || []);
   trocarAba("achados");
+}
+
+/* Faixa de procedência: diz de cara QUAIS FONTES entraram nesta auditoria.
+ * Sem ela, não dá para saber se o parecer cruzou o Diário, a base histórica e a
+ * legislação, ou se apenas leu a pasta do Drive. */
+function renderFontes(r) {
+  const c = r.contadores || {};
+  const cob = r.cobertura || {};
+  const usou = (nome) => (r.trilha || []).some((t) => t.ferramenta === nome);
+  const itens = [
+    ["📁 Documentos do Drive", c.documentos_lidos || 0,
+     `de ${cob.total || 0} arquivos varridos`, (c.documentos_lidos || 0) > 0],
+    ["📋 Diário de Lançamentos", usou("consultar_diario") ? "✓" : "—",
+     "riscos e decisões do time", usou("consultar_diario")],
+    ["🗂️ Base histórica", c.precedentes || 0, "casos anteriores", (c.precedentes || 0) > 0],
+    ["⚖️ Legislação", (r.legislacao || []).length, "normas conferidas no texto",
+     (r.legislacao || []).length > 0],
+    ["🌊 SPU / marinha", usou("consultar_spu") ? "✓" : "—", "situação dominial",
+     usou("consultar_spu")],
+    ["🔎 Web / prefeitura", usou("web_search") || usou("web_fetch") ? "✓" : "—",
+     "portais oficiais", usou("web_search") || usou("web_fetch")],
+  ];
+  $("fontes").innerHTML =
+    `<div class="fontes-titulo">Fontes cruzadas nesta auditoria</div>` +
+    `<div class="fontes-grid">` + itens.map(([rot, val, sub, on]) => `
+      <div class="fonte ${on ? "on" : "off"}">
+        <span class="fonte-rot">${esc(rot)}</span>
+        <span class="fonte-val">${esc(String(val))}</span>
+        <span class="fonte-sub">${esc(sub)}</span>
+      </div>`).join("") + `</div>`;
+}
+
+function renderLegislacao(ls) {
+  $("c-leg").textContent = ls.length || "";
+  if (!ls.length) {
+    $("tab-legislacao").innerHTML = `<div class="ausencia">
+      <h4>Nenhuma legislação verificada em texto primário</h4>
+      <p>Os parâmetros urbanísticos citados vêm da Viabilidade Técnica Construtiva; a norma
+      que os fundamenta não foi conferida nesta rodada. Existe base estruturada apenas para
+      Florianópolis — nos demais municípios o Auditor precisa buscar a lei no portal oficial
+      da prefeitura.</p></div>`;
+    return;
+  }
+  $("tab-legislacao").innerHTML = `
+    <p class="sub">Normas conferidas em texto primário. A vigência se reconfere a cada DD —
+       nunca citar lei de memória.</p>
+    <div class="cruz-scroll"><table class="cruz-tab">
+      <tr><th>Norma / dispositivo</th><th>O que fundamenta</th><th>Trecho</th>
+          <th>Consultado em</th></tr>
+      ${ls.map((l) => `<tr>
+        <td class="p-param">${l.link
+          ? `<a href="${esc(l.link)}" target="_blank" rel="noopener">${esc(l.norma)}</a>`
+          : esc(l.norma)}</td>
+        <td class="col-impl">${esc(l.fundamenta)}</td>
+        <td class="col-impl">${esc((l.trecho || "").slice(0, 180))}</td>
+        <td>${esc(l.consultado_em || "—")}</td>
+      </tr>`).join("")}
+    </table></div>`;
 }
 
 function renderExposicao(e, demo) {

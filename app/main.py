@@ -31,7 +31,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from auditor import estado, pipeline, relatorio
+from auditor import estado, parecer, pipeline, relatorio
 from core import docs_writer
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -214,6 +214,7 @@ def _rodar(jid: str, folder_id: str, nome: str, contraditor: bool) -> None:
         livro = out["livro"]
         resumo = out["resumo"]
         resumo["markdown"] = out["markdown"]
+        resumo["parecer_md"] = out["parecer_md"]
         resumo["xlsx_url"] = f"/api/dd/{livro.emp_id}/xlsx"
         resumo["docx_url"] = f"/api/dd/{livro.emp_id}/docx"
         with _LOCK:
@@ -350,7 +351,8 @@ def _resumo_de(emp_id: str) -> dict:
     if not lv:
         raise HTTPException(404, "Nenhuma auditoria gravada para este empreendimento.")
     r = relatorio.resumo_api(lv)
-    r["markdown"] = relatorio.render_markdown(lv)
+    r["markdown"] = relatorio.render_markdown(lv)      # área de trabalho
+    r["parecer_md"] = parecer.render(lv)               # entregável oficial
     return r
 
 
@@ -370,9 +372,17 @@ def baixar_xlsx(emp_id: str):
 
 @app.get("/api/dd/{emp_id}/docx")
 def baixar_docx(emp_id: str):
+    """Parecer Técnico oficial em .docx — o entregável, não a tela de auditoria."""
     import unicodedata
     r = _resumo_de(emp_id)
-    dados = docs_writer.gerar_docx_bytes(r["nome"], r["markdown"], None)
+    imagens = None
+    if not demo_mode():
+        try:
+            from core import drive_client
+            imagens = parecer.imagens_para_doc(estado.ler_livro(emp_id), drive_client)
+        except Exception:  # noqa: BLE001
+            imagens = None
+    dados = docs_writer.gerar_docx_bytes(r["nome"], r["parecer_md"], imagens)
     base = (unicodedata.normalize("NFKD", f"DD_Tecnica_{r['nome']}")
             .encode("ascii", "ignore").decode("ascii")).replace(" ", "_") or "DD_Tecnica"
     return Response(
@@ -393,8 +403,10 @@ def gerar_gdoc(emp_id: str):
     if not destino:
         raise HTTPException(400, "Pasta de destino não identificada nesta rodada.")
     try:
+        from core import drive_client
         doc = docs_writer.create_google_doc(
-            destino, f"[{r['nome']}] DD Técnica (auto)", r["markdown"], images=None)
+            destino, f"[{r['nome']}] DD Técnica (auto)", r["parecer_md"],
+            images=parecer.imagens_para_doc(estado.ler_livro(emp_id), drive_client))
         return {"doc_url": doc.get("url", "")}
     except Exception as e:  # noqa: BLE001
         raise HTTPException(500, f"Falha ao criar Google Doc: {e}")
@@ -527,7 +539,12 @@ def _demo(emp_id: str) -> dict:
             "comparativos": _comparativo_ilustrativo(a),
         } for i, a in enumerate(achados, 1)],
         "lacunas": [], "precedentes": [], "perguntas_ao_humano": [],
-        "cobertura": {}, "changelog": {}, "trilha": [],
+        "cobertura": {}, "changelog": {}, "trilha": [], "legislacao": [], "imagens": [],
+        "parecer_md": ("> ⚠️ **Exemplo fixo do repositório.** Em produção, esta aba traz o "
+                       "Parecer Técnico no formato oficial da Seazone (1. IMÓVEL, "
+                       "2. PROPRIETÁRIO, 3. CONCLUSÃO com as seções por disciplina, "
+                       "tabelas de área, figuras e o campo de recomendação para "
+                       "assinatura).\n\n") + md,
         "contadores": {
             "criticos": sum(1 for a in achados if a.get("severidade") == "Crítico"),
             "atencao": sum(1 for a in achados if a.get("severidade") == "Atenção"),
